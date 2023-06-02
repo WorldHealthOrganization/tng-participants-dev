@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0 * * * *'
+env:
+  # Setting an environment variable with the value of a configuration variable
+  env_var: ${{ vars.ENV_CONTEXT_VAR }}
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8  
+      - name: Configure Python
+        run: | 
+                pip install --upgrade pip
+                pip install -r scripts/requirements.txt
+      - name: Configure Bot
+        run: |
+          git config --global user.email ${{secrets.GITHUB_BOT_EMAIL}}
+          git config --global user.name ${{secrets.GITHUB_BOT_USER}}
+          git config --global user.password ${{secrets.GITHUB_BOT_TOKEN}}
+          git config --global pull.rebase true
+          git config --global branch.autosetuprebase always
+
+      ########################    Observe Country XX ##############################
+      # - uses: actions/checkout@v3
+      #- name: Onboarding for XX
+      # id: NL
+      #  run: |
+      #          scripts/delivery.sh "${{vars[format('{0}','XX')]}}" "${{secrets.GITHUB_BOT_TOKEN}}"
+
+      #- name: Create Pull Request
+      #  run: gh pr create -B main -H NL/onboardingRequest --title 'Bot requested a change for XX.' --body 'Please merge the onnboarding request of XX.'
+      #  continue-on-error: true
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
