@@ -46,7 +46,8 @@ name: 'Terraform'
 
 on:
   push:
-    branches: [ "main" ]
+    tags:        
+      - '*'           # Push events to every tag not containing /
     
 permissions:
   contents: read
