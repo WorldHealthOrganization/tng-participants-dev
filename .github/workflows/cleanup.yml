@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Clean Workflow Runs
+name: Clean Workflows
 
 # Controls when the workflow will run
 on:
@@ -25,5 +25,4 @@ jobs:
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
-          retain_days: 1
           keep_minimum_runs: 2
