@@ -54,14 +54,14 @@ jobs:
 
       ########################    Observe Country NL ##############################
       - uses: actions/checkout@v3
-      - name: Onboarding for NL
-        id: NL
+      - name: Onboarding for XX
+        id: XX
         continue-on-error: true
         run: |
-                scripts/delivery.sh "${{secrets[format('{0}','NL')]}}" "${{secrets.BOT_TOKEN_GITHUB}}"
+                scripts/delivery.sh "${{secrets[format('{0}','XX')]}}" "${{secrets.BOT_TOKEN_GITHUB}}"
 
       - name: Create Pull Request
-        run: gh pr create -B main -H NL/onboardingRequest --title 'Bot requested a change for NL.' --body 'Please merge the onnboarding request of NL.'
+        run: gh pr create -B main -H NL/onboardingRequest --title 'Bot requested a change for XX.' --body 'Please merge the onnboarding request of XX.'
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN_GITHUB }}
