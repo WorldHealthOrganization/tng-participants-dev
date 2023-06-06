@@ -15,8 +15,8 @@ The incoming content needs to be checked for the following rules:
 |Valid PEM| The certificates will be checked for a valid pem structure|
 |Key Length| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
 |Algorithm| OID TBD|
-|Country Flag| The country flag must be set to the correct country code|
-|Oversea Territory OU| TBD|
+|Country Flag| The country flag (C value) must be set to the correct country code|
+|Oversea Territory OU | TBD|
 |Explicit Parameter| ICAO TBD|
 |CSCA Validity Range| TBD |
 |Extended Key Usages| TBD Valid OID for DDCC/DCC|
