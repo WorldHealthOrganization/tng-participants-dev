@@ -1,4 +1,4 @@
-gpg --import temp/gpg 
+gpg --import temp/gpg  2> /dev/null
 cd repo
 (cat ../temp/tag | xargs git verify-tag --raw 2> >(grep "GOODSIG"))>../temp/verifyResult
 cd ..
