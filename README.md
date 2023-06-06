@@ -5,3 +5,19 @@ This repository contains the current onboarded key material in DEV environment f
 # Procedure
 
 To be part of the Smart Trust Network, copy/fork at first the [template repository](https://github.com/WorldHealthOrganization/tng-participant-template) and send an onboarding/participation request to tng-support@who.int. After verification of your request your repository will be linked with this one and your onboarding informations are replicated to the environment.
+
+# QA Checks
+
+The incoming content needs to be checked for the following rules:
+
+|Checks|Description|
+|----|-----------|
+|Valid PEM| The certificates will be checked for a valid pem structure|
+|Key Length| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
+|Algorithm| OID TBD|
+|Country Flag| The country flag must be set to the correct country code|
+|Oversea Territory OU| TBD|
+|Explicit Parameter| ICAO TBD|
+|CSCA Validity Range| TBD |
+|Extended Key Usages| TBD Valid OID for DDCC/DCC|
+|Key Usages| TBD|
