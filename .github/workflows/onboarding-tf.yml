@@ -119,19 +119,17 @@ jobs:
           cat /dev/null > ${CA_BUNDLE_FILE}
           echo "Building CA_BUNDLE_FILE"
           i=0
-          for cert in **/onboarding/
-            for cert in **/auth/CA*.pem
-            do
-                i=$(($i+1))
-                echo "Adding $cert to ${CA_BUNDLE_FILE}"
-                cat $cert >> ${CA_BUNDLE_FILE}
-              fi
-            done
+          for cert in **/auth/CA*.pem
+          do
+              i=$(($i+1))
+              echo "Adding $cert to ${CA_BUNDLE_FILE}"
+              cat $cert >> ${CA_BUNDLE_FILE}
+            fi
           done
           echo -e  '\e[34m' Found $i Certificates  '\e[0m'
 
           if [ $i -eq 0 ]; then
-            echo "NO CERTIFICATES FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            echo "NO CA*.pem CERTIFICATES FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             exit 1
           fi
           echo "##############################################################"
