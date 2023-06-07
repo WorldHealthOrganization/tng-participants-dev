@@ -6,7 +6,7 @@ name: Check Country Delivery
 on:
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '0 * * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
 env:
   # Setting an environment variable with the value of a configuration variable
@@ -23,10 +23,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.8  
+          python-version: 3.8
       - uses: actions/checkout@v3
       - name: Configure Python
-        run: | 
+        run: |
                 pip install --upgrade pip
                 pip install -r scripts/requirements.txt
                 echo "$TEST"
@@ -44,6 +44,6 @@ jobs:
         id: Onboarding
         env:
           GITHUB_TOKEN: ${{secrets.BOT_TOKEN_GITHUB}}
-          SECRETS:  ${{toJSON(secrets)}}
+          SECRETS: ${{toJSON(secrets)}}
         run: |
-               python scripts/delivery.py 
+          python scripts/delivery.py
