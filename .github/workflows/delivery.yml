@@ -43,7 +43,7 @@ jobs:
       - name: Onboarding
         id: Onboarding
         env:
-          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN_GITHUB }}
+          GITHUB_TOKEN: ${{secrets.BOT_TOKEN_GITHUB}}
           SECRETS:  ${{toJSON(secrets)}}
         run: |
                python scripts/delivery.py 
