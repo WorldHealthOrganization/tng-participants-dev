@@ -13,6 +13,7 @@ The incoming content needs to be checked for the following rules:
 
 |Checks|Description|
 |----|-----------|
+|Valid Folder Structure|Checks if the folder structure is valid and all required files are there.|
 |Valid PEM | The certificates will be checked for a valid pem structure|
 |Key Length| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
 |Algorithm| OID TBD|
