@@ -119,7 +119,7 @@ jobs:
           cat /dev/null > ${CA_BUNDLE_FILE}
           echo "Building CA_BUNDLE_FILE"
           i=0
-          for cert in **/auth/CA*.pem
+          for cert in find . -path **/auth/CA*.pem
           do
               i=$(($i+1))
               echo "Adding $cert to ${CA_BUNDLE_FILE}"
