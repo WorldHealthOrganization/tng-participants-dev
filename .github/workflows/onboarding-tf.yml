@@ -124,7 +124,6 @@ jobs:
               i=$(($i+1))
               echo "Adding $cert to ${CA_BUNDLE_FILE}"
               cat $cert >> ${CA_BUNDLE_FILE}
-            fi
           done
           echo -e  '\e[34m' Found $i Certificates  '\e[0m'
 
