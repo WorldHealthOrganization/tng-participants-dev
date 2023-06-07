@@ -20,6 +20,9 @@ on:
   push:
     branches:
       - dev
+    pull_request:
+      branches:
+        - main
 
 #token write permissions required for OIDC authentication
 permissions:
