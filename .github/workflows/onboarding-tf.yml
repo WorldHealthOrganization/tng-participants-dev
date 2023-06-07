@@ -1,0 +1,144 @@
+name: 'Onboarding using terraform'
+# These github environment secrets  are used by the terraform azure provider to setup OIDD authentication.
+# AZURE_CLIENT_ID  - id of the app registration
+# AZURE_SUBSCRIPTION_ID & AZURE_TENANT_ID describe the cloud section
+# WHO azure subscription is  c9e69bd2-42a5-4900-b641-c52d3e31639a
+
+# in the  portal.azure.com ..  App Registrations/<SC-RG-NAME>/Certificates & secrets we find the federated credentials to trigger a workflow in github
+# repo:WorldHealthOrganization/tng-iac:ref:refs/heads/dev
+# repo:WorldHealthOrganization/tng-iac:ref:refs/heads/uat
+
+# the github environment variable TNG_RESOURCE_GROUP_NAME determines the target resource group for this provisioning
+# and has to match the RG configured for the app registration
+
+# we test the setup with curl after using 3 parameters
+#    echo "${{secrets.TNG_CLIENT_CERTIFICATE_CA}}"  > client_ca.crt
+#    echo "${{secrets.TNG_CLIENT_CERTIFICATE}}"  > client.crt
+#    echo "${{secrets.TNG_CLIENT_KEY}}" > client.key
+
+on:
+  push:
+    branches:
+      - dev
+
+#token write permissions required for OIDC authentication
+permissions:
+  id-token: write
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+jobs:
+  onboarding-tf:
+    name: 'Onboarding Terraform'
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      TNG_RESOURCE_GROUP_NAME: ${{ vars.TNG_RESOURCE_GROUP_NAME }}
+      container_name: terraform-secrets
+      tfstate_blobkey: secrets.tfstate
+      tfplan_file: tfplansecrets
+    steps:
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: jq
+        uses: dcarbone/install-jq-action@v1.0.1
+        with:
+          version: '1.6'
+          force: false
+
+      - name: 'get aks clustername from subscription & resourcegroup'
+        id: naming
+        run: |
+          AZ_SUBSCRIPTION=$(az account show | jq -r .name)
+          SUBSCRIPTION=${AZ_SUBSCRIPTION:0:6};SUBSCR=${SUBSCRIPTION//_/};sub=$(echo ${SUBSCR} | tr '[:upper:]' '[:lower:]')
+          resource_group="${TNG_RESOURCE_GROUP_NAME}";SRG=${resource_group//-/};lcRG=$(echo ${SRG} | tr '[:upper:]' '[:lower:]')
+          prefix="${sub:0:4}${lcRG:0:11}"
+          aks_cluster_name="${prefix}-aks"
+          echo "aks_cluster_name=${prefix}-aks" >> "$GITHUB_OUTPUT"
+          echo "storage_account_terraform=${prefix}tfstate" >> "$GITHUB_OUTPUT"
+#          TLS_KEY=$(echo "${{secrets.TNG_CLIENT_KEY}}" | base64 -w 0)
+#          TLS_CERT=$(echo "${{secrets.TNG_CLIENT_CERTIFICATE}}" | base64 -w 0)
+#          TLS_CERT_CA=$(echo "${{secrets.TNG_CLIENT_CERTIFICATE_CA}}" | base64 -w 0)
+
+      - name: Create Storage Account and Container If Needed
+        env:
+          storage_account: ${{steps.naming.outputs.storage_account_terraform}}
+        run: |
+          if az storage account show --name ${storage_account} -o tsv;
+          then
+            echo found ${storage_account}
+          else
+            if az storage account create --resource-group ${TNG_RESOURCE_GROUP_NAME} --name ${storage_account} --sku Standard_LRS --encryption-services blob
+            then
+              echo created storage account create --resource-group ${TNG_RESOURCE_GROUP_NAME} --name ${storage_account}
+            else
+              echo "storage account creation FAILED FOR --resource-group ${TNG_RESOURCE_GROUP_NAME} --name ${storage_account}"
+            fi
+          fi
+          echo "############################################################## creating ${container_name} in ${storage_account}"
+          if [ az storage container exists --name ${container_name} --account-name ${storage_account} -o tsv == "True" ]
+          then
+            az storage container create --name ${container_name} --account-name ${storage_account} --auth-mode login
+            echo -e  '\e[32m' Storage container ${container_name} created'\e[0m'
+          else
+            echo -e  '\e[31m' Storage container ${container_name} exists'\e[0m'
+          fi
+          echo "##############################################################"
+
+      - name: Terraform Init
+        env:
+          storage_account: ${{steps.naming.outputs.storage_account_terraform}}
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${TNG_RESOURCE_GROUP_NAME}" \
+            -backend-config="storage_account_name=${storage_account}" \
+            -backend-config="container_name=${container_name}" \
+            -backend-config="key=${tfstate_blobkey}" \
+            -backend-config="use_oidc=true"
+
+      - name: Create  CA-Bundle from country certs
+        run: |
+          CA_BUNDLE_FILE=ca-bundle.crt
+          # clear cert file
+          cat /dev/null > ${CA_BUNDLE_FILE}
+          echo "Building CA_BUNDLE_FILE"
+          i=0
+          for cert in $(/usr/bin/find . -path **/auth/CA*.pem)
+          do
+              i=$(($i+1))
+              echo "Adding $cert to ${CA_BUNDLE_FILE}"
+              cat $cert >> ${CA_BUNDLE_FILE}
+          done
+          echo -e  '\e[34m' Found $i Certificates  '\e[0m'
+
+          if [ $i -eq 0 ]; then
+            echo "NO CA*.pem CERTIFICATES FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            exit 1
+          fi
+          echo "##############################################################"
+          echo -e  '\e[34m' Added $i Certificates to  -- $(wc  ${CA_BUNDLE}) '\e[0m'
+          echo "##############################################################"
+          # we just write this into the GITHUB_ENV and use it from there
+          echo TF_VAR_ca_bundle_b64="$(base64 -w 0 $CA_BUNDLE_FILE)" >> $GITHUB_ENV
+
+      - name: Terraform load certificate
+        if:
+        working-directory: ./terraform
+        run: |
+          terraform apply -auto-approve ${tfplan_file}
