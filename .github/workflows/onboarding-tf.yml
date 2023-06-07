@@ -1,22 +1,12 @@
 name: 'Onboarding using terraform'
-
-on:
-  push:
-    branches:
-      - main
-
-permissions:
-  id-token: write
-  contents: write
-  pull-requests: write
-
 # These github environment secrets  are used by the terraform azure provider to setup OIDD authentication.
 # AZURE_CLIENT_ID  - id of the app registration
 # AZURE_SUBSCRIPTION_ID & AZURE_TENANT_ID describe the cloud section
 # WHO azure subscription is  c9e69bd2-42a5-4900-b641-c52d3e31639a
 
-# in the  Certificates & secrets we find the federated credentials to trigger a workflow in github
-# repo:WorldHealthOrganization/tng-iac:ref:refs/heads/main
+# in the  portal.azure.com ..  App Registrations/<SC-RG-NAME>/Certificates & secrets we find the federated credentials to trigger a workflow in github
+# repo:WorldHealthOrganization/tng-iac:ref:refs/heads/dev
+# repo:WorldHealthOrganization/tng-iac:ref:refs/heads/uat
 
 # the github environment variable TNG_RESOURCE_GROUP_NAME determines the target resource group for this provisioning
 # and has to match the RG configured for the app registration
@@ -25,20 +15,25 @@ permissions:
 #    echo "${{secrets.TNG_CLIENT_CERTIFICATE_CA}}"  > client_ca.crt
 #    echo "${{secrets.TNG_CLIENT_CERTIFICATE}}"  > client.crt
 #    echo "${{secrets.TNG_CLIENT_KEY}}" > client.key
+
+on:
+  push:
+    branches:
+      - dev
+
 env:
 
-  ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
-  ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-  ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
-  TNG_RESOURCE_GROUP_NAME: "${{ vars.TNG_RESOURCE_GROUP_NAME }}"
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
 jobs:
   onboarding-tf:
-    name: 'Terraform post AKS'
-    if: (github.ref == 'refs/heads/who-ddcc' || github.ref == 'refs/heads/tsidev')
+    name: 'Onboarding Terraform'
     runs-on: ubuntu-latest
     environment: dev
     env:
+      TNG_RESOURCE_GROUP_NAME: ${{ vars.TNG_RESOURCE_GROUP_NAME }}
       container_name: terraform-secrets
       tfstate_blobkey: secrets.tfstate
       tfplan_file: tfplansecrets
@@ -63,7 +58,8 @@ jobs:
         with:
           version: '1.6'
           force: false
-      - name: 'get aks clustername'
+
+      - name: 'get aks clustername from subscription & resourcegroup'
         id: naming
         run: |
           AZ_SUBSCRIPTION=$(az account show | jq -r .name)
@@ -77,7 +73,7 @@ jobs:
 #          TLS_CERT=$(echo "${{secrets.TNG_CLIENT_CERTIFICATE}}" | base64 -w 0)
 #          TLS_CERT_CA=$(echo "${{secrets.TNG_CLIENT_CERTIFICATE_CA}}" | base64 -w 0)
 
-      - name: Create Storage Container If Needed
+      - name: Create Storage Account and Container If Needed
         env:
           storage_account: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
@@ -102,7 +98,7 @@ jobs:
           fi
           echo "##############################################################"
 
-      - name: Terraform Init POST_AKS
+      - name: Terraform Init
         env:
           storage_account: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
@@ -113,7 +109,7 @@ jobs:
             -backend-config="key=${tfstate_blobkey}" \
             -backend-config="use_oidc=true"
 
-      - name: Create  CA-Bundle from certs in network/whitelist POST_AKS
+      - name: Create  CA-Bundle from country certs
         run: |
           CA_BUNDLE_FILE=ca-bundle.crt
           # clear cert file
@@ -131,6 +127,10 @@ jobs:
           done
           echo -e  '\e[34m' Found $i Certificates  '\e[0m'
 
+          if [ $i -eq 0 ]; then
+            echo "NO CERTIFICATES FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            exit 1
+          fi
           echo "##############################################################"
           echo -e  '\e[34m' Added $i Certificates to  -- $(wc  ${CA_BUNDLE}) '\e[0m'
           echo "##############################################################"
@@ -138,6 +138,7 @@ jobs:
           echo TF_VAR_ca_bundle_b64="$(base64 -w 0 $CA_BUNDLE_FILE)" >> $GITHUB_ENV
 
       - name: Terraform load certificate
+        if:
         working-directory: ./terraform
         run: |
           terraform apply -auto-approve ${tfplan_file}
