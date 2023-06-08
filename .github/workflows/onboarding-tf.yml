@@ -81,7 +81,8 @@ jobs:
 
       - name: Create Storage Account and Container If Needed
         env:
-          TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
+          #TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
+          TF_STATE_STORAGE_ACCOUNT: ${{vars.TF_STATE_STORAGE_ACCOUNT}}
         run: |
           echo "############################################################## creating ${TF_STATE_CONTAINER_NAME} in ${TF_STATE_STORAGE_ACCOUNT} if needed"
           if [ "$(az storage account check-name --name ${TF_STATE_STORAGE_ACCOUNT}| jq -r .nameAvailable)" = "true" ]
@@ -107,7 +108,8 @@ jobs:
       - name: Terraform Init
         working-directory: ./terraform
         env:
-          TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
+          #TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
+          TF_STATE_STORAGE_ACCOUNT: ${{vars.TF_STATE_STORAGE_ACCOUNT}}
         run: |
           terraform init \
             -backend-config="resource_group_name=${{vars.TNG_RESOURCE_GROUP_NAME}}" \
