@@ -83,7 +83,7 @@ jobs:
         env:
           storage_account: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
-          if [ "$(az storage account show --name ${storage_account}| jq -r .nameAvailable)" = "true" ]
+          if [ "$(az storage account check-name --name ${storage_account}| jq -r .nameAvailable)" = "true" ]
           then
             if az storage account create --resource-group ${TNG_RESOURCE_GROUP_NAME} --name ${storage_account} --sku Standard_LRS --encryption-services blob
             then
