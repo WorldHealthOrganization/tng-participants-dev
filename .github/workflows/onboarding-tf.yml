@@ -110,7 +110,7 @@ jobs:
           TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
           terraform init \
-            -backend-config="resource_group_name=${vars.TNG_RESOURCE_GROUP_NAME}}" \
+            -backend-config="resource_group_name=${{vars.TNG_RESOURCE_GROUP_NAME}}" \
             -backend-config="storage_account_name=${TF_STATE_STORAGE_ACCOUNT}" \
             -backend-config="container_name=${TF_STATE_CONTAINER_NAME}" \
             -backend-config="key=${TF_STATE_BLOBKEY}" \
