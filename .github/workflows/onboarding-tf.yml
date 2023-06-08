@@ -42,7 +42,6 @@ jobs:
     env:
       TF_STATE_CONTAINER_NAME: terraform-secrets
       TF_STATE_BLOBKEY: secrets.tfstate
-      tfplan_file: tfplansecrets
     steps:
       - name: 'Az CLI login'
         uses: azure/login@v1
@@ -97,7 +96,7 @@ jobs:
             echo -e  '\e[31m' found ${TF_STATE_STORAGE_ACCOUNT} '\e[0m'
           fi
           echo "############################################################## creating ${TF_STATE_CONTAINER_NAME} in ${TF_STATE_STORAGE_ACCOUNT} if needed"
-          if [ "$(az storage container exists --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT} -o tsv)" = "True" ]
+          if [ "$(az storage container exists --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT}| jq -r .exists)" = "true" ]
           then
             az storage container create --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT} --auth-mode login
             echo -e  '\e[32m' Storage container ${TF_STATE_CONTAINER_NAME} created'\e[0m'
@@ -148,4 +147,4 @@ jobs:
         if:
         working-directory: ./terraform
         run: |
-          terraform apply -auto-approve ${tfplan_file}
+          terraform apply -auto-approve
