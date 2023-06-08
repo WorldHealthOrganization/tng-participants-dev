@@ -84,7 +84,7 @@ jobs:
           TF_STATE_STORAGE_ACCOUNT: ${{vars.TF_STATE_STORAGE_ACCOUNT}}
         run: |
           echo "############################################################## creating  ${TF_STATE_STORAGE_ACCOUNT} if needed"
-          if [ "$(az storage account check-name --name ${TF_STATE_STORAGE_ACCOUNT}| jq -r .nameAvailable)" = "true" ]
+          if [ "$(az storage account check-name --name ${TF_STATE_STORAGE_ACCOUNT} --auth-mode login| jq -r .nameAvailable)" = "true" ]
           then
             if az storage account create --resource-group ${{vars.TNG_RESOURCE_GROUP_NAME}} --name ${TF_STATE_STORAGE_ACCOUNT} --sku Standard_LRS --encryption-services blob
             then
@@ -96,7 +96,7 @@ jobs:
             echo -e  '\e[31m' found ${TF_STATE_STORAGE_ACCOUNT} '\e[0m'
           fi
           echo "############################################################## creating ${TF_STATE_CONTAINER_NAME} in ${TF_STATE_STORAGE_ACCOUNT} if needed"
-          if [ "$(az storage container exists --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT}| jq -r .exists)" = "true" ]
+          if [ "$(az storage container exists --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT} --auth-mode login| jq -r .exists)" = "true" ]
           then
             az storage container create --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT} --auth-mode login
             echo -e  '\e[32m' Storage container ${TF_STATE_CONTAINER_NAME} created'\e[0m'
@@ -142,6 +142,23 @@ jobs:
           echo "##############################################################"
           # we just write this into the GITHUB_ENV and use it from there
           echo TF_VAR_ca_bundle_b64="$(base64 -w 0 $CA_BUNDLE_FILE)" >> $GITHUB_ENV
+
+      # Use kubelogin to configure your kubeconfig for Azure auth
+      - name: Set up kubelogin for non-interactive login
+        uses: azure/use-kubelogin@v1
+        with:
+          kubelogin-version: 'v0.0.25'
+
+      - name: Setup kubectl
+        id: install-kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Set context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{vars.TNG_RESOURCE_GROUP_NAME}}
+          cluster-name: tngrg01-aks
+          # cluster-name: ${{steps.naming.outputs.aks_cluster_name}}
 
       - name: Terraform load certificate
         if:
