@@ -40,9 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-      TNG_RESOURCE_GROUP_NAME: ${{ vars.TNG_RESOURCE_GROUP_NAME }}
-      container_name: terraform-secrets
-      tfstate_blobkey: secrets.tfstate
+      TF_STATE_CONTAINER_NAME: terraform-secrets
+      TF_STATE_BLOBKEY: secrets.tfstate
       tfplan_file: tfplansecrets
     steps:
       - name: 'Az CLI login'
@@ -71,7 +70,7 @@ jobs:
         run: |
           AZ_SUBSCRIPTION=$(az account show | jq -r .name)
           SUBSCRIPTION=${AZ_SUBSCRIPTION:0:6};SUBSCR=${SUBSCRIPTION//_/};sub=$(echo ${SUBSCR} | tr '[:upper:]' '[:lower:]')
-          resource_group="${TNG_RESOURCE_GROUP_NAME}";SRG=${resource_group//-/};lcRG=$(echo ${SRG} | tr '[:upper:]' '[:lower:]')
+          resource_group="${{vars.TNG_RESOURCE_GROUP_NAME}}";SRG=${resource_group//-/};lcRG=$(echo ${SRG} | tr '[:upper:]' '[:lower:]')
           prefix="${sub:0:4}${lcRG:0:11}"
           aks_cluster_name="${prefix}-aks"
           echo "aks_cluster_name=${prefix}-aks" >> "$GITHUB_OUTPUT"
@@ -95,26 +94,26 @@ jobs:
           else
             echo -e  '\e[31m' found ${storage_account} '\e[0m'
           fi
-          echo "############################################################## creating ${container_name} in ${storage_account}"
-          if [ az storage container exists --name ${container_name} --account-name ${storage_account} -o tsv == "True" ]
+          echo "############################################################## creating ${TF_STATE_CONTAINER_NAME} in ${storage_account}"
+          if [ az storage container exists --name ${TF_STATE_CONTAINER_NAME} --account-name ${storage_account} -o tsv == "True" ]
           then
-            az storage container create --name ${container_name} --account-name ${storage_account} --auth-mode login
-            echo -e  '\e[32m' Storage container ${container_name} created'\e[0m'
+            az storage container create --name ${TF_STATE_CONTAINER_NAME} --account-name ${storage_account} --auth-mode login
+            echo -e  '\e[32m' Storage container ${TF_STATE_CONTAINER_NAME} created'\e[0m'
           else
-            echo -e  '\e[31m' Storage container ${container_name} exists'\e[0m'
+            echo -e  '\e[31m' Storage container ${TF_STATE_CONTAINER_NAME} exists'\e[0m'
           fi
           echo "##############################################################"
 
       - name: Terraform Init
         working-directory: ./terraform
         env:
-          storage_account: ${{steps.naming.outputs.storage_account_terraform}}
+          TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
           terraform init \
             -backend-config="resource_group_name=${TNG_RESOURCE_GROUP_NAME}" \
-            -backend-config="storage_account_name=${storage_account}" \
-            -backend-config="container_name=${container_name}" \
-            -backend-config="key=${tfstate_blobkey}" \
+            -backend-config="storage_account_name=${TF_STATE_STORAGE_ACCOUNT}" \
+            -backend-config="container_name=${TF_STATE_CONTAINER_NAME}" \
+            -backend-config="key=${TF_STATE_BLOBKEY}" \
             -backend-config="use_oidc=true"
 
       - name: Create  CA-Bundle from country certs
