@@ -81,10 +81,10 @@ jobs:
 
       - name: Create Storage Account and Container If Needed
         env:
-          #TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
+          # TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
           TF_STATE_STORAGE_ACCOUNT: ${{vars.TF_STATE_STORAGE_ACCOUNT}}
         run: |
-          echo "############################################################## creating ${TF_STATE_CONTAINER_NAME} in ${TF_STATE_STORAGE_ACCOUNT} if needed"
+          echo "############################################################## creating  ${TF_STATE_STORAGE_ACCOUNT} if needed"
           if [ "$(az storage account check-name --name ${TF_STATE_STORAGE_ACCOUNT}| jq -r .nameAvailable)" = "true" ]
           then
             if az storage account create --resource-group ${{vars.TNG_RESOURCE_GROUP_NAME}} --name ${TF_STATE_STORAGE_ACCOUNT} --sku Standard_LRS --encryption-services blob
@@ -96,7 +96,8 @@ jobs:
           else
             echo -e  '\e[31m' found ${TF_STATE_STORAGE_ACCOUNT} '\e[0m'
           fi
-          if [ az storage container exists --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT} -o tsv == "True" ]
+          echo "############################################################## creating ${TF_STATE_CONTAINER_NAME} in ${TF_STATE_STORAGE_ACCOUNT} if needed"
+          if [ "$(az storage container exists --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT} -o tsv)" = "True" ]
           then
             az storage container create --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT} --auth-mode login
             echo -e  '\e[32m' Storage container ${TF_STATE_CONTAINER_NAME} created'\e[0m'
@@ -108,7 +109,7 @@ jobs:
       - name: Terraform Init
         working-directory: ./terraform
         env:
-          #TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
+          # TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
           TF_STATE_STORAGE_ACCOUNT: ${{vars.TF_STATE_STORAGE_ACCOUNT}}
         run: |
           terraform init \
