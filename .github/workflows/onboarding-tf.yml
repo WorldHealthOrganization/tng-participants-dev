@@ -19,11 +19,7 @@ name: 'Onboarding using terraform'
 on:
   push:
     branches:
-      - dev
       - main
-    pull_request:
-      branches:
-        - main
 
 # token write permissions required for OIDC authentication
 permissions:
