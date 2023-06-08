@@ -84,16 +84,16 @@ jobs:
         env:
           storage_account: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
-          if az storage account show --name ${storage_account} -o tsv;
+          if [[ "$(az storage account show --name ${storage_account} -o tsv)" =~ "not found" ]]
           then
-            echo found ${storage_account}
-          else
             if az storage account create --resource-group ${TNG_RESOURCE_GROUP_NAME} --name ${storage_account} --sku Standard_LRS --encryption-services blob
             then
               echo created storage account create --resource-group ${TNG_RESOURCE_GROUP_NAME} --name ${storage_account}
             else
               echo "storage account creation FAILED FOR --resource-group ${TNG_RESOURCE_GROUP_NAME} --name ${storage_account}"
             fi
+          else
+            echo -e  '\e[31m' found ${storage_account} '\e[0m'
           fi
           echo "############################################################## creating ${container_name} in ${storage_account}"
           if [ az storage container exists --name ${container_name} --account-name ${storage_account} -o tsv == "True" ]
