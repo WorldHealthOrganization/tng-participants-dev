@@ -25,7 +25,7 @@ on:
       branches:
         - main
 
-#token write permissions required for OIDC authentication
+# token write permissions required for OIDC authentication
 permissions:
   id-token: write
 
@@ -106,6 +106,7 @@ jobs:
           echo "##############################################################"
 
       - name: Terraform Init
+        working-directory: ./terraform
         env:
           storage_account: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
