@@ -1,2 +1,4 @@
 gitpython
 pycountry
+pytest
+cryptography
