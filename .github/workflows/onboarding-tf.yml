@@ -41,7 +41,6 @@ jobs:
     name: 'Onboarding Terraform'
     runs-on: ubuntu-latest
     environment: dev
-    env:
     steps:
       - name: 'Az CLI login'
         uses: azure/login@v1
