@@ -75,6 +75,7 @@ class PemFileWrapper:
     file_name = None
     error = None
     pathinfo = {}
+    extensions = {}
     
     def __init__(self, pem_file):
         self.file_name = os.path.normpath(pem_file)
@@ -85,6 +86,15 @@ class PemFileWrapper:
         except Exception as ex: 
             self.error = ex
             self.x509 = None
+
+        try:
+            for ex in self.x509.extensions:
+                self.extensions[ ex.oid.dotted_string ] = ex 
+                if not ex.oid._name == 'Unknown OID':
+                    self.extensions[ ex.oid._name ] = ex
+        except ValueError:
+            pass # Could not load extensions
+
 
         try: 
             path = self.file_name.split(os.sep)
