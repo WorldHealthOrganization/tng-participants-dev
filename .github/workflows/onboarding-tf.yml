@@ -157,7 +157,7 @@ jobs:
               echo "Adding $cert to ${CA_BUNDLE_FILE}"
               cat $cert >> ${CA_BUNDLE_FILE}
           done
-          echo "${{secrets.TNG_CLIENT_CERTIFICATE_CA}}" >> ${CA_BUNDLE_FILE}
+          echo "${{secrets.TNG_ROOT_CA}}" >> ${CA_BUNDLE_FILE}
           echo "##############################################################"
           echo -e  '\e[34m' Added $i Certificates to  -- $(wc  ${CA_BUNDLE_FILE}) '\e[0m'
           echo "##############################################################"
