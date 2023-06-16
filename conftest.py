@@ -1,5 +1,7 @@
 import os
+import json
 import pytest
+import warnings
 import pycountry
 from glob import glob
 from cryptography import x509
@@ -23,7 +25,9 @@ def _add_country(db, **params):
 
 def pytest_addoption(parser):
     parser.addoption("-C", "--country-code", action="store", default="*", help="Country code of tests to run.")
-
+    parser.addoption("--type", default=None, help="Certificate type (AUTH,UP,CSCA)")
+    with open('___foo___.bar','w') as of:
+        of.write('foobar')
     
 def pytest_generate_tests(metafunc):
     ''' Walk all subfolders of the current directory that consist of 3 characters
@@ -34,11 +38,14 @@ def pytest_generate_tests(metafunc):
             - All test cases that have a "pem_file" parameter
             - All pem files discovered in the directory walk
     ''' 
-    _add_country(pycountry.countries, alpha_2='XA', alpha_3='XXA', common_name='Test XA',
-                                     flag='­🥳', name='Test XA', numeric='991', official_name='Test Country XA' )
 
-    _add_country(pycountry.countries, alpha_2='XB', alpha_3='XXB', common_name='Test XB',
-                                     flag='­🙃', name='Test XB', numeric='992', official_name='Test Country Iks Beh' )
+    try:
+        test_countries = json.load(open('testing_countries.json'))
+        for country_def in test_countries.get('countries'):
+            _add_country(pycountry.countries, **country_def)
+    except Exception as ex:
+        message = f"Testing countries could not be loaded ({str(ex)})"
+        warnings.warn(message)
 
     def glob_files(country_code='*', base_dir='.'):
         "Find matching files"
@@ -58,7 +65,22 @@ def pytest_generate_tests(metafunc):
 
         return found_files
         
+    def filter_filenames_by_type(files, type):
+        if type is None: 
+            return files
+    
+        if type.lower() in ('up', 'upload'): 
+            return [ file for file in files if file.split(os.sep)[-2].lower() == 'up ']
+        if type.lower() in ('auth', 'tls'): 
+            return [ file for file in files if file.split(os.sep)[-2].lower() == 'auth ']
+        if type.lower() in ('ca', 'csca'): 
+            return [ file for file in files if file.split(os.sep)[-2].lower() == 'auth ']
+        
+        return files
+
     pem_files = glob_files( metafunc.config.getoption("country_code") )
+    pem_files = filter_filenames_by_type(pem_files, )
+
     
     if "cert" in metafunc.fixturenames:
         metafunc.parametrize("cert", pem_files, indirect=True)
@@ -88,15 +110,17 @@ class PemFileWrapper:
             self.x509 = None
 
         try:
+            self.extensions = {}
             for ex in self.x509.extensions:
                 self.extensions[ ex.oid.dotted_string ] = ex 
                 if not ex.oid._name == 'Unknown OID':
                     self.extensions[ ex.oid._name ] = ex
-        except ValueError:
+        except:
             pass # Could not load extensions
 
 
         try: 
+            self.pathinfo = {}
             path = self.file_name.split(os.sep)
             self.pathinfo['type'] = path[-2] # up, csca, auth
             self.pathinfo['domain'] = path[-3] # DCC, DIVOC, SHC
