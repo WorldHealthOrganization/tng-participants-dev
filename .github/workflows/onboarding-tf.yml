@@ -21,11 +21,6 @@ permissions:
 # the github environment variable TNG_RESOURCE_GROUP_NAME determines the target resource group for this provisioning
 # and has to match the RG configured for the app registration
 
-# we test the setup with curl after using 3 parameters
-#    echo "${{secrets.TNG_CLIENT_CERTIFICATE_CA}}"  > client_ca.crt
-#    echo "${{secrets.TNG_CLIENT_CERTIFICATE}}"  > client.crt
-#    echo "${{secrets.TNG_CLIENT_KEY}}" > client.key
-
 env:
   TF_VAR_environment: dev
   TNG_RESOURCE_GROUP_NAME: ${{vars.TNG_RESOURCE_GROUP_NAME}}
@@ -105,11 +100,10 @@ jobs:
 
       - name: Create Storage Account If Needed
         env:
-          TNG_RESOURCE_GROUP_NAME: ${{env.TNG_RESOURCE_GROUP_NAME}}
-          TF_STATE_STORAGE_ACCOUNT: ${{env.TF_STATE_STORAGE_ACCOUNT}}
+          TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
           echo "############################################################## creating  ${TF_STATE_STORAGE_ACCOUNT} if needed"
-          if [ "$(az storage account check-name --name ${TF_STATE_STORAGE_ACCOUNT} | jq -r .nameAvailable)" = "true" ]
+          if [ "$(az storage account check-name --name ${TF_STATE_STORAGE_ACCOUNT} --auth-mode login| jq -r .nameAvailable)" = "true" ]
           then
             if az storage account create --resource-group ${TNG_RESOURCE_GROUP_NAME} --name ${TF_STATE_STORAGE_ACCOUNT} --sku Standard_LRS --encryption-services blob
             then
@@ -122,8 +116,7 @@ jobs:
           fi
       - name: Create Storage Container If Needed
         env:
-          TF_STATE_STORAGE_ACCOUNT: ${{env.TF_STATE_STORAGE_ACCOUNT}}
-          TF_STATE_CONTAINER_NAME: ${{env.TF_STATE_CONTAINER_NAME}}
+          TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
         run: |
           echo "############################################################## creating ${TF_STATE_CONTAINER_NAME} in ${TF_STATE_STORAGE_ACCOUNT} if needed"
           if [ "$(az storage container exists --name ${TF_STATE_CONTAINER_NAME} --account-name ${TF_STATE_STORAGE_ACCOUNT}| jq -r .exists)" = "true" ]
@@ -140,7 +133,7 @@ jobs:
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         env:
-          TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outpus.storage_account_terraform}}
+          TF_STATE_STORAGE_ACCOUNT: ${{steps.naming.outputs.storage_account_terraform}}
         working-directory: ./terraform
         run: |
           terraform init \
