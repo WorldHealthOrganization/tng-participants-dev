@@ -181,10 +181,12 @@ jobs:
           cluster-name: ${{steps.naming.outputs.aks_cluster_name}}
           # cluster-name: tngrg01-aks  # this is the hack/hotfix to target a different aks cluster
 
-#      - name: remove previous ca bundle
-#        run: |
-#          kubectl delete secret gateway-ca-bundle
-# TODO also remove the previous state!!!
+      # also remove the previous state!!!
+      - name: remove previous ca bundle
+        working-directory: ./terraform
+        run: |
+          kubectl delete secret gateway-ca-bundle || true
+          terraform state rm kubernetes_secret.gateway_ca_bundle || true
 
       - name: Terraform load certificate
         working-directory: ./terraform

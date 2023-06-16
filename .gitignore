@@ -1,3 +1,7 @@
 *override.tf
 *.iml
 .idea
+*.tfstate
+*.tfvars
+.idea
+.terraform*
