@@ -25,9 +25,7 @@ def _add_country(db, **params):
 
 def pytest_addoption(parser):
     parser.addoption("-C", "--country-code", action="store", default="*", help="Country code of tests to run.")
-    parser.addoption("--type", default=None, help="Certificate type (AUTH,UP,CSCA)")
-    with open('___foo___.bar','w') as of:
-        of.write('foobar')
+    parser.addoption("-T", "--type", default=None, help="Certificate type (AUTH,UP,CSCA)")
     
 def pytest_generate_tests(metafunc):
     ''' Walk all subfolders of the current directory that consist of 3 characters
@@ -70,19 +68,21 @@ def pytest_generate_tests(metafunc):
             return files
     
         if type.lower() in ('up', 'upload'): 
-            return [ file for file in files if file.split(os.sep)[-2].lower() == 'up ']
+            return [ file for file in files if file.split(os.sep)[-2].lower() == 'up']
         if type.lower() in ('auth', 'tls'): 
-            return [ file for file in files if file.split(os.sep)[-2].lower() == 'auth ']
+            return [ file for file in files if file.split(os.sep)[-2].lower() == 'auth']
         if type.lower() in ('ca', 'csca'): 
-            return [ file for file in files if file.split(os.sep)[-2].lower() == 'auth ']
+            return [ file for file in files if file.split(os.sep)[-2].lower() == 'csca']
         
         return files
 
     pem_files = glob_files( metafunc.config.getoption("country_code") )
-    pem_files = filter_filenames_by_type(pem_files, )
+    pem_files = filter_filenames_by_type(pem_files,metafunc.config.getoption("type") )
 
-    
+    # Parametrize all tests that have a "cert" parameter with the found cert files
     if "cert" in metafunc.fixturenames:
+        print(dir(metafunc))
+        print(metafunc.function)
         metafunc.parametrize("cert", pem_files, indirect=True)
 
 _cert_cache = {}

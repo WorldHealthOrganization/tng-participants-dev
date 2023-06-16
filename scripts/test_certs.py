@@ -1,6 +1,8 @@
 import pytest
+import functools
 import pycountry
 from cryptography import x509
+from datetime import datetime, timedelta
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 '''
 Tests defined by this document:
@@ -8,15 +10,24 @@ Tests defined by this document:
 
 '''
 
+def skip_if_cert_not_loaded(func):
+    'Decorator for tests that should be skipped if the cert has not been loaded'
+    @functools.wraps(func)
+    def wrapper(cert, *args, **kwargs):
+        if not cert or cert.error: 
+            pytest.skip(reason='Certificate could not be loaded')
+        else: 
+            return func(cert,*args, **kwargs)
+    return wrapper
+
 def test_valid_pem(cert):
     'The certificates will be checked for a valid pem structure'
     if not cert.error is None: 
         raise cert.error
 
+@skip_if_cert_not_loaded
 def test_key_length(cert):
     'The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit'
-    if cert.error: 
-        pytest.skip(reason='Certificate could not be loaded')
 
     public_key = cert.x509.public_key()
 
@@ -27,16 +38,14 @@ def test_key_length(cert):
     else:
         assert False, 'Unsupported key type'
     
+@skip_if_cert_not_loaded
 def test_algorithm(cert):
     'OID TBD'
-    if cert.error: 
-        pytest.skip(reason='Certificate could not be loaded')
     pytest.skip(reason='OID TBD') # TODO: Implement 
 
+@skip_if_cert_not_loaded
 def test_country_flag(cert):
     'The country flag (C value) must be set to the correct country code'
-    if cert.error: 
-        pytest.skip(reason='Certificate could not be loaded')
 
     country_attributes = cert.x509.subject.get_attributes_for_oid(x509.NameOID.COUNTRY_NAME)
     
@@ -50,27 +59,34 @@ def test_country_flag(cert):
     # Check 3: Country in path must match country of C attribute
     assert cert.pathinfo.get('country') == country.alpha_3
 
+@skip_if_cert_not_loaded
 def test_oversea_territory_ou(cert):
     'TBD' # TODO: implement
-    if cert.error: 
-        pytest.skip(reason='Certificate could not be loaded')
 
     state_prov_attr = cert.x509.subject.get_attributes_for_oid(x509.NameOID.STATE_OR_PROVINCE_NAME)
     ju_country_attr = cert.x509.subject.get_attributes_for_oid(x509.NameOID.JURISDICTION_COUNTRY_NAME)
     # ...
 
+@skip_if_cert_not_loaded
 def test_explicit_parameter(cert):
-    if cert.pathinfo.get('domain').upper() == 'ICAO':
-        pytest.fail('Explicit parameters for ICAO need to be defined')
+    pass # TODO: implement
     
-def test_csca_validity_range(cert):
+@skip_if_cert_not_loaded
+def test_csca_validity_range(cert):    
     'CSCA must be valid for at least 2 years and at most 4 years'
-    pass
+    if not cert.pathinfo.get('type').upper() == 'CSCA':
+        pytest.skip('Test does not apply to non-CSCA-certs')
 
+    now = datetime.utcnow()
+    
+    assert cert.x509.not_valid_after - cert.x509.not_valid_before > timedelta(days=2*365), \
+        "CSCA must be valid for at least 2 years"
+    assert cert.x509.not_valid_after - cert.x509.not_valid_before < timedelta(days=4*366), \
+        "CSCA must be valid for max 4 years"
+
+
+@skip_if_cert_not_loaded
 def test_extended_key_usages(cert):
-    if cert.error: 
-        pytest.skip(reason='Certificate could not be loaded')
-
     if cert.pathinfo.get('type').upper() == 'CSCA': 
         pytest.skip(reason='CSCA certs do not require extended key usage')
 
@@ -80,10 +96,8 @@ def test_extended_key_usages(cert):
     if cert.pathinfo.get('type').upper() == 'AUTH':  
         assert x509.ObjectIdentifier('1.3.6.1.5.5.7.3.2') in usages, 'AUTH certificates must allow clientAuthentication'
 
+@skip_if_cert_not_loaded
 def test_key_usages(cert):
-    if cert.error: 
-        pytest.skip(reason='Certificate could not be loaded')
-
 
     assert '2.5.29.15' in cert.extensions, 'keyUsage not in extensions'
     usages = cert.extensions['2.5.29.15'].value
@@ -100,4 +114,10 @@ def test_key_usages(cert):
         assert usages.key_cert_sign == True, 'CSCA should have usage flag "key cert sign"'
 
 
+def test_valid_domain(cert):
+    'The domain in the path name must be valid'
+
+    domain = cert.pathinfo.get('domain')
+    assert domain, 'Certificate at incorrect location'
+    assert domain.upper() in ('DCC','DDCC','DIVOC','ICAO','SHC'), 'Invalid domain'
     
