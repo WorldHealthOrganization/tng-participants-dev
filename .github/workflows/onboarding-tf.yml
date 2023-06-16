@@ -30,7 +30,7 @@ env:
   ARM_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
   ARM_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
 
-  TF_STATE_CONTAINER_NAME: terraform-participants
+    TF_STATE_CONTAINER_NAME: terraform-participants
   TF_STATE_BLOBKEY: participants.tfstate
 
 jobs:
@@ -181,11 +181,12 @@ jobs:
           cluster-name: ${{steps.naming.outputs.aks_cluster_name}}
           # cluster-name: tngrg01-aks  # this is the hack/hotfix to target a different aks cluster
 
-      - name: show-kubectl
-        run: |
-          kubectl get pods
-
-#      - name: Terraform load certificate
-#        working-directory: ./terraform
+#      - name: remove previous ca bundle
 #        run: |
-#          terraform apply -auto-approve
+#          kubectl delete secret gateway-ca-bundle
+# TODO also remove the previous state!!!
+
+      - name: Terraform load certificate
+        working-directory: ./terraform
+        run: |
+          terraform apply -auto-approve
