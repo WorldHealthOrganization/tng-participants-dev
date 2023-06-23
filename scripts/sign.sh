@@ -1,14 +1,17 @@
 #!/bin/bash
 set -e
 
-CASDIR=$(realpath $@)
+REALPATH=/usr/bin/realpath
+BASENAME=/usr/bin/basename
+
+CASDIR=$1
 if [[ ! -d $CASDIR ]]; then
     echo "Usage: ${BASH_SOURCE[0]} /path/to/private/key/directory"
     echo "       Missing first parameter is path to directory containing private keys"
     exit 1
 fi
+CASDIR=$($REALPATH ${CASDIR})
 
-BASENAME=/usr/bin/basename
 KEYTYPESTOSIGN=("onboarding")
 CURRDIR=$PWD
 
@@ -32,7 +35,7 @@ declare -A USAGETOSIGNINGCFG=(
  [SCA]="$CASDIR/cas/TA/openssl.conf"
  )
 
-ROOT=$(realpath $(dirname $(dirname ${BASH_SOURCE[0]})))
+ROOT=$($REALPATH $(dirname $(dirname ${BASH_SOURCE[0]})))
 echo "Examining contents of $ROOT";
 for DIR in $ROOT/*
 do
@@ -78,22 +81,29 @@ do
 		    CSRPATH=$SIGNEDDIR/$CSR
 		    echo "        Signing CERT $KEY with $SIGNINGCA "
 		    echo "           x509 Output At: $SIGNEDCERTPATH"
-		    echo "           Text Output At: $SIGNEDTXTPATH"
+
 		    cd $CASDIR
-		    SUBJ=`openssl x509 -in $CERTPATH -noout -subject --nameopt multiline | tail -n +2 | sed 's/^\s*/\//' | sed 's/\s*=\s*/=/' |sed -z 's/\n//g'`
+		    SUBJ=$(openssl x509 -in ${CERTPATH} -noout -subject --nameopt multiline | tail -n +2 | sed 's/^\s*/\//' | sed 's/\s*=\s*/=/' |sed -z 's/\n//g')
 		    openssl req -out ${CSRPATH} -key ${SIGNINGKEY} -new  -subj "${SUBJ}" 
 		    openssl ca -batch -create_serial -config $SIGNINGCFG -cert $SIGNINGCA -keyfile $SIGNINGKEY \
-			    -in $CSRPATH -out $SIGNEDCERTPATH   -subj "${SUBJ}"  2>&1 | sed 's/^/            /g'
-
+			    -in $CSRPATH -out $SIGNEDCERTPATH   -subj "${SUBJ}"  2>&1 | sed 's/^/            | /g'
 		    cd $CURRDIR
-		    echo TrustAnchor Signature: > $SIGNEDTXTPATH
-		    echo `openssl x509 -in $SIGNEDCERTPATH -noout -text -certopt ca_default -certopt no_validity -certopt no_serial -certopt no_subject -certopt no_extensions -certopt no_signame | tail -n +2| sed -z 's/\n*//g' | sed 's/\s*//g' | sed 's/://g' | xxd -r -p | base64 -w 0` \
-			 >>  $SIGNEDTXTPATH
-		    echo Certificate Raw Data: >> $SIGNEDTXTPATH
-		    echo `openssl x509 -in $SIGNEDCERTPATH  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed 's/\s*//g'` >> $SIGNEDTXTPATH
-		    echo Certificate Thumbprint: `openssl x509 -in $SIGNEDCERTPATH -noout -fingerprint | awk -F'=' '{print $2}' | sed 's/://g'` \
-			 >>  $SIGNEDTXTPATH
-		    echo Certificate Country: $ISO3 >>  $SIGNEDTXTPATH  #not two letter code!!!
+
+
+		    COUNTRYNAME=`openssl x509 -in BEL/onboarding/DCC/up/UP.pem -noout -subject -nameopt multiline | grep countryName | awk -F'=' '{print $2}'  | sed 's/\s*//'`
+		    if [ ! -z ${COUNTRYNAME} ]; then
+			echo "           Text Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
+			echo TrustAnchor Signature: > $SIGNEDTXTPATH
+			echo `openssl x509 -in $SIGNEDCERTPATH -noout -text -certopt ca_default -certopt no_validity -certopt no_serial -certopt no_subject -certopt no_extensions -certopt no_signame | tail -n +2| sed -z 's/\n*//g' | sed 's/\s*//g' | sed 's/://g' | xxd -r -p | base64 -w 0` \
+			     >>  $SIGNEDTXTPATH
+			echo Certificate Raw Data: >> $SIGNEDTXTPATH
+			echo `openssl x509 -in $CERTPATH  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed 's/\s*//g'` >> $SIGNEDTXTPATH
+			echo Certificate Thumbprint: `openssl x509 -in $CERTPATH -noout -fingerprint -sha256 | awk -F'=' '{print $2}' | sed 's/://g'` \
+			     >>  $SIGNEDTXTPATH			
+			echo Certificate Country: $COUNTRYNAME >>  $SIGNEDTXTPATH  
+		    else 
+			echo "           Skupping Text Output"
+		    fi
 		done
 	    done
 	done
