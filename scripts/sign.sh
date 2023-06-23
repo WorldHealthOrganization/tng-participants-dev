@@ -94,11 +94,10 @@ do
 		    if [ ! -z ${COUNTRYNAME} ]; then
 			echo "           Text Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
 			echo TrustAnchor Signature: > $SIGNEDTXTPATH
-			echo `openssl x509 -in $SIGNEDCERTPATH -noout -text -certopt ca_default -certopt no_validity -certopt no_serial -certopt no_subject -certopt no_extensions -certopt no_signame | tail -n +2| sed -z 's/\n*//g' | sed 's/\s*//g' | sed 's/://g' | xxd -r -p | base64 -w 0` \
-			     >>  $SIGNEDTXTPATH
+			echo `openssl x509 -in ${CERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'`    >>  $SIGNEDTXTPATH
 			echo Certificate Raw Data: >> $SIGNEDTXTPATH
 			echo `openssl x509 -in $CERTPATH  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed 's/\s*//g'` >> $SIGNEDTXTPATH
-			echo Certificate Thumbprint: `openssl x509 -in $CERTPATH -noout -fingerprint -sha256 | awk -F'=' '{print $2}' | sed 's/://g'` \
+			echo Certificate Thumbprint: `openssl x509 -in $CERTPATH -noout -fingerprint -sha256 | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
 			     >>  $SIGNEDTXTPATH			
 			echo Certificate Country: $COUNTRYNAME >>  $SIGNEDTXTPATH  
 		    else 
@@ -110,8 +109,3 @@ do
   done
 done
 
-
-    # touch WHO/signing/DCC/TNG_$CA.txt
-    # echo 
-
-    # 	 >> WHO/signing/DCC/TNG_$CA.txt
