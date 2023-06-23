@@ -94,7 +94,7 @@ do
 		    if [ ! -z ${COUNTRYNAME} ]; then
 			echo "           Text Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
 			echo TrustAnchor Signature: > $SIGNEDTXTPATH
-			echo `openssl x509 -in ${CERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'`    >>  $SIGNEDTXTPATH
+			echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'`    >>  $SIGNEDTXTPATH
 			echo Certificate Raw Data: >> $SIGNEDTXTPATH
 			echo `openssl x509 -in $CERTPATH  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed 's/\s*//g'` >> $SIGNEDTXTPATH
 			echo Certificate Thumbprint: `openssl x509 -in $CERTPATH -noout -fingerprint -sha256 | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
