@@ -91,7 +91,10 @@ do
 		    echo "    Don't know what time of keys are in $USAGEDIR"
 		    continue
 		fi 
-		USAGE=${DIRTOUSAGE[$USAGEDIR]}		
+		USAGE=${DIRTOUSAGE[$USAGEDIR]}
+		USAGEDIR=$DOMAINDIR/$USAGEDIR
+		echo "DD="$DOMAINDIR
+		echo "UD="$USAGEDIR
 		if [ ! "${USAGETOSIGNINGKEY[$USAGE]+isset}" ]; then
 		    ehco "    Don't know waht to sign keys in $USAGEDIR with"
 		    #don't know what to sign with
@@ -132,11 +135,14 @@ do
 			echo "           Text Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
 			echo TrustAnchor Signature:\
 			     > $SIGNEDTXTPATH
-			echo `openssl x509 -outform der -inform $CERT -out ${CERT}.der`
-			echo `openssl cms sign -nodetach -in ${CERT}.der -signer $SIGNINGCA -inkey $SIGNINGKEY -out ${CERT}_signed.der -outform DER -binary`
-			echo `openssl base64 in ${CERT}_signed.der -out -out signed.b64 -e -A`\
-		#	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'`\
+			#echo `openssl x509 -outform der -inform $CERT -out $SIGNEDDIR/${CERT}.der`
+			echo `openssl x509 -outform der -in ${CERTPATH} -out $SIGNEDDIR/${CERT}.der`
+			echo `openssl cms -sign -nodetach -in $SIGNEDDIR/${CERT}.der -signer $SIGNINGCA -inkey $SIGNINGKEY -out $SIGNEDDIR/${CERT}_signed.der -outform DER -binary`
+			#echo `openssl base64 in $SIGNEDDIR/${CERT}_signed.der -out -out signed.b64 -e -A` 
+			echo `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a`\
 			     >>  $SIGNEDTXTPATH
+			    #	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
+				#>>  $SIGNEDTXTPATH
 			echo Certificate Raw Data: \  #WHY IS THIS NOT SIGNEDCERTPATH?
 			     >> $SIGNEDTXTPATH
 			echo `openssl x509 -in ${CERTPATH}  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed 's/\s*//g'` \
