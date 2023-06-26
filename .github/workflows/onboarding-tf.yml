@@ -151,7 +151,7 @@ jobs:
           truncate --size 0 ${CA_BUNDLE_FILE}
           echo "Building CA_BUNDLE_FILE"
           i=1
-          for cert in $(/usr/bin/find . -path **/TLS/CA*.pem)
+          for cert in $(/usr/bin/find . -path **/TLS/* -name CA*.pem)
           do
               i=$(($i+1))
               echo "Adding $cert to ${CA_BUNDLE_FILE}"
