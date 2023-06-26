@@ -139,10 +139,10 @@ do
 			echo `openssl x509 -outform der -in ${CERTPATH} -out $SIGNEDDIR/${CERT}.der`
 			echo `openssl cms -sign -nodetach -in $SIGNEDDIR/${CERT}.der -signer $SIGNINGCA -inkey $SIGNINGKEY -out $SIGNEDDIR/${CERT}_signed.der -outform DER -binary`
 			#echo `openssl base64 in $SIGNEDDIR/${CERT}_signed.der -out -out signed.b64 -e -A` 
-			echo `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a`\
+			echo `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a | sed -z s/\n*//g`\
 			     >>  $SIGNEDTXTPATH
-			    #	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
-				#>>  $SIGNEDTXTPATH
+			#	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
+			    #>>  $SIGNEDTXTPATH
 			echo Certificate Raw Data: \  #WHY IS THIS NOT SIGNEDCERTPATH?
 			     >> $SIGNEDTXTPATH
 			echo `openssl x509 -in ${CERTPATH}  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed 's/\s*//g'` \
