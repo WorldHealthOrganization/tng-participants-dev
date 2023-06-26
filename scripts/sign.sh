@@ -1,8 +1,29 @@
-#!/bin/bash
+!/bin/bash
 set -e
 
 REALPATH=/usr/bin/realpath
 BASENAME=/usr/bin/basename
+
+
+#signs keys assumging a directory structure as follows
+# $ISO3/ – three letter country code or WHO which contains key material
+# $ISO3/signing/ – used to contain public keys for signing.  Intended only for use by WHO
+# $ISO3/signing/$DOMAIN/$USAGE/$FILEROOT.pem – public key used to verify 
+# $ISO3/onboarding/ – used to contain public keys for key material from participants
+# $ISO3/onboarding/$DOMAIN/$USAGEDIR
+# $ISO3/onboarding/$DOMAIN/$USAGEDIR/$FILEROOT.pem
+# $ISO3/onboarding/$DOMAIN/$USAGEDIR/signed/
+# $ISO3/onboarding/$DOMAIN/$USAGEDIR/signed/WWO_$USAGE.signed.$FILEROOT.pem
+# $ISO3/onboarding/$DOMAIN/$USAGEDIR/signed/WHO_$USAGE.signed.$FILEROOT.txt
+#
+# each $USAGEDIR should map to a functional CA (e.g. TA, TLS) as defined by $DIRTOUSAGE
+#
+# also produces a .txt file for databse import to TNG Gateway with following fields
+# TrustAnchor Signature:
+# Certificate Raw Data: (no BEGIN CERT or END CERT)
+# Certificate Thumbprint:
+# Certificate Country: 
+
 
 CASDIR=$1
 if [[ ! -d $CASDIR ]]; then
@@ -16,24 +37,30 @@ KEYTYPESTOSIGN=("onboarding")
 CURRDIR=$PWD
 
 
+
 declare -A USAGETOSIGNINGCA=(
- [auth]="$CASDIR/cas/TLS/certs/TNG_TLS.pem"
  [TLS]="$CASDIR/cas/TLS/certs/TNG_TLS.pem"
- [csca]="$CASDIR/cas/TA/certs/TNG_TA.pem"
- [SCA]="$CASDIR/cas/TA/certs/TNG_TA.pem"
+ [TA]="$CASDIR/cas/TA/certs/TNG_TA.pem"
 )
 declare -A USAGETOSIGNINGKEY=(
- [auth]="$CASDIR/cas/TLS/private/TNG_TLS.key.pem"
  [TLS]="$CASDIR/cas/TLS/private/TNG_TLS.key.pem"
- [csca]="$CASDIR/cas/TA/private/TNG_TA.key.pem"
- [SCA]="$CASDIR/cas/TA/private/TNG_TA.key.pem"
+ [TA]="$CASDIR/cas/TA/private/TNG_TA.key.pem"
 )
 declare -A USAGETOSIGNINGCFG=(
- [auth]="$CASDIR/cas/TLS/openssl.conf"
  [TLS]="$CASDIR/cas/TLS/openssl.conf"
- [csca]="$CASDIR/cas/TA/openssl.conf"
- [SCA]="$CASDIR/cas/TA/openssl.conf"
+ [TA]="$CASDIR/cas/TA/openssl.conf"
  )
+
+
+declare -A DIRTOUSAGE=(
+  [auth]="TLS"
+  [TLS]="TLS"
+  [csca]="TA"  
+  [SCA]="TA"
+  [SCA]="TA"
+)
+
+
 
 ROOT=$($REALPATH $(dirname $(dirname ${BASH_SOURCE[0]})))
 echo "Examining contents of $ROOT";
@@ -58,8 +85,18 @@ do
 	    for USAGEDIR in $DOMAINDIR/*/
 	    do
 		if [[ ! -d $USAGEDIR ||  -L $USAGEDIR ]]; then continue; fi #not a directory 
-		USAGE=$($BASENAME "$USAGEDIR")
-		if [ ! "${USAGETOSIGNINGKEY[$USAGE]+isset}" ]; then continue; fi #don't know what to sign with
+		USAGEDIR=$($BASENAME "$USAGEDIR")
+		if [ ! "${DIRTOUSAGE[$USAGEDIR]+isset}" ]; then
+		    #don't know what to sign with
+		    echo "    Don't know what time of keys are in $USAGEDIR"
+		    continue
+		fi 
+		USAGE=${DIRTOUSAGE[$USAGEDIR]}		
+		if [ ! "${USAGETOSIGNINGKEY[$USAGE]+isset}" ]; then
+		    ehco "    Don't know waht to sign keys in $USAGEDIR with"
+		    #don't know what to sign with
+		    continue
+		fi
 		SIGNINGKEY=$PRIVATEKEYDIR/${USAGETOSIGNINGKEY[$USAGE]}
 		SIGNINGCA=$PRIVATEKEYDIR/${USAGETOSIGNINGCA[$USAGE]}
 		SIGNINGCFG=$PRIVATEKEYDIR/${USAGETOSIGNINGCFG[$USAGE]}
@@ -75,7 +112,7 @@ do
 		    CERT=$($BASENAME "${CERTPATH}")
 		    SIGNEDCERT=signed.$CERT
 		    CSR=$CERT.csr
-		    SIGNEDTXT=signed.${CERT%.pem}.txt
+		    SIGNEDTXT=TNG_$USAGE.signed.${CERT%.pem}.txt
 		    SIGNEDCERTPATH=$SIGNEDDIR/$SIGNEDCERT
 		    SIGNEDTXTPATH=$SIGNEDDIR/$SIGNEDTXT
 		    CSRPATH=$SIGNEDDIR/$CSR
@@ -90,18 +127,25 @@ do
 		    cd $CURRDIR
 
 
-		    COUNTRYNAME=`openssl x509 -in BEL/onboarding/DCC/up/UP.pem -noout -subject -nameopt multiline | grep countryName | awk -F'=' '{print $2}'  | sed 's/\s*//'`
+		    COUNTRYNAME=`openssl x509 -in ${CERTPATH} -noout -subject -nameopt multiline | grep countryName | awk -F'=' '{print $2}'  | sed 's/\s*//'`
 		    if [ ! -z ${COUNTRYNAME} ]; then
 			echo "           Text Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
-			echo TrustAnchor Signature: > $SIGNEDTXTPATH
-			echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'`    >>  $SIGNEDTXTPATH
-			echo Certificate Raw Data: >> $SIGNEDTXTPATH
-			echo `openssl x509 -in $CERTPATH  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed 's/\s*//g'` >> $SIGNEDTXTPATH
-			echo Certificate Thumbprint: `openssl x509 -in $CERTPATH -noout -fingerprint -sha256 | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
+			echo TrustAnchor Signature:\
+			     > $SIGNEDTXTPATH
+			echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'`\
+			     >>  $SIGNEDTXTPATH
+			echo Certificate Raw Data: \  #WHY IS THIS NOT SIGNEDCERTPATH?
+			     >> $SIGNEDTXTPATH
+			echo `openssl x509 -in ${CERTPATH}  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed 's/\s*//g'` \
+			     >> $SIGNEDTXTPATH
+			echo Certificate Thumbprint: \   
 			     >>  $SIGNEDTXTPATH			
-			echo Certificate Country: $COUNTRYNAME >>  $SIGNEDTXTPATH  
+			echo `openssl x509 -in ${CERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
+			     >>  $SIGNEDTXTPATH			
+			echo Certificate Country: $COUNTRYNAME \
+			     >>  $SIGNEDTXTPATH  
 		    else 
-			echo "           Skupping Text Output"
+			echo "           Skipping Text Output"
 		    fi
 		done
 	    done
