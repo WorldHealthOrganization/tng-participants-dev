@@ -141,16 +141,17 @@ do
 			#echo `openssl base64 in $SIGNEDDIR/${CERT}_signed.der -out -out signed.b64 -e -A` 
 			echo `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a -A | sed -z 's/\n*//g' | sed -z 's/\s*//g' ` \
 			     >>  $SIGNEDTXTPATH
+			echo >> $SIGNEDTXTPATH
 			#	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
 			    #>>  $SIGNEDTXTPATH
-			echo Certificate Raw Data: \  #WHY IS THIS NOT SIGNEDCERTPATH?
-			     >> $SIGNEDTXTPATH
+			echo Certificate Raw Data: >> $SIGNEDTXTPATH
 			echo `openssl x509 -in ${CERTPATH}  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed -z 's/\s*//g' ` \
 			     >> $SIGNEDTXTPATH
-			echo Certificate Thumbprint: \   
-			     >>  $SIGNEDTXTPATH			
+			echo >>  $SIGNEDTXTPATH
+			echo Certificate Thumbprint: >>  $SIGNEDTXTPATH
 			echo `openssl x509 -in ${CERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g' ` \
-			     >>  $SIGNEDTXTPATH			
+			     >>  $SIGNEDTXTPATH
+			echo >>  $SIGNEDTXTPATH
 			echo Certificate Country: $COUNTRYNAME \
 			     >>  $SIGNEDTXTPATH  
 		    else 
