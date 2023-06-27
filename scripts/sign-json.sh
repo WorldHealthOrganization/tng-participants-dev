@@ -134,7 +134,7 @@ do
 		    if [ ! -z ${COUNTRYNAME} ]; then
 			echo "           Text Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
 			echo '{' > $SIGNEDTXTPATH
-			echo -n '"TrustAnchor Signature" : "' >> $SIGNEDTXTPATH
+			echo -n '"TrustAnchorSignature": "' >> $SIGNEDTXTPATH
 			#echo `openssl x509 -outform der -inform $CERT -out $SIGNEDDIR/${CERT}.der`
 			openssl x509 -outform der -in ${CERTPATH} -out $SIGNEDDIR/${CERT}.der
 			openssl cms -sign -nodetach -in $SIGNEDDIR/${CERT}.der -signer $SIGNINGCA -inkey $SIGNINGKEY -out $SIGNEDDIR/${CERT}_signed.der -outform DER -binary
@@ -144,15 +144,15 @@ do
 			echo '",' >>  $SIGNEDTXTPATH
 			#	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
 			    #>>  $SIGNEDTXTPATH
-			echo -n  '"Certificate Raw Data": "' >> $SIGNEDTXTPATH
+			echo -n  '"CertificateRawData": "' >> $SIGNEDTXTPATH
 			echo -n `openssl x509 -in ${CERTPATH}  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed -z 's/\s*//g' ` \
 			     >> $SIGNEDTXTPATH
 			echo '",' >>  $SIGNEDTXTPATH
-			echo -n '"Certificate Thumbprint": "' >>  $SIGNEDTXTPATH
+			echo -n '"CertificateThumbprint": "' >>  $SIGNEDTXTPATH
 			echo -n `openssl x509 -in ${CERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g' ` \
 			     >>  $SIGNEDTXTPATH
 			echo '",' >>  $SIGNEDTXTPATH
-			echo -n '"Certificate Country": "'$COUNTRYNAME \
+			echo -n '"CertificateCountry": "'$COUNTRYNAME \
 			     >>  $SIGNEDTXTPATH
 			echo '"' >>  $SIGNEDTXTPATH
 			echo -n '}' >>  $SIGNEDTXTPATH
