@@ -21,6 +21,7 @@ branchName = country+"/onboardingRequest"
 os.system("git checkout -b" + branchName)
 os.system("rm -rf "+ country)
 os.system("mkdir " + country)
+os.system("ls " + country)
 os.system("mv  -v repo/onboarding " + country + "/" )
 os.system("mv " + country + "/onboarding/auth "+ country+"/onboarding/TLS")
 os.system("mv " + country + "/onboarding/csca "+ country+"/onboarding/SCA")
