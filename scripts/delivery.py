@@ -69,7 +69,7 @@ if __name__=='__main__':
                     
                 os.system("gh pr create -B main -H " + country.alpha_3 +"/onboardingRequest --title 'Bot requested a change for "+country.alpha_3+".' --body 'Please merge the onnboarding request of "+country.alpha_3+".'")
                 
-                os.system("./fileCheck.sh "+country.alpha_3)
+                os.system("./scripts/fileCheck.sh "+country.alpha_3)
                 
                 if os.path.exists("temp/Failure"):
                     os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'The PR contains Failure files which must be resolved'. -b 'Please resolve the Errors before proceeding. The failure files contain more information.'")
