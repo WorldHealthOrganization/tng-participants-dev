@@ -74,7 +74,7 @@ def test_explicit_parameter(cert):
 @skip_if_cert_not_loaded
 def test_csca_validity_range(cert):    
     'CSCA must be valid for at least 2 years and at most 4 years'
-    if not cert.pathinfo.get('type').upper() == 'CSCA':
+    if not cert.pathinfo.get('group').upper() == 'CSCA':
         pytest.skip('Test does not apply to non-CSCA-certs')
 
     now = datetime.utcnow()
@@ -87,37 +87,45 @@ def test_csca_validity_range(cert):
 
 @skip_if_cert_not_loaded
 def test_extended_key_usages(cert):
-    if cert.pathinfo.get('type').upper() == 'CSCA': 
+    if cert.pathinfo.get('group').upper() == 'CSCA': 
         pytest.skip(reason='CSCA certs do not require extended key usage')
 
     assert '2.5.29.37' in cert.extensions, 'extendedKeyUsage not in extensions'
     usages = cert.extensions['2.5.29.37'].value._usages
     
-    if cert.pathinfo.get('type').upper() == 'AUTH':  
+    if cert.pathinfo.get('group').upper() == 'AUTH':  
         assert x509.ObjectIdentifier('1.3.6.1.5.5.7.3.2') in usages, 'AUTH certificates must allow clientAuthentication'
 
 @skip_if_cert_not_loaded
 def test_key_usages(cert):
-
+    """Check if the certificates have the required keyUsage flags 
+       depending on certificate group and file name"""
     assert '2.5.29.15' in cert.extensions, 'keyUsage not in extensions'
     usages = cert.extensions['2.5.29.15'].value
 
-    if cert.pathinfo.get('type').upper() == 'AUTH':  
-        assert usages.digital_signature == True, 'AUTH cert should have usage flag "digital signature"'
-        assert usages.crl_sign == False, 'AUTH cert should not have usage flag "CRL sign"'
+    if cert.pathinfo.get('group').upper() == 'TLS':  
+        assert usages.digital_signature == True, 'TLS cert should have usage flag "digital signature"'
+        assert usages.crl_sign == False, 'TLS cert should not have usage flag "CRL sign"'
         # ... TODO
-    elif cert.pathinfo.get('type').upper() == 'UP':  
+    elif cert.pathinfo.get('group').upper() == 'UP':  
         assert usages.digital_signature == True, 'UP cert should have usage flag "digital signature"'
         assert usages.crl_sign == False, 'UP cert should not have usage flag "CRL sign"'
         # ... TODO
-    elif cert.pathinfo.get('type').upper() == 'CSCA':  
-        assert usages.key_cert_sign == True, 'CSCA should have usage flag "key cert sign"'
+    elif cert.pathinfo.get('group').upper() == 'SCA' \
+    and cert.pathinfo.get('filename').upper() == 'SCA.pem':
+        assert usages.key_cert_sign == True, 'SCA should have usage flag "key cert sign"'
 
+
+def test_valid_group(cert):
+    'The group in the path name must be valid'
+    group = cert.pathinfo.get('group')
+    assert group, 'Certificate at incorrect location'
+    assert group.upper() in ('UP', 'SCA', 'TLS'), 'Invalid group: ' + group
 
 def test_valid_domain(cert):
     'The domain in the path name must be valid'
 
     domain = cert.pathinfo.get('domain')
     assert domain, 'Certificate at incorrect location'
-    assert domain.upper() in ('DCC','DDCC','DIVOC','ICAO','SHC'), 'Invalid domain'
+    assert domain.upper() in ('DCC','DDCC','DIVOC','ICAO','SHC'), 'Invalid domain: ' + domain
     

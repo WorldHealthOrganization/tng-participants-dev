@@ -25,7 +25,7 @@ def _add_country(db, **params):
 
 def pytest_addoption(parser):
     parser.addoption("-C", "--country-code", action="store", default="*", help="Country code of tests to run.")
-    parser.addoption("-T", "--type", default=None, help="Certificate type (AUTH,UP,CSCA)")
+    parser.addoption("-G", "--group", default=None, help="Certificate group (TLS,UP,SCA)")
     
 def pytest_generate_tests(metafunc):
     ''' Walk all subfolders of the current directory that consist of 3 characters
@@ -63,21 +63,21 @@ def pytest_generate_tests(metafunc):
 
         return found_files
         
-    def filter_filenames_by_type(files, type):
-        if type is None: 
+    def filter_filenames_by_group(files, group):
+        if group is None: 
             return files
     
-        if type.lower() in ('up', 'upload'): 
+        if group.lower() in ('up', 'upload'): 
             return [ file for file in files if file.split(os.sep)[-2].lower() == 'up']
-        if type.lower() in ('auth', 'tls'): 
-            return [ file for file in files if file.split(os.sep)[-2].lower() == 'auth']
-        if type.lower() in ('ca', 'csca'): 
-            return [ file for file in files if file.split(os.sep)[-2].lower() == 'csca']
+        if group.lower() in ('auth', 'tls'): 
+            return [ file for file in files if file.split(os.sep)[-2].lower() == 'tls']
+        if group.lower() in ('ca', 'csca', 'sca'): 
+            return [ file for file in files if file.split(os.sep)[-2].lower() == 'sca']
         
         return files
 
     pem_files = glob_files( metafunc.config.getoption("country_code") )
-    pem_files = filter_filenames_by_type(pem_files,metafunc.config.getoption("type") )
+    pem_files = filter_filenames_by_group(pem_files,metafunc.config.getoption("group") )
 
     # Parametrize all tests that have a "cert" parameter with the found cert files
     if "cert" in metafunc.fixturenames:
@@ -122,7 +122,8 @@ class PemFileWrapper:
         try: 
             self.pathinfo = {}
             path = self.file_name.split(os.sep)
-            self.pathinfo['type'] = path[-2] # up, csca, auth
+            self.pathinfo['filename'] = path[-1] # CA.pem, TLS.pem, UP.pem ...
+            self.pathinfo['group'] = path[-2] # up, csca, auth
             self.pathinfo['domain'] = path[-3] # DCC, DIVOC, SHC
             self.pathinfo['country'] = path[-5] # GER, BEL, FIN ...
         except:
