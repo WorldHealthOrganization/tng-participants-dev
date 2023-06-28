@@ -43,10 +43,7 @@ if __name__=='__main__':
         if cCode in doc: 
             try:
                 os.system("echo Try onboarding for " + country.alpha_3)
-                
-                ###############  Transitive Trust
-                os.system("./scripts/transitiveTrust.sh "+country.alpha_2)
-                
+                 
                 ################## Prepare the internal structure
                 os.system("rm -rf repo")
                 os.system("rm -rf temp")
@@ -57,7 +54,9 @@ if __name__=='__main__':
                     raise Exception("Configuration Error")
                 
                 if os.path.exists("sync"):  
-                   if os.system("python scripts/onboardingRequest.py transit/"+country.alpha_2) != 0:
+                   ###############  Transitive Trust
+                   os.system("./scripts/transitiveTrust.sh "+country.alpha_2)
+                   if os.system("python scripts/onboardingRequest.py ./transit/"+country.alpha_2) != 0:
                           raise Exception("Onboarding Request failed.")
                 else:
                     try:       
