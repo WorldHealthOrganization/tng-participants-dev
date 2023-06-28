@@ -5,3 +5,6 @@
 *.tfvars
 .idea
 .terraform*
+transit
+repo
+temp

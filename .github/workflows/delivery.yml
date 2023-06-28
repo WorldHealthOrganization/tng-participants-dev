@@ -38,12 +38,6 @@ jobs:
           git config --global user.password ${{secrets.BOT_TOKEN_GITHUB}}
           git config --global pull.rebase true
           git config --global branch.autosetuprebase always
-      - name: Create gitignore
-        run: |
-          echo "transit/" >> .gitignore
-          echo "repo/" >> .gitignore
-          echo "temp/" >> .gitignore
-          cat .gitignore
       - name: Transitive Trust 
         run: | 
            git clone https://${{secrets.BOT_TOKEN_GITHUB}}@${{vars.TRANSITIVE_TRUST_SOURCE}} transit
