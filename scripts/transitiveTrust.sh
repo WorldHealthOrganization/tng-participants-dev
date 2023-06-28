@@ -10,4 +10,4 @@ cd ..
 cd ..
 ./extract.sh $ENV $1     
 cd ..
-ls
+ls transit/$1
