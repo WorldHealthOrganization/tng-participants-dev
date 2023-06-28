@@ -16,4 +16,4 @@ if [ -e "temp/SIGNED" ]; then
   gh pr review $1/onboardingRequest -r -b "The content is currently not signed. Run the sign script before merging"
 fi
 
-gh auth logout -h github.com
+#gh auth logout -h github.com
