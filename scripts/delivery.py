@@ -70,8 +70,11 @@ if __name__=='__main__':
                     except Exception as Error:
                         os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
                 
-                os.system("gh pr create -B main -H " + country.alpha_3 +"/onboardingRequest --title 'Bot requested a change for "+country.alpha_3+".' --body 'Please merge the onnboarding request of "+country.alpha_3+".' > /dev/null 2>&1" )
+                ######### Create PR
                 
+                os.system("./scripts/createPR.sh")
+                
+                #####################
                 if os.path.exists(country.alpha_3+"/onboarding/UP"):
                  os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/UP")
                 if os.path.exists(country.alpha_3+"/onboarding/TLS"):
