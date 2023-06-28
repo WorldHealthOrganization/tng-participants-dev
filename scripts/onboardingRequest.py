@@ -9,7 +9,7 @@ if repo == "repo":
     if not result:
         raise Exception("Bad verification.")
     else:
-        print("Verification was good.")
+        os.system("echo 'Verification was good.'")
 
 with open('temp/country') as f:
   country = f.readline().replace("\n","")
