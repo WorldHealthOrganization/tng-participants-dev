@@ -18,5 +18,5 @@ find $1 -print | grep -i "signed" > temp/SIGNED
 if [ -s "temp/SIGNED" ]; then
     rm "temp/SIGNED"
 fi
-
+ls temp
 echo "finished fileCheck"
