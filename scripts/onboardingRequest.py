@@ -15,7 +15,6 @@ with open('temp/country') as f:
   country = f.readline().replace("\n","")
 
 branchName = country+"/onboardingRequest" 
-os.system("ls "+repo+"/onboarding")
 os.system("git checkout -b" + branchName +" > /dev/null 2>&1")
 os.system("rm -rf "+ country)
 os.system("mkdir " + country)

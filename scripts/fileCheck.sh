@@ -1,3 +1,5 @@
+#!/bin/bash
+
 find $1 -print | grep -i "Failure" > temp/Failure
 
 if [ -s "temp/Failure" ]; then
