@@ -50,7 +50,7 @@ if __name__=='__main__':
                 os.system("echo '"+country.alpha_3 + "\n' > temp/country")
                 os.system("echo '"+doc[cCode]+ "' > temp/base64")
                 if os.system("python scripts/config.py") !=0:
-                    raise Exception("Configuration Error in Script")
+                    raise Exception("Configuration Error")
                 
                 if os.path.exists("sync"):  
                    if os.system("python scripts/onboardingRequest.py transit/"+country.alpha_2) != 0:
@@ -65,11 +65,11 @@ if __name__=='__main__':
                         if os.system("python scripts/onboardingRequest.py repo") != 0:
                           raise Exception("Onboarding Request failed.")
                     except Exception as Error:
-                        print("Error occoured for onboarding request " + country.alpha_3 +": "+ Error) 
+                        print("Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)) 
                     
                 os.system("gh pr create -B main -H " + country.alpha_3 +"/onboardingRequest --title 'Bot requested a change for "+country.alpha_3+".' --body 'Please merge the onnboarding request of "+country.alpha_3+".'")
                 
-                os.system("./failureCheck.sh "+country.alpha_3)
+                os.system("./fileCheck.sh "+country.alpha_3)
                 
                 if os.path.exists("temp/Failure"):
                     os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'The PR contains Failure files which must be resolved'. -b 'Please resolve the Errors before proceeding. The failure files contain more information.'")
@@ -83,4 +83,4 @@ if __name__=='__main__':
                 os.system("git checkout main")
                 os.system("git reset --hard && git clean -f -d")
             except Exception as Error:
-                print("Error occoured for onboarding " + country.alpha_3 +": "+ Error)
+                print("Error occoured for onboarding " + country.alpha_3 +": "+ str(Error))
