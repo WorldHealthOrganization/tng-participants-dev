@@ -2,15 +2,25 @@ import pytest
 import functools
 import pycountry
 from cryptography import x509
+from cryptography.x509 import ObjectIdentifier as OID
 from datetime import datetime, timedelta
-from cryptography.hazmat.primitives.asymmetric import ec, rsa
+from cryptography.hazmat.primitives.asymmetric import ec, rsa, dsa
 '''
 Tests defined by this document:
     https://github.com/WorldHealthOrganization/tng-participants-dev/blob/main/README.md#qa-checks  
 
 '''
 
-def skip_if_cert_not_loaded(func):
+def test_valid_pem(cert):
+    '''The certificates will be checked for a valid pem structure.
+       Loading of the pem file happens during parametrization of the test cases. 
+       This test checks whether there has been an error during that phase. 
+    '''
+    if not cert.error is None: 
+        raise cert.error
+
+
+def requires_readable_cert(func):
     'Decorator for tests that should be skipped if the cert has not been loaded'
     @functools.wraps(func)
     def wrapper(cert, *args, **kwargs):
@@ -20,14 +30,9 @@ def skip_if_cert_not_loaded(func):
             return func(cert,*args, **kwargs)
     return wrapper
 
-def test_valid_pem(cert):
-    'The certificates will be checked for a valid pem structure'
-    if not cert.error is None: 
-        raise cert.error
-
-@skip_if_cert_not_loaded
+@requires_readable_cert
 def test_key_length(cert):
-    'The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit'
+    'The key length should be for RSA-PSS and DSS minimum 3072, and for EC-DSA 256 bit'
 
     public_key = cert.x509.public_key()
 
@@ -35,17 +40,38 @@ def test_key_length(cert):
         assert public_key.key_size >= 3072, f'RSA Key not long enough: {public_key.key_size}'
     elif isinstance(public_key, ec.EllipticCurvePublicKey):
         assert public_key.curve.key_size >= 256, f'EC Key not long enough: {public_key.curve.key_size}'
+    elif isinstance(public_key, dsa.DSAPublicKey):
+        assert public_key.key_size >= 3072, f'DSA Key not long enough: {public_key.key_size}'
     else:
         assert False, 'Unsupported key type'
     
-@skip_if_cert_not_loaded
+@requires_readable_cert
 def test_algorithm(cert):
-    'OID TBD'
-    pytest.skip(reason='OID TBD') # TODO: Implement 
+    'Algorithm must be in allowed list'
+    assert isinstance(cert.x509, x509.Certificate)
+    allowed_OIDs = (OID('1.2.840.10045.4.3.2'), # ecdsa-with-SHA256
+                    #OID('1.2.840.10045.4.3.3'), # ecdsa-with-SHA384
+                    OID('1.2.840.113549.1.1.10'), # rsassa-pss
+                    OID('2.16.840.1.101.3.4.3.2'), # dsaWithSha256
+                    OID('1.2.840.113549.1.1.11'), # Legacy: sha256WithRSAEncryption
+                    )
+    
+    assert cert.x509.signature_algorithm_oid in allowed_OIDs, f'Signature algorithm not allowed: {cert.x509.signature_algorithm_oid}'    
 
-@skip_if_cert_not_loaded
-def test_country_flag(cert):
+@requires_readable_cert
+def test_subject_format(cert, pytestconfig):
+    country_attributes = cert.x509.subject.get_attributes_for_oid(x509.NameOID.COUNTRY_NAME)
+    assert len(country_attributes) == 1, 'Certificate must have 1 C attribute'
+    #common_name_attributes = cert.x509.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)
+    #assert len(common_name_attributes) == 1, 'Certificate must have 1 CN attribute'
+
+
+@requires_readable_cert
+def test_country_flag(cert, pytestconfig):
     'The country flag (C value) must be set to the correct country code'
+
+    if not pytestconfig.getoption('country_mode'): 
+        pytest.skip(reason='This test only runs in country mode')
 
     country_attributes = cert.x509.subject.get_attributes_for_oid(x509.NameOID.COUNTRY_NAME)
     
@@ -59,62 +85,91 @@ def test_country_flag(cert):
     # Check 3: Country in path must match country of C attribute
     assert cert.pathinfo.get('country') == country.alpha_3
 
-@skip_if_cert_not_loaded
+@requires_readable_cert
 def test_oversea_territory_ou(cert):
-    'TBD' # TODO: implement
+    pytest.skip(reason='Not implemented yet') # TODO: implement for ICAO
 
     state_prov_attr = cert.x509.subject.get_attributes_for_oid(x509.NameOID.STATE_OR_PROVINCE_NAME)
     ju_country_attr = cert.x509.subject.get_attributes_for_oid(x509.NameOID.JURISDICTION_COUNTRY_NAME)
-    # ...
 
-@skip_if_cert_not_loaded
+@requires_readable_cert
 def test_explicit_parameter(cert):
-    pass # TODO: implement
+    pytest.skip(reason='Not implemented yet') # TODO: implement for ICAO
     
-@skip_if_cert_not_loaded
-def test_csca_validity_range(cert):    
-    'CSCA must be valid for at least 2 years and at most 4 years'
-    if not cert.pathinfo.get('group').upper() == 'CSCA':
-        pytest.skip('Test does not apply to non-CSCA-certs')
-
-    now = datetime.utcnow()
+@requires_readable_cert
+def test_validity_range(cert):    
+    '''SCA must be valid for at least 2 years and at most 4 years,
+       UP, TLS must be valid for at least 1 year and at most 2 years
+    '''
+    validity = cert.x509.not_valid_after - cert.x509.not_valid_before
     
-    assert cert.x509.not_valid_after - cert.x509.not_valid_before > timedelta(days=2*365), \
-        "CSCA must be valid for at least 2 years"
-    assert cert.x509.not_valid_after - cert.x509.not_valid_before < timedelta(days=4*366), \
-        "CSCA must be valid for max 4 years"
+    if cert.pathinfo.get('group').upper() == 'SCA':
+        min_years, max_years = 2, 4
+    else: 
+        min_years, max_years = 1, 2
 
+    assert  validity > timedelta(days=min_years*365), \
+       f"{cert.pathinfo.get('group')} must be valid for at least {min_years} years (is: {validity.days} days)"
+    assert validity < timedelta(days=max_years*366), \
+       f"{cert.pathinfo.get('group')} must be valid for at most {max_years} years (is: {validity.days} days)"
 
-@skip_if_cert_not_loaded
+@requires_readable_cert
+def test_validity(cert):    
+    '''Onboarded certificates must be valid for at least 30 days from now'''
+    assert cert.x509.not_valid_after >= datetime.now()+timedelta(days=30),\
+        "Certificate expires in less than 30 days"
+
+@requires_readable_cert
 def test_extended_key_usages(cert):
-    if cert.pathinfo.get('group').upper() == 'CSCA': 
-        pytest.skip(reason='CSCA certs do not require extended key usage')
+    """Extended key usage for TLS and UP certs must be set"""
+    if cert.pathinfo.get('group').upper() == 'SCA'\
+    or cert.pathinfo.get('group').upper() == 'TLS' and cert.pathinfo.get('filename').upper().startswith('CA'):
+        pytest.skip(reason='CA/SCA certs do not require extended key usage')
 
     assert '2.5.29.37' in cert.extensions, 'extendedKeyUsage not in extensions'
     usages = cert.extensions['2.5.29.37'].value._usages
     
-    if cert.pathinfo.get('group').upper() == 'AUTH':  
+    if cert.pathinfo.get('group').upper() == 'TLS'\
+    and cert.pathinfo.get('filename').upper().startswith('CA'):
         assert x509.ObjectIdentifier('1.3.6.1.5.5.7.3.2') in usages, 'AUTH certificates must allow clientAuthentication'
 
-@skip_if_cert_not_loaded
+@requires_readable_cert
 def test_key_usages(cert):
     """Check if the certificates have the required keyUsage flags 
        depending on certificate group and file name"""
-    assert '2.5.29.15' in cert.extensions, 'keyUsage not in extensions'
+    assert '2.5.29.15' in cert.extensions, 'keyUsage not in x509 extensions'
     usages = cert.extensions['2.5.29.15'].value
 
-    if cert.pathinfo.get('group').upper() == 'TLS':  
+    # TLS client certs in TLS group
+    if cert.pathinfo.get('group').upper() == 'TLS'\
+    and cert.pathinfo.get('filename').startswith('TLS'):  
         assert usages.digital_signature == True, 'TLS cert should have usage flag "digital signature"'
         assert usages.crl_sign == False, 'TLS cert should not have usage flag "CRL sign"'
         # ... TODO
+    # CA certs in TLS group
+    elif cert.pathinfo.get('group').upper() == 'TLS'\
+    and cert.pathinfo.get('filename').upper().startswith('CA'):  
+        pass
     elif cert.pathinfo.get('group').upper() == 'UP':  
         assert usages.digital_signature == True, 'UP cert should have usage flag "digital signature"'
         assert usages.crl_sign == False, 'UP cert should not have usage flag "CRL sign"'
         # ... TODO
-    elif cert.pathinfo.get('group').upper() == 'SCA' \
-    and cert.pathinfo.get('filename').upper() == 'SCA.pem':
+    elif cert.pathinfo.get('group').upper() == 'SCA':
         assert usages.key_cert_sign == True, 'SCA should have usage flag "key cert sign"'
 
+@requires_readable_cert
+def test_basic_constraints(cert):
+    '''Only CA and SCA certs may have a CA:TRUE constraint'''
+
+    assert '2.5.29.19' in cert.extensions, 'basicConstraints not in x509 extensions'
+    basicConstraints = cert.extensions['2.5.29.19'].value
+
+    if cert.pathinfo.get('group').upper() == 'SCA'\
+    or cert.pathinfo.get('group').upper() == 'TLS' and cert.pathinfo.get('filename').upper().startswith('CA'):
+        assert basicConstraints.ca == True, 'SCA and CA certs must have basicConstraints(CA:TRUE)'
+        assert not basicConstraints.path_length, 'Path length must be 0 or None'
+    else:
+        assert not basicConstraints.ca == True, 'non-CA certs must NOT have basicConstraints(CA:TRUE)'
 
 def test_valid_group(cert):
     'The group in the path name must be valid'

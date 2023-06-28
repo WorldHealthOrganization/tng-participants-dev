@@ -10,11 +10,12 @@ def test_folder_structure(country_folder):
     # This makes the subsequent code independent from the OS path separator
 
     # Collect the files before testing
-    
+    offset = len(country_folder.split(os.sep))
+
     onboardings = {}
     for path, dirs, files in os.walk(country_folder):
         for file in files: 
-            long_path = tuple(os.path.join(path, file).split(os.sep)[2:])
+            long_path = tuple(os.path.join(path, file).split(os.sep)[offset:])
             if long_path[0].lower() == 'onboarding':
                 domain = long_path[1]
                 if not domain in onboardings:

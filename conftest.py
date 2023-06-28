@@ -7,6 +7,11 @@ from glob import glob
 from cryptography import x509
 from functools import lru_cache
 
+def pytest_addoption(parser):
+    parser.addoption("--country-mode", action="store_true", help="Expect country folders")
+    parser.addoption("-G", "--group", default=None, help="Filter group (TLS,UP,SCA)")
+    parser.addoption("-D", "--domain", default=None, help="Filter domain (DCC,DDCC,ICAO,...)")
+
 def _add_country(db, **params):
     '''Add a country to a pycountry database for the duration of this session.
        This is useful to patch testing countries into a list of countries.'''
@@ -24,29 +29,30 @@ def _add_country(db, **params):
         index = db.indices.setdefault(key, {})
         index[value] = obj
 
-def pytest_addoption(parser):
-    parser.addoption("-C", "--country-code", action="store", default="*", help="Country code of tests to run.")
-    parser.addoption("-G", "--group", default=None, help="Certificate group (TLS,UP,SCA)")
+try:
+    test_countries = json.load(open('testing_countries.json'))
+    for country_def in test_countries.get('countries'):
+        _add_country(pycountry.countries, **country_def)
+except Exception as ex:
+    message = f"Testing countries could not be loaded ({str(ex)})"
+    warnings.warn(message)
 
 @lru_cache(maxsize=16)
-def _glob_files(country_code='*', base_dir='.'):
-    "Find matching files"
-
-    if country_code in ('*', None): 
+def _glob_files(country_mode=False, base_dir='.' ):
+    if country_mode: 
         country_dirs = glob(os.path.join(base_dir,'???')) 
     else:
-        country_dirs = [os.path.join(base_dir,country_code)]
+        country_dirs = [os.path.join(base_dir,'onboarding')]        
 
     found_files = []
     for country_dir in country_dirs:
         for root, dirs, files in os.walk(country_dir):
             for file in files: 
                 name, ext = os.path.splitext(file)
-                if ext.lower() in ['.pem']:
+                if ext.lower() in ['.pem', '.crt']:
                     found_files.append(os.path.join(root, file))
 
     return found_files, country_dirs
-
 
 def pytest_generate_tests(metafunc):
     ''' Walk all subfolders of the current directory that consist of 3 characters
@@ -57,16 +63,7 @@ def pytest_generate_tests(metafunc):
             - All test cases that have a "pem_file" parameter
             - All pem files discovered in the directory walk
     ''' 
-
-    try:
-        test_countries = json.load(open('testing_countries.json'))
-        for country_def in test_countries.get('countries'):
-            _add_country(pycountry.countries, **country_def)
-    except Exception as ex:
-        message = f"Testing countries could not be loaded ({str(ex)})"
-        warnings.warn(message)
-
-        
+       
     def filter_filenames_by_group(files, group):
         if group is None: 
             return files
@@ -80,7 +77,8 @@ def pytest_generate_tests(metafunc):
         
         return files
 
-    pem_files, country_folders = _glob_files( metafunc.config.getoption("country_code") )
+
+    pem_files, country_folders = _glob_files( metafunc.config.getoption("country_mode") )
     pem_files = filter_filenames_by_group(pem_files,metafunc.config.getoption("group") )
 
     # Parametrize all tests that have a "cert" parameter with the found cert files
