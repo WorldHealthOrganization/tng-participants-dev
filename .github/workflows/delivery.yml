@@ -49,8 +49,8 @@ jobs:
            echo "${{secrets.NB_UP_SIGNING_PUB}}" > pub-key.pem
            echo "${{secrets.NB_UP_SIGNING_KEY}}" > priv-key.pem
            cd .. 
-           ./extract.sh ${{vars.ENV}} 
            cd ..
+           ./extract.sh ${{vars.ENV}}         
            cd ..
 
       - name: Onboarding
