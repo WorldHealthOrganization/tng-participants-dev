@@ -16,6 +16,6 @@ d = json.loads(decodedStr, strict=False)
 if "sync" in d and d["sync"] == True:
     os.system("touch sync")
 else:
-    os.system("echo 'https://"+os.environ.get("BOT_TOKEN_GITHUB")+"@"+d["repo"] + "' > temp/repo")
+    os.system("echo 'https://"+os.environ.get("GITHUB_TOKEN")+"@"+d["repo"] + "' > temp/repo")
     for key in d["keys"]:          
         os.system("echo '"+key + "' >> temp/gpg")
