@@ -72,7 +72,7 @@ if __name__=='__main__':
                 
                 ######### Create PR
                 
-                os.system("./scripts/createPR.sh")
+                os.system("./scripts/createPR.sh "+country.alpha_3)
                 
                 #####################
                 if os.path.exists(country.alpha_3+"/onboarding/UP"):
