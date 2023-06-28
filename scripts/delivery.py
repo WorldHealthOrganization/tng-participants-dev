@@ -56,7 +56,7 @@ if __name__=='__main__':
                 if os.path.exists("sync"):  
                    ###############  Transitive Trust
                    os.system("./scripts/transitiveTrust.sh "+country.alpha_2)
-                   if os.system("python scripts/onboardingRequest.py ./transit/"+country.alpha_2) != 0:
+                   if os.system("python scripts/onboardingRequest.py ./transit/"+os.environ.get("ENV")+"/countries/"+country.alpha_2) != 0:
                           raise Exception("Onboarding Request failed.")
                 else:
                     try:       
