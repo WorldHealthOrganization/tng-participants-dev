@@ -2,8 +2,6 @@
 
 export GITHUB_TOKEN=$GITHUB_JOB_TOKEN
 
-gh pr status -c
-
 if [ -e "temp/Failure" ]; then
   gh pr review $1/onboardingRequest -r -b "Please resolve the Errors before proceeding. The failure files contain more information." 
 fi
