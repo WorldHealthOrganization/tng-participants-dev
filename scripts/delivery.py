@@ -45,7 +45,7 @@ if __name__=='__main__':
                 os.system("echo Try onboarding for " + country.alpha_3)
                 
                 ###############  Transitive Trust
-                os.system("./transitiveTrust.sh "+country.alpha_2)
+                os.system("./scripts/transitiveTrust.sh "+country.alpha_2)
                 
                 ################## Prepare the internal structure
                 os.system("rm -rf repo")
