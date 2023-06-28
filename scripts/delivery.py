@@ -43,6 +43,21 @@ if __name__=='__main__':
         if cCode in doc: 
             try:
                 os.system("echo Try onboarding for " + country.alpha_3)
+                
+                ###############  Transitive Trust
+                
+                os.system("git clone https://"+doc["BOT_TOKEN_GITHUB"]+"@"+os.environ("TRANSITIVE_TRUST_SOURCE") + "transit")
+                os.system("cd transit")
+                os.system("cd "+os.environ("ENV"))
+                os.system("mkdir signing")
+                os.system("cd signing") 
+                os.system("echo "+doc["NB_UP_SIGNING_PUB"]+" > pub-key.pem")
+                os.system("echo "+doc["NB_UP_SIGNING_KEY"]+" > priv-key.pem")
+                os.system("cd ..")
+                os.system("cd ..")
+                os.system("./extract.sh "+ os.environ("ENV")+" "+country.alpha_2)     
+                os.system("cd ..")
+                
                 ################## Prepare the internal structure
                 os.system("rm -rf repo")
                 os.system("rm -rf temp")

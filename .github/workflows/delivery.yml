@@ -29,8 +29,6 @@ jobs:
         run: |
                 pip install --upgrade pip
                 pip install -r scripts/requirements.txt
-        env:
-          TEST: ${{toJSON(secrets)}}
       - name: Configure Bot
         run: |
           git config --global user.email ${{secrets.BOT_EMAIL_GITHUB}}
@@ -38,24 +36,13 @@ jobs:
           git config --global user.password ${{secrets.BOT_TOKEN_GITHUB}}
           git config --global pull.rebase true
           git config --global branch.autosetuprebase always
-      - name: Transitive Trust 
-        run: | 
-           git clone https://${{secrets.BOT_TOKEN_GITHUB}}@${{vars.TRANSITIVE_TRUST_SOURCE}} transit
-           cd transit
-           cd "${{vars.ENV}}"
-           mkdir signing 
-           cd signing     
-           echo "${{secrets.NB_UP_SIGNING_PUB}}" > pub-key.pem
-           echo "${{secrets.NB_UP_SIGNING_KEY}}" > priv-key.pem
-           cd .. 
-           cd ..
-           ./extract.sh ${{vars.ENV}}      
-           cd ..
 
       - name: Onboarding
         id: Onboarding
         env:
           GITHUB_TOKEN: ${{secrets.BOT_TOKEN_GITHUB}}
+          TRANSITIVE_TRUST_SOURCE: ${{vars.TRANSITIVE_TRUST_SOURCE}}
           SECRETS: ${{toJSON(secrets)}}
+          ENV: ${{vars.ENV}}
         run: |
           python scripts/delivery.py
