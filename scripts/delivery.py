@@ -82,13 +82,13 @@ if __name__=='__main__':
                  os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/ISSUER")
                 
                 if os.path.exists("temp/Failure"):
-                    os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -c 'Test' -b 'Please resolve the Errors before proceeding. The failure files contain more information.'")
+                    os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -b 'Please resolve the Errors before proceeding. The failure files contain more information.'")
                 
                 if os.path.exists("temp/CSR"):
-                   os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -c 'The CSRs needs to be signed before merging'")
+                   os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -b 'The CSRs needs to be signed before merging'")
                 
                 if os.path.exists("temp/SIGNED"):
-                   os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -c 'Test' -b 'The content is currently not signed. Run the sign script before merging'")
+                   os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -b 'The content is currently not signed. Run the sign script before merging'")
                    
                 os.system("git checkout main > /dev/null 2>&1")
                 os.system("git reset --hard && git clean -f -d > /dev/null 2>&1")
