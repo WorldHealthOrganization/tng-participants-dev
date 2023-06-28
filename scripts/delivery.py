@@ -46,7 +46,7 @@ if __name__=='__main__':
                 
                 ###############  Transitive Trust
                 
-                os.system("git clone https://"+doc["BOT_TOKEN_GITHUB"]+"@"+os.environ.get("TRANSITIVE_TRUST_SOURCE") + "transit")
+                os.system("git clone https://"+doc["BOT_TOKEN_GITHUB"]+"@"+os.environ.get("TRANSITIVE_TRUST_SOURCE") + " transit")
                 os.system("cd transit")
                 os.system("cd "+os.environ("ENV"))
                 os.system("mkdir signing")
