@@ -29,7 +29,6 @@ jobs:
         run: |
                 pip install --upgrade pip
                 pip install -r scripts/requirements.txt
-                echo "$TEST"
         env:
           TEST: ${{toJSON(secrets)}}
       - name: Configure Bot
@@ -45,9 +44,10 @@ jobs:
            git clone https://${{secrets.BOT_TOKEN_GITHUB}}@${{vars.TRANSITIVE_TRUST_SOURCE}} transit
            cd transit
            mkdir signing 
-           cd signing
-           pub-key.pem < "${{secrets.NB_UP_SIGNING_PUB}}" 
-           priv-key.pem < "${{secrets.NB_UP_SIGNING_KEY}}"
+           cd signing       
+           echo "${{secrets.NB_UP_SIGNING_PUB}}" > pub-key.pem
+           echo "${{secrets.NB_UP_SIGNING_KEY}}" > priv-key.pem
+           cat bla
            cd .. 
            ./extract.sh ${{vars.ENV}} 
            cd ..
