@@ -1,6 +1,6 @@
 # Introduction
 
-This repository contains the current onboarded key material in DEV environment for the Smart Trust Network. To be part of it, follow the instructions below. 
+This repository contains the current onboarded key material in DEV environment for the Smart Trust Network. To be part of it, follow the instructions below.
 
 # Procedure
 
@@ -24,4 +24,5 @@ The incoming content needs to be checked for the following rules:
 |Extended Key Usages| List of valid [OIDs](https://github.com/WorldHealthOrganization/smart-trust-network-gateway/blob/main/docs/Architecture.md#dsc-limitation)|
 |Key Usages| TBD e.g. Digital Signature|
 |Repository Crosscheck| Keys must not be existing in uat, dev|
+|Valid domain| Domain in path name must be one of DCC DDCC DIVOC ICAO SHC|
 

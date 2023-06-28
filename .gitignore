@@ -38,3 +38,11 @@ coverage.xml
 # Translations
 *.mo
 
+# Terraform
+*override.tf
+*.iml
+.idea
+*.tfstate
+*.tfvars
+.idea
+.terraform*
