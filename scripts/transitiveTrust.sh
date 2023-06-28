@@ -1,3 +1,4 @@
+rm -rf transit
 git clone https://$GITHUB_TOKEN@$TRANSITIVE_TRUST_SOURCE transit
 cd transit
 cd $ENV
