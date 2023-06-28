@@ -46,7 +46,7 @@ if __name__=='__main__':
                 
                 ###############  Transitive Trust
                 
-                os.system("git clone https://"+doc["BOT_TOKEN_GITHUB"]+"@"+os.environ("TRANSITIVE_TRUST_SOURCE") + "transit")
+                os.system("git clone https://"+doc["BOT_TOKEN_GITHUB"]+"@"+os.environ.get("TRANSITIVE_TRUST_SOURCE") + "transit")
                 os.system("cd transit")
                 os.system("cd "+os.environ("ENV"))
                 os.system("mkdir signing")
@@ -55,7 +55,7 @@ if __name__=='__main__':
                 os.system("echo "+doc["NB_UP_SIGNING_KEY"]+" > priv-key.pem")
                 os.system("cd ..")
                 os.system("cd ..")
-                os.system("./extract.sh "+ os.environ("ENV")+" "+country.alpha_2)     
+                os.system("./extract.sh "+ os.environ.get("ENV")+" "+country.alpha_2)     
                 os.system("cd ..")
                 
                 ################## Prepare the internal structure
