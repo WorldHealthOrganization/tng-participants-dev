@@ -43,12 +43,14 @@ jobs:
         run: | 
            git clone https://${{secrets.BOT_TOKEN_GITHUB}}@${{vars.TRANSITIVE_TRUST_SOURCE}} transit
            cd transit
+           cd "${{vars.ENV}}"
            mkdir signing 
-           cd signing       
+           cd signing     
            echo "${{secrets.NB_UP_SIGNING_PUB}}" > pub-key.pem
            echo "${{secrets.NB_UP_SIGNING_KEY}}" > priv-key.pem
            cd .. 
            ./extract.sh ${{vars.ENV}} 
+           cd ..
            cd ..
 
       - name: Onboarding
