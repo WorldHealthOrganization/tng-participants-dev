@@ -40,6 +40,7 @@ jobs:
       - name: Onboarding
         id: Onboarding
         env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           BOT_TOKEN_GITHUB: ${{secrets.BOT_TOKEN_GITHUB}}
           TRANSITIVE_TRUST_SOURCE: ${{vars.TRANSITIVE_TRUST_SOURCE}}
           SECRETS: ${{toJSON(secrets)}}
