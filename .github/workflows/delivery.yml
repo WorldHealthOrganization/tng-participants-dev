@@ -40,6 +40,11 @@ jobs:
           git config --global pull.rebase true
           git config --global branch.autosetuprebase always
 
+      - name: Transitive Trust 
+        run: | 
+           git clone ${{vars.TRANSITIVE_TRUST_SOURCE}} transit
+           ./transit/extract.sh ${{vars.ENV}} 
+
       - name: Onboarding
         id: Onboarding
         env:

@@ -41,18 +41,39 @@ if __name__=='__main__':
         if country.alpha_3 in doc:
             cCode= country.alpha_3
         if cCode in doc: 
-            print("Try onboarding for " + country.alpha_3)
             try:
+                print("Try onboarding for " + country.alpha_3)
+                ################## Prepare the internal structure
                 os.system("rm -rf repo")
                 os.system("rm -rf temp")
                 os.system("mkdir temp")
                 os.system("echo '"+country.alpha_3 + "\n' > temp/country")
                 os.system("echo '"+doc[cCode]+ "' > temp/base64")
                 os.system("python scripts/config.py")
-                os.system("python scripts/repo.py")
-                os.system("./scripts/verify.sh 1> /dev/null")
-                os.system("python scripts/onboardingRequest.py")
+                
+                if os.path.exists("sync"):  
+                   os.system("python scripts/onboardingRequest.py transit/"+country.alpha_2)  
+                else:
+                    try:       
+                        os.system("python scripts/repo.py")
+                        os.system("./scripts/verify.sh 1> /dev/null")
+                        os.system("python scripts/onboardingRequest.py repo")
+                    except Exception as Error:
+                        print("Error occoured for onboarding request " + country.alpha_3 +": "+ Error) 
+                    
                 os.system("gh pr create -B main -H " + country.alpha_3 +"/onboardingRequest --title 'Bot requested a change for "+country.alpha_3+".' --body 'Please merge the onnboarding request of "+country.alpha_3+".'")
+                
+                os.system("./failureCheck.sh "+country.alpha_3)
+                
+                if os.path.exists("temp/Failure"):
+                    os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'The PR contains Failure files which must be resolved'. -b 'Please resolve the Errors before proceeding. The failure files contain more information.'")
+                
+                if os.path.exists("temp/CSR"):
+                    os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'Please resolve the CSR signings before merging.' -b 'The CSRs needs to be signed before merging'")
+                
+                if os.path.exists("temp/SIGNED"):
+                        os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'Please signed the content before merging' -b 'The content is currently not signed. Run the sign script before merging'")
+                   
                 os.system("git checkout main")
                 os.system("git reset --hard && git clean -f -d")
             except Exception as Error:
