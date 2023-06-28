@@ -85,7 +85,7 @@ if __name__=='__main__':
                 #     os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'The PR contains Failure files which must be resolved'. -b 'Please resolve the Errors before proceeding. The failure files contain more information.'")
                 
                 if os.path.exists("temp/CSR"):
-                   os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'Please resolve the CSR signings before merging.' -b 'The CSRs needs to be signed before merging'")
+                   os.system("gh pr review -r -c 'Please resolve the CSR signings before merging.' -b 'The CSRs needs to be signed before merging'")
                 
                 # if os.path.exists("temp/SIGNED"):
                 #         os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'Please signed the content before merging' -b 'The content is currently not signed. Run the sign script before merging'")
