@@ -1,22 +1,25 @@
 #!/bin/bash
 echo "Start fileCheck"
 echo "Check:" $1
-find $1 -print | grep -i "Failure" > temp/Failure
+find $1 -print | grep -i "Failure" > temp/tmpFailure
 
-if [ -n "temp/Failure" ]; then
-    rm "temp/Failure"
+if [ -s "temp/tmpFailure" ]; then
+    cat temp/tmpFailure > temp/Failure
+    rm "temp/tmpFailure"
 fi
 
-find $1 -print | grep -i "CSR" > temp/CSR
+find $1 -print | grep -i "CSR" > temp/tmpCSR
 
-if [ -n "temp/CSR" ]; then
-    rm "temp/CSR"
+if [ -s "temp/tmpCSR" ]; then
+    cat temp/tmpCSR > temp/CSR
+    rm "temp/tmpCSR"
 fi
 
-find $1 -print | grep -i "signed" > temp/SIGNED
+find $1 -print | grep -i "signed" > temp/tmpSIGNED
 
-if [ -n "temp/SIGNED" ]; then
-    rm "temp/SIGNED"
+if [  -s "temp/tmpSIGNED" ]; then
+    cat temp/tmpSIGNED > temp/SIGNED
+    rm "temp/tmpSIGNED"
 fi
 ls temp
 echo "finished fileCheck"
