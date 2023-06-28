@@ -17,6 +17,7 @@ The incoming content needs to be checked for the following rules:
 |Valid PEM | The certificates will be checked for a valid pem structure|
 |TLS.PEM without CA| The TLS.PEM must be without CA Chain|
 |CA.PEM present| The CA.PEM must be present |
+| Chain Check| TLS.PEM + CA.PEM must resolve and verify| 
 |Key Length| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
 |Algorithm| OID TBD|
 |Country Flag| The country flag (C value) must be set to the correct country code|
