@@ -48,7 +48,7 @@ if __name__=='__main__':
                 
                 os.system("git clone https://"+doc["BOT_TOKEN_GITHUB"]+"@"+os.environ.get("TRANSITIVE_TRUST_SOURCE") + " transit")
                 os.system("cd transit")
-                os.system("cd "+os.environ("ENV"))
+                os.system("cd "+os.environ.get("ENV"))
                 os.system("mkdir signing")
                 os.system("cd signing") 
                 os.system("echo "+doc["NB_UP_SIGNING_PUB"]+" > pub-key.pem")
