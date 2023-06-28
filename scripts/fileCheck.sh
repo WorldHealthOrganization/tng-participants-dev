@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Start fileCheck"
-
+echo "Check:" $1
 find $1 -print | grep -i "Failure" > temp/Failure
 
 if [ -s "temp/Failure" ]; then
