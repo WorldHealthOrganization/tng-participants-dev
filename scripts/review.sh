@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export GITHUB_TOKEN=$BOT_TOKEN_GITHUB
+export GITHUB_TOKEN=$GITHUB_JOB_TOKEN
 
 if [ -e "temp/Failure" ]; then
   gh pr review $1/onboardingRequest -r -b "Please resolve the Errors before proceeding. The failure files contain more information." 
