@@ -67,7 +67,7 @@ if __name__=='__main__':
                     except Exception as Error:
                         print("Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)) 
                     
-                os.system("gh pr create -B main -H " + country.alpha_3 +"/onboardingRequest --title 'Bot requested a change for "+country.alpha_3+".' --body 'Please merge the onnboarding request of "+country.alpha_3+".'")
+                os.system("gh pr create -B main -H " + country.alpha_3 +"/onboardingRequest --title 'Bot requested a change for "+country.alpha_3+".' --body 'Please merge the onnboarding request of "+country.alpha_3+".' > /dev/null 2>&1" )
                 
                 if os.path.exists(country.alpha_3+"/onboarding/UP"):
                  os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/UP")
@@ -87,7 +87,7 @@ if __name__=='__main__':
                 if os.path.exists("temp/SIGNED"):
                         os.system("gh pr review "+country.alpha_3 +"/onboardingRequest -r -c 'Please signed the content before merging' -b 'The content is currently not signed. Run the sign script before merging'")
                    
-                os.system("git checkout main")
-                os.system("git reset --hard && git clean -f -d")
+                os.system("git checkout main > /dev/null 2>&1")
+                os.system("git reset --hard && git clean -f -d > /dev/null 2>&1")
             except Exception as Error:
                 print("Error occoured for onboarding " + country.alpha_3 +": "+ str(Error))
