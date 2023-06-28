@@ -49,15 +49,21 @@ if __name__=='__main__':
                 os.system("mkdir temp")
                 os.system("echo '"+country.alpha_3 + "\n' > temp/country")
                 os.system("echo '"+doc[cCode]+ "' > temp/base64")
-                os.system("python scripts/config.py")
+                if os.system("python scripts/config.py") !=0:
+                    raise Exception("Configuration Error in Script")
                 
                 if os.path.exists("sync"):  
-                   os.system("python scripts/onboardingRequest.py transit/"+country.alpha_2)  
+                   if os.system("python scripts/onboardingRequest.py transit/"+country.alpha_2) != 0:
+                          raise Exception("Onboarding Request failed.")
                 else:
                     try:       
-                        os.system("python scripts/repo.py")
+                        if os.system("python scripts/repo.py") != 0:
+                              raise Exception("Repository Cloning failed.")
+                          
                         os.system("./scripts/verify.sh 1> /dev/null")
-                        os.system("python scripts/onboardingRequest.py repo")
+                        
+                        if os.system("python scripts/onboardingRequest.py repo") != 0:
+                          raise Exception("Onboarding Request failed.")
                     except Exception as Error:
                         print("Error occoured for onboarding request " + country.alpha_3 +": "+ Error) 
                     
