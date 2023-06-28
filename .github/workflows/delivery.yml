@@ -43,7 +43,9 @@ jobs:
       - name: Transitive Trust 
         run: | 
            git clone https://${{secrets.BOT_TOKEN_GITHUB}}@${{vars.TRANSITIVE_TRUST_SOURCE}} transit
+           cd transit
            ./transit/extract.sh ${{vars.ENV}} 
+           cd ..
 
       - name: Onboarding
         id: Onboarding
