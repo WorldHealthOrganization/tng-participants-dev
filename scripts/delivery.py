@@ -45,19 +45,7 @@ if __name__=='__main__':
                 os.system("echo Try onboarding for " + country.alpha_3)
                 
                 ###############  Transitive Trust
-                os.system("rm -rf transit")
-                os.system("git clone https://"+doc["BOT_TOKEN_GITHUB"]+"@"+os.environ.get("TRANSITIVE_TRUST_SOURCE") + " transit")
-                os.system("cd transit")
-                os.system("ls transit")
-                os.system("cd "+os.environ.get("ENV"))
-                os.system("mkdir signing")
-                os.system("cd signing") 
-                os.system("echo "+doc["NB_UP_SIGNING_PUB"]+" > pub-key.pem")
-                os.system("echo "+doc["NB_UP_SIGNING_KEY"]+" > priv-key.pem")
-                os.system("cd ..")
-                os.system("cd ..")
-                os.system("./extract.sh "+ os.environ.get("ENV")+" "+country.alpha_2)     
-                os.system("cd ..")
+                os.system("./transitiveTrust.sh "+country.alpha_2)
                 
                 ################## Prepare the internal structure
                 os.system("rm -rf repo")
