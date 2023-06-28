@@ -44,9 +44,9 @@ jobs:
         run: | 
            git clone https://${{secrets.BOT_TOKEN_GITHUB}}@${{vars.TRANSITIVE_TRUST_SOURCE}} transit
            cd transit
-           mkdir signing
-           echo "${{secrets.NB_UP_SIGNING_PUB}}" >> signing/pub-key.pem
-           echo "${{secrets.NB_UP_SIGNING_KEY}}" >> signing/priv-key.pem
+           mkdir signing 
+           signing/pub-key.pem < "${{secrets.NB_UP_SIGNING_PUB}}" 
+           signing/priv-key.pem < "${{secrets.NB_UP_SIGNING_KEY}}"
            ./extract.sh ${{vars.ENV}} 
            cd ..
 

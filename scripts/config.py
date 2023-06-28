@@ -7,7 +7,7 @@ with open("temp/base64") as f:
     decodedStr = str(decodedBytes, "utf-8")
 d = json.loads(decodedStr, strict=False)
 
-if d["sync"] == True:
+if "sync" in d and d["sync"] == True:
     os.system("touch sync")
 else:
     os.system("echo 'https://"+os.environ.get("GITHUB_TOKEN")+"@"+d["repo"] + "' > temp/repo")
