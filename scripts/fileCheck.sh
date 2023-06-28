@@ -17,8 +17,10 @@ fi
 
 find $1 -print | grep -i "signed" > temp/tmpSIGNED
 
-if [  -s "temp/tmpSIGNED" ]; then
-    cat temp/tmpSIGNED > temp/SIGNED
-    rm -f "temp/tmpSIGNED"
+if [ -s "temp/tmpSIGNED" ]; then
+    echo "nothing" > /dev/null
+else
+  cat temp/tmpSIGNED > temp/SIGNED
+  rm -f "temp/tmpSIGNED"
 fi
 echo "finished fileCheck"
