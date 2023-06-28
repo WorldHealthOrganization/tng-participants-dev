@@ -6,7 +6,6 @@ repo = sys.argv[1]
 if repo == "repo":
   with open('temp/verifyResult') as f:
     result = f.readline()   
-    print(result)
     if not result:
         raise Exception("Bad verification.")
     else:
