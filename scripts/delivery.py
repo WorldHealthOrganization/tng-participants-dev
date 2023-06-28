@@ -42,7 +42,7 @@ if __name__=='__main__':
             cCode= country.alpha_3
         if cCode in doc: 
             try:
-                print("Try onboarding for " + country.alpha_3)
+                os.system("echo Try onboarding for " + country.alpha_3)
                 ################## Prepare the internal structure
                 os.system("rm -rf repo")
                 os.system("rm -rf temp")
@@ -65,7 +65,7 @@ if __name__=='__main__':
                         if os.system("python scripts/onboardingRequest.py repo") != 0:
                           raise Exception("Onboarding Request failed.")
                     except Exception as Error:
-                        print("Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)) 
+                        os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
                     
                 os.system("gh pr create -B main -H " + country.alpha_3 +"/onboardingRequest --title 'Bot requested a change for "+country.alpha_3+".' --body 'Please merge the onnboarding request of "+country.alpha_3+".' > /dev/null 2>&1" )
                 
@@ -90,4 +90,4 @@ if __name__=='__main__':
                 os.system("git checkout main > /dev/null 2>&1")
                 os.system("git reset --hard && git clean -f -d > /dev/null 2>&1")
             except Exception as Error:
-                print("Error occoured for onboarding " + country.alpha_3 +": "+ str(Error))
+                os.system("echo 'Error occoured for onboarding " + country.alpha_3 +": "+ str(Error)+"'")
