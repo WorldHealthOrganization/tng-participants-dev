@@ -3,7 +3,14 @@ import json
 import base64
 
 with open("temp/base64") as f:
-    decodedBytes = base64.urlsafe_b64decode(f.read())
+    data = f.read()
+    missing_padding = len(data) % 4
+    if missing_padding == 3:
+        data = data[0:-3]
+    elif missing_padding != 0:
+        print ("Missing padding : " + str(missing_padding))
+        data += '=' * (4 - missing_padding)
+    decodedBytes = base64.urlsafe_b64decode(data)
     decodedStr = str(decodedBytes, "utf-8")
 d = json.loads(decodedStr, strict=False)
 
