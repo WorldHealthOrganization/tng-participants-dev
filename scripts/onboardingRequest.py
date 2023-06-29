@@ -18,16 +18,13 @@ branchName = country + "/onboardingRequest"
 
 branches = os.popen("git ls-remote --heads").read()
 
-os.system("echo open branchlist")
-os.system("git ls-remote --heads")
-
 if branchName in branches:
   os.system("echo switch branch")
   os.system("git switch "+branchName)
   os.system("git fetch")
 else:
   os.system("git checkout -b" + branchName)
-os.system("git rev-parse --abbrev-ref HEAD")
+
 os.system("ls") 
 
 os.system("mkdir -p " + country)
