@@ -10,7 +10,13 @@ from functools import lru_cache
 def pytest_addoption(parser):
     parser.addoption("--country-mode", action="store_true", help="Expect country folders")
     parser.addoption("-G", "--group", default=None, help="Filter group (TLS,UP,SCA)")
+    parser.addoption("-C", "--country", default=None, help="Filter by country")
     parser.addoption("-D", "--domain", default=None, help="Filter domain (DCC,DDCC,ICAO,...)")
+
+_PATH_INDEX_FILENAME = -1
+_PATH_INDEX_GROUP = -2
+_PATH_INDEX_DOMAIN = -3
+_PATH_INDEX_COUNTRY = -5
 
 def _add_country(db, **params):
     '''Add a country to a pycountry database for the duration of this session.
@@ -30,12 +36,13 @@ def _add_country(db, **params):
         index[value] = obj
 
 try:
-    test_countries = json.load(open('testing_countries.json'))
+    test_countries = json.load(open(os.path.join('scripts','tests','testing_countries.json')))
     for country_def in test_countries.get('countries'):
         _add_country(pycountry.countries, **country_def)
 except Exception as ex:
     message = f"Testing countries could not be loaded ({str(ex)})"
     warnings.warn(message)
+
 
 @lru_cache(maxsize=16)
 def _glob_files(country_mode=False, base_dir='.' ):
@@ -63,28 +70,27 @@ def pytest_generate_tests(metafunc):
             - All test cases that have a "pem_file" parameter
             - All pem files discovered in the directory walk
     ''' 
-       
-    def filter_filenames_by_group(files, group):
-        if group is None: 
-            return files
+
+    def filter_by(pem_files, filter_value, filter_index):
+       if not filter_value:
+           return pem_files
+       return [p for p in pem_files if p.split(os.sep)[filter_index].upper()\
+                                         == filter_value.upper() ]
     
-        if group.lower() in ('up', 'upload'): 
-            return [ file for file in files if file.split(os.sep)[-2].lower() == 'up']
-        if group.lower() in ('auth', 'tls'): 
-            return [ file for file in files if file.split(os.sep)[-2].lower() == 'tls']
-        if group.lower() in ('ca', 'csca', 'sca'): 
-            return [ file for file in files if file.split(os.sep)[-2].lower() == 'sca']
-        
-        return files
+    config = metafunc.config
+    pem_files, country_folders = _glob_files( config.getoption('country_mode') )
+    if config.getoption('country') and not config.getoption('country_mode'):
+        raise ValueError('Country filter cannot be applied if not running in country-mode.'+
+                         ' Use --country-mode to enable this mode.')
 
+    pem_files = filter_by(pem_files, config.getoption('group'), _PATH_INDEX_GROUP )
+    pem_files = filter_by(pem_files, config.getoption('country'), _PATH_INDEX_COUNTRY )
+    pem_files = filter_by(pem_files, config.getoption('domain'), _PATH_INDEX_DOMAIN )
 
-    pem_files, country_folders = _glob_files( metafunc.config.getoption("country_mode") )
-    pem_files = filter_filenames_by_group(pem_files,metafunc.config.getoption("group") )
+    country_folders = filter_by(country_folders, config.getoption('country'), 1 )
 
     # Parametrize all tests that have a "cert" parameter with the found cert files
     if "cert" in metafunc.fixturenames:
-        #print(dir(metafunc))
-        #print(metafunc.function)
         metafunc.parametrize("cert", pem_files, indirect=True)
 
     # Parametrize all tests that have a "country" parameter with the found dirs

@@ -9,9 +9,9 @@ on:
         description: 'Additional Parameters'
         required: false
         default: ''
-  pull_request:
+  push:    
 jobs:
-  build:
+  qa-check:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -35,26 +35,7 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Validate Pull Request
-      if: ${{ github.event_name != 'workflow_dispatch' }}
-      env:
-        REMOTE_GATEWAY_1_URL: ${{ vars.REMOTE_GATEWAY_1_URL }}
-        REMOTE_GATEWAY_2_URL: ${{ vars.REMOTE_GATEWAY_2_URL }}
-        REMOTE_GATEWAY_1_CLIENT_CERT: ${{ secrets.REMOTE_GATEWAY_1_CLIENT_CERT }}
-        REMOTE_GATEWAY_1_CLIENT_KEY: ${{ secrets.REMOTE_GATEWAY_1_CLIENT_KEY }}
-        REMOTE_GATEWAY_2_CLIENT_CERT: ${{ secrets.REMOTE_GATEWAY_2_CLIENT_CERT }}
-        REMOTE_GATEWAY_2_CLIENT_KEY: ${{ secrets.REMOTE_GATEWAY_2_CLIENT_KEY }}
-      run: |
-        pytest --country-mode --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
-    - name: Validate TNG QA Workflow Dispatch
-      if: ${{ github.event_name == 'workflow_dispatch' }}
-      env:
-        REMOTE_GATEWAY_1_URL: ${{ vars.REMOTE_GATEWAY_1_URL }}
-        REMOTE_GATEWAY_2_URL: ${{ vars.REMOTE_GATEWAY_2_URL }}
-        REMOTE_GATEWAY_1_CLIENT_CERT: ${{ secrets.REMOTE_GATEWAY_1_CLIENT_CERT }}
-        REMOTE_GATEWAY_1_CLIENT_KEY: ${{ secrets.REMOTE_GATEWAY_1_CLIENT_KEY }}
-        REMOTE_GATEWAY_2_CLIENT_CERT: ${{ secrets.REMOTE_GATEWAY_2_CLIENT_CERT }}
-        REMOTE_GATEWAY_2_CLIENT_KEY: ${{ secrets.REMOTE_GATEWAY_2_CLIENT_KEY }}
+    - name: Run QA checks
       run: |
         pytest -vs ${{ github.event.inputs.additional_params }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
 
