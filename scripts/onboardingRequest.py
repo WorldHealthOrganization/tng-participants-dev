@@ -20,7 +20,7 @@ os.system("mkdir -p " + country)
 os.system("rm -rf " + country)
 
 
-#os.system("mkdir -p " + country+"/onboarding")
+os.system("mkdir -p " + country+"/onboarding")
 
 #os.system("rm -f "+ country+"/onboarding/DCC/TLS/*.PEM")
 #os.system("rm -f "+ country+"/onboarding/DCC/SCA/*.PEM")
