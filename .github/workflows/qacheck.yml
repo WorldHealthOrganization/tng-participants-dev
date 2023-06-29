@@ -9,8 +9,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run QA Check
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: 
-        echo Run here Script (branch is head_ref) $GITHUB_HEAD_REF
+      run: |
+        echo 'Run here Script (branch is head_ref) $GITHUB_HEAD_REF'
     
