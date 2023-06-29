@@ -6,7 +6,7 @@ on:
   pull_request:    
   push:
     branches:
-      - '*/onboardingRequest' 
+      - '**/onboardingRequest' 
 jobs:
   check-folder-structure:
     runs-on: ubuntu-latest

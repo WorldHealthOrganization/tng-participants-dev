@@ -6,7 +6,7 @@ on:
   pull_request: 
   push:
     branches:
-      - '*/onboardingRequest'   
+      - '**/onboardingRequest'   
 jobs:
   certificate-check:
     runs-on: ubuntu-latest
