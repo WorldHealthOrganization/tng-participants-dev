@@ -75,10 +75,10 @@ if __name__=='__main__':
                             os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
                         
                         ######### Create PR 
-                        os.system("./scripts/createPR.sh "+country.alpha_3)
-                    
-                        os.system("git checkout main > /dev/null 2>&1")
-                        os.system("git reset --hard && git clean -f -d > /dev/null 2>&1")
+                    os.system("./scripts/createPR.sh "+country.alpha_3)
+                
+                    os.system("git checkout main > /dev/null 2>&1")
+                    os.system("git reset --hard && git clean -f -d > /dev/null 2>&1")
                 else:
                     os.system("echo Skip "+country.alpha_3 + "Branch already exist merge the branch or delete the branch.")
             except Exception as Error:
