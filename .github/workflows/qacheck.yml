@@ -7,5 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Extract branch name
-      run: echo running on branch ${GITHUB_REF##*/}
+    - uses: nelonoel/branch-name@v1
+    # Use branch name for whatever purpose
+    - run: echo ${BRANCH_NAME}
