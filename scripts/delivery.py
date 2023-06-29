@@ -36,13 +36,16 @@ if __name__=='__main__':
                                      flag='😄', name='Test XX', numeric='9990', official_name='Test Country XX' )
     countries = list(pycountry.countries)
 
+    branches = os.popen("git ls-remote --heads").read()
+    print ("branches found:")
+    print(branches)
+
     for country in countries:        
         cCode = country.alpha_2
         if country.alpha_3 in doc:
             cCode= country.alpha_3
         if cCode in doc: 
             try:
-                branches = os.popen("git ls-remote --heads").read()
                 branchName = country.alpha_3+"/onboardingRequest"
                 
                 if not branchName in branches:
