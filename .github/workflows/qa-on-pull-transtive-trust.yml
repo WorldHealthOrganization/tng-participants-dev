@@ -3,6 +3,7 @@
 
 name: Review Bot
 on:
+  pull_request:
   push:
     branches:
       - '*/onboardingRequest'   
