@@ -60,7 +60,7 @@ if __name__=='__main__':
                     if os.path.exists("sync"):  
                     ###############  Transitive Trust
                         os.system("./scripts/transitiveTrust.sh "+country.alpha_2)
-                        if os.system("python scripts/onboardingRequest.py ./transit/"+os.environ.get("ENV")+"/countries/"+country.alpha_2) != 0:
+                        if os.system("python scripts/onboardingRequest.py ./transit/"+os.environ.get("ENV")+"/countries/"+country.alpha_2+" > /dev/null 2>&1") != 0:
                                 raise Exception("Onboarding Request failed.")
                         else:
                             try:       
@@ -69,7 +69,7 @@ if __name__=='__main__':
                                 
                                 os.system("./scripts/verify.sh 1> /dev/null")
                                 
-                                if os.system("python scripts/onboardingRequest.py repo") != 0:
+                                if os.system("python scripts/onboardingRequest.py repo > /dev/null 2>&1") != 0:
                                     raise Exception("Onboarding Request failed.")
                             except Exception as Error:
                                 os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
@@ -80,6 +80,6 @@ if __name__=='__main__':
                         os.system("git checkout main > /dev/null 2>&1")
                         os.system("git reset --hard && git clean -f -d > /dev/null 2>&1")
                 else:
-                    os.system("Skip "+country.alpha_3 + "Branch already exist merge the branch or delete the branch.")
+                    os.system("echo Skip "+country.alpha_3 + "Branch already exist merge the branch or delete the branch.")
             except Exception as Error:
                 os.system("echo 'Error occoured for onboarding " + country.alpha_3 +": "+ str(Error)+"'")
