@@ -20,7 +20,7 @@ os.system("mkdir -p " + country)
 os.system("rm -rf " + country)
 
 
-os.system("mkdir -p " + country+"/onboarding")
+#os.system("mkdir -p " + country+"/onboarding")
 
 #os.system("rm -f "+ country+"/onboarding/DCC/TLS/*.PEM")
 #os.system("rm -f "+ country+"/onboarding/DCC/SCA/*.PEM")
@@ -32,7 +32,8 @@ os.system("mkdir -p " + country+"/onboarding")
 os.system("echo ls before")
 os.system("ls "+country+"/onboarding" )
 os.system("echo  copy folder ")
-os.system("cp -r "+repo+"/onboarding " + country + "/onboarding" )
+
+os.system("cp -r "+repo+"/onboarding " + country )
 
 os.system("echo ls ")
 os.system("ls "+repo+"/onboarding" )
