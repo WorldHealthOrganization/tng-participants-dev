@@ -3,11 +3,14 @@ on:
   pull_request:
    branches: ['main']
 jobs:
-  ci:
+  test:
     runs-on: ubuntu-latest
+    if: contains(github.head_ref, 'onboardingRequest')
     steps:
     - uses: actions/checkout@v2
-    - name: Dump GitHub context
+    - name: Run QA Check
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
+      run: 
+        echo Run here Script (branch is head_ref) $GITHUB_HEAD_REF
+    
