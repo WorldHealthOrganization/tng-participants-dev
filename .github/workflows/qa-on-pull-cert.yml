@@ -4,9 +4,7 @@
 name: Quality Assurance (Certificates)
 on:
   pull_request: 
-  push:
-    branches:
-      - '**/onboardingRequest'   
+    types: [ opened, synchronize, reopened, edited ] 
 jobs:
   certificate-check:
     runs-on: ubuntu-latest
