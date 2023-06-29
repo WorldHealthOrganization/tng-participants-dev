@@ -25,7 +25,9 @@ os.system("[ -d "+country + "/onboarding/DCC/csca"+" ] && mv " + country + "/onb
 os.system("[ -d "+country + "/onboarding/DCC/up"+" ] && mv " + country + "/onboarding/DCC/up "+ country+"/onboarding/DCC/UP")
 os.system("[ -f "+country + "/onboarding/DCC/SCA/CSCA.pem"+" ] && mv " + country + "/onboarding/DCC/SCA/CSCA.pem "+ country+"/onboarding/DCC/SCA/SCA.pem")
 os.system("git add "+ country)
-os.system("git commit -m 'Bot added Files from "+country+"' ")
+
+result = os.popen("git commit -m 'Bot added Files from "+country+"' ").read()
+print(result)
 os.system("git push -f -u origin "+ branchName + " ")
 
 #> /dev/null 2>&1
