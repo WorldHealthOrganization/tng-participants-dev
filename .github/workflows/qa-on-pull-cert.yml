@@ -3,7 +3,10 @@
 
 name: Quality Assurance (Certificates)
 on:
-  pull_request:    
+  pull_request: 
+  push:
+    branches:
+      - '*/onboardingRequest'   
 jobs:
   certificate-check:
     runs-on: ubuntu-latest

@@ -4,6 +4,9 @@
 name: Quality Assurance (Folder Structure)
 on:
   pull_request:    
+  push:
+    branches:
+      - '*/onboardingRequest' 
 jobs:
   check-folder-structure:
     runs-on: ubuntu-latest
