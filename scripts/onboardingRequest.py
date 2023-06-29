@@ -27,7 +27,8 @@ if os.path.exists("sync"):
   if os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.PEM"): 
       os.system("rm "+country+"/onboarding/DCC/UP/UP_SYNC.CSR")
 else:
-  os.system("rm "+country+"/onboarding/DCC/UP/UP_SYNC.PEM")
+    if os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.PEM"): 
+      os.system("rm "+country+"/onboarding/DCC/UP/UP_SYNC.PEM")
 
 os.system("[ -d "+country + "/onboarding/DCC/auth"+" ] && mv " + country + "/onboarding/DCC/auth "+ country+"/onboarding/DCC/TLS")
 os.system("[ -d "+country + "/onboarding/DCC/csca"+" ] && mv " + country + "/onboarding/DCC/csca "+ country+"/onboarding/DCC/SCA")
