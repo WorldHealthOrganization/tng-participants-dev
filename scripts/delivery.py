@@ -62,17 +62,17 @@ if __name__=='__main__':
                         os.system("./scripts/transitiveTrust.sh "+country.alpha_2)
                         if os.system("python scripts/onboardingRequest.py ./transit/"+os.environ.get("ENV")+"/countries/"+country.alpha_2+" > /dev/null 2>&1") != 0:
                                 raise Exception("Onboarding Request failed.")
-                        else:
-                            try:       
-                                if os.system("python scripts/repo.py") != 0:
-                                    raise Exception("Repository Cloning failed.")
-                                
-                                os.system("./scripts/verify.sh 1> /dev/null")
-                                
-                                if os.system("python scripts/onboardingRequest.py repo > /dev/null 2>&1") != 0:
-                                    raise Exception("Onboarding Request failed.")
-                            except Exception as Error:
-                                os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
+                    else:
+                        try:       
+                            if os.system("python scripts/repo.py") != 0:
+                                raise Exception("Repository Cloning failed.")
+                            
+                            os.system("./scripts/verify.sh 1> /dev/null")
+                            
+                            if os.system("python scripts/onboardingRequest.py repo > /dev/null 2>&1") != 0:
+                                raise Exception("Onboarding Request failed.")
+                        except Exception as Error:
+                            os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
                         
                         ######### Create PR 
                         os.system("./scripts/createPR.sh "+country.alpha_3)
