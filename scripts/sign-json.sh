@@ -39,15 +39,18 @@ CURRDIR=$PWD
 
 
 declare -A USAGETOSIGNINGCA=(
- [TLS]="$CASDIR/cas/TLS/certs/TNG_TLS.pem"
+# [TLS]="$CASDIR/cas/TLS/certs/TNG_TLS.pem"
+ [TLS]="$CASDIR/cas/TA/certs/TNG_TA.pem"
  [TA]="$CASDIR/cas/TA/certs/TNG_TA.pem"
 )
 declare -A USAGETOSIGNINGKEY=(
- [TLS]="$CASDIR/cas/TLS/private/TNG_TLS.key.pem"
+ #[TLS]="$CASDIR/cas/TLS/private/TNG_TLS.key.pem"	
+ [TLS]="$CASDIR/cas/TA/private/TNG_TA.key.pem"
  [TA]="$CASDIR/cas/TA/private/TNG_TA.key.pem"
 )
 declare -A USAGETOSIGNINGCFG=(
- [TLS]="$CASDIR/cas/TLS/openssl.conf"
+ #[TLS]="$CASDIR/cas/TLS/openssl.conf"
+ [TLS]="$CASDIR/cas/TA/openssl.conf"
  [TA]="$CASDIR/cas/TA/openssl.conf"
  )
 
