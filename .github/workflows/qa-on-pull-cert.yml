@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-
+    if: contains(github.head_ref, 'onboardingRequest')
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 
@@ -28,10 +28,8 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run QA checks
-      env: 
-        COUNTRY:  ${{ vars.ENV_COUNTRY }}
       run: |
-        pytest -vs scripts/tests/test_certs.py --country-mode -C ${{ vars.ENV_COUNTRY }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+        pytest -vs scripts/tests/test_certs.py --country-mode -C ${{ github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
 
 
 
