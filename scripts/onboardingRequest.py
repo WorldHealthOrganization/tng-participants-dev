@@ -16,7 +16,7 @@ with open('temp/country') as f:
 
 branchName = country + "/onboardingRequest"
 
-branches = os.popen('git branch -').read()
+branches = os.popen('git branch -a').read()
       
 if branchName in branches:
   os.system("git checkout origin/"+branchName +"") 
