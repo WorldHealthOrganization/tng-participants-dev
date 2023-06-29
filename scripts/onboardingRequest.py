@@ -17,14 +17,14 @@ with open('temp/country') as f:
 branchName = country+"/onboardingRequest" 
 os.system("git checkout -b" + branchName +" > /dev/null 2>&1")
 os.system("mkdir -p " + country)
-os.system("ls "+repo)
-os.system("ls "+repo+"/onboarding")
+
+os.system("ls "+repo+"/onboarding/DCC")
 os.system("rm "+ country+"/onboarding/DCC/TLS/*.PEM")
 os.system("rm "+ country+"/onboarding/DCC/SCA/*.PEM")
 os.system("rm "+ country+"/onboarding/DCC/UP/UP_*[0-9].PEM")
 os.system("rm "+ country+"/onboarding/DCC/ISSUER/*.txt")
 
-os.system("mv  -v "+repo+"/onboarding " + country + "/ > /dev/null 2>&1" )
+os.system("mv -v "+repo+"/onboarding " + country + "/" )
 os.system("[ -d "+country + "/onboarding/DCC/auth"+" ] && mv " + country + "/onboarding/DCC/auth "+ country+"/onboarding/DCC/TLS")
 os.system("[ -d "+country + "/onboarding/DCC/csca"+" ] && mv " + country + "/onboarding/DCC/csca "+ country+"/onboarding/DCC/SCA")
 os.system("[ -d "+country + "/onboarding/DCC/up"+" ] && mv " + country + "/onboarding/DCC/up "+ country+"/onboarding/DCC/UP")
