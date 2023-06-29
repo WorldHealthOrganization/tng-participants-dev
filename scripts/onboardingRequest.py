@@ -22,7 +22,8 @@ if branchName in branches:
   os.system("git checkout origin/"+branchName +"") 
 else:
   os.system("git checkout -b" + branchName)
-  
+os.system("ls") 
+
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 os.system("cp -r "+repo+"/onboarding " + country )
