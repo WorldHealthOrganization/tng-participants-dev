@@ -16,7 +16,7 @@ with open('temp/country') as f:
 
 branchName = country + "/onboardingRequest"
 
-branches = os.popen('git branch -a').read()
+branches = os.popen('git branch -r').read()
       
 if branchName in branches:
   os.system("echo switch branch")
