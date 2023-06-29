@@ -70,6 +70,9 @@ if __name__=='__main__':
                     except Exception as Error:
                         os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
                 
+            
+                
+                
                 ######### Create PR
                 
                 os.system("./scripts/createPR.sh "+country.alpha_3)
@@ -83,11 +86,10 @@ if __name__=='__main__':
                   os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/SCA")
                 if os.path.exists(country.alpha_3+"/onboarding/ISSUER"):
                  os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/ISSUER")
-                
-                
+                   
                 ####### Review section
                 
-                os.system("./scripts/review.sh "+country.alpha_3)
+                #os.system("./scripts/review.sh "+country.alpha_3)
             
                 #####################
             
