@@ -24,7 +24,8 @@ os.system("rm -rf " + country)
 #os.system("rm -f "+ country+"/onboarding/DCC/UP/UP_*[0-9].PEM")
 #os.system("rm -f "+ country+"/onboarding/DCC/ISSUER/*.txt")
 os.system("ls "+repo+"/onboarding")
-os.system("cp -a "+repo+"/onboarding/. " + country + "/" )
+
+os.system("cp -a "+repo+"/. " + country + "/" )
 
 os.system("[ -d "+country + "/onboarding/DCC/auth"+" ] && mv " + country + "/onboarding/DCC/auth "+ country+"/onboarding/DCC/TLS")
 os.system("[ -d "+country + "/onboarding/DCC/csca"+" ] && mv " + country + "/onboarding/DCC/csca "+ country+"/onboarding/DCC/SCA")
