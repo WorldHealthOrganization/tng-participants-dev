@@ -7,6 +7,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set output
-      id: vars
-      run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+    - name: Extract branch name
+      run: echo running on branch ${GITHUB_REF##*/}
