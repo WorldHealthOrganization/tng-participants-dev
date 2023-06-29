@@ -20,8 +20,8 @@ os.system("git checkout -b" + branchName +" > /dev/null 2>&1")
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 os.system("cp -r "+repo+"/onboarding " + country )
-os.system("cat "+country+"/onboarding/DCC/TLS/Report")
-os.system("rm "+country+"/onboarding/DCC/TLS/Report")
+os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && cat "+country+"/onboarding/DCC/TLS/Report")
+os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && rm "+country+"/onboarding/DCC/TLS/Report")
 
 if os.path.exists("sync"):
   if os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.PEM"): 
