@@ -16,17 +16,7 @@ with open('temp/country') as f:
 
 branchName = country + "/onboardingRequest"
 
-branches = os.popen("git ls-remote --heads").read()
-
-if branchName in branches:
-  os.system("echo switch branch")
-  os.system("git switch "+branchName)
-  os.system("git fetch")
-else:
-  os.system("git checkout -b" + branchName)
-
-os.system("ls") 
-
+os.system("git checkout -b" + branchName)
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 os.system("cp -r "+repo+"/onboarding " + country )
@@ -36,10 +26,6 @@ os.system("[ -d "+country + "/onboarding/DCC/up"+" ] && mv " + country + "/onboa
 os.system("[ -f "+country + "/onboarding/DCC/SCA/CSCA.pem"+" ] && mv " + country + "/onboarding/DCC/SCA/CSCA.pem "+ country+"/onboarding/DCC/SCA/SCA.pem")
 os.system("git add "+ country)
 os.system("git commit -m 'Bot added Files from "+country+"' ")
-
-if branchName in branches:  
-  os.system("git push -f -u origin "+ branchName + " ")
-else:
-  os.system("git push origin "+ branchName + " ") 
+os.system("git push -f -u origin "+ branchName + " ")
 
 #> /dev/null 2>&1
