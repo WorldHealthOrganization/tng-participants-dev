@@ -83,8 +83,13 @@ def pytest_generate_tests(metafunc):
         raise ValueError('Country filter cannot be applied if not running in country-mode.'+
                          ' Use --country-mode to enable this mode.')
 
+    _country = config.getoption('country')
+    # Accept branch names as country
+    if _country and '/' in _country:
+        _country = _country.split('/')[0]
+
     pem_files = filter_by(pem_files, config.getoption('group'), _PATH_INDEX_GROUP )
-    pem_files = filter_by(pem_files, config.getoption('country'), _PATH_INDEX_COUNTRY )
+    pem_files = filter_by(pem_files, _country, _PATH_INDEX_COUNTRY )
     pem_files = filter_by(pem_files, config.getoption('domain'), _PATH_INDEX_DOMAIN )
 
     country_folders = filter_by(country_folders, config.getoption('country'), 1 )
