@@ -14,7 +14,7 @@ if repo == "repo":
 with open('temp/country') as f:
   country = f.readline().replace("\n","")
 
-branchName = "onboardingRequest/" + country
+branchName = country + "/onboardingRequest"
 os.system("git checkout -b" + branchName +" > /dev/null 2>&1")
 os.system("mkdir -p " + country)
 os.system("rm -rf " + country)
