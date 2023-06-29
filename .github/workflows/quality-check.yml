@@ -40,10 +40,10 @@ jobs:
       env:
         REMOTE_GATEWAY_1_URL: ${{ vars.REMOTE_GATEWAY_1_URL }}
         REMOTE_GATEWAY_2_URL: ${{ vars.REMOTE_GATEWAY_2_URL }}
-        REMOTE_GATEWAY_1_CLIENT_CERT: ${{ vars.REMOTE_GATEWAY_1_CLIENT_CERT }}
-        REMOTE_GATEWAY_1_CLIENT_KEY: ${{ vars.REMOTE_GATEWAY_1_CLIENT_KEY }}
-        REMOTE_GATEWAY_2_CLIENT_CERT: ${{ vars.REMOTE_GATEWAY_2_CLIENT_CERT }}
-        REMOTE_GATEWAY_2_CLIENT_KEY: ${{ vars.REMOTE_GATEWAY_2_CLIENT_KEY }}
+        REMOTE_GATEWAY_1_CLIENT_CERT: ${{ secrets.REMOTE_GATEWAY_1_CLIENT_CERT }}
+        REMOTE_GATEWAY_1_CLIENT_KEY: ${{ secrets.REMOTE_GATEWAY_1_CLIENT_KEY }}
+        REMOTE_GATEWAY_2_CLIENT_CERT: ${{ secrets.REMOTE_GATEWAY_2_CLIENT_CERT }}
+        REMOTE_GATEWAY_2_CLIENT_KEY: ${{ secrets.REMOTE_GATEWAY_2_CLIENT_KEY }}
       run: |
         pytest --country-mode --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
     - name: Validate TNG QA Workflow Dispatch
@@ -51,10 +51,10 @@ jobs:
       env:
         REMOTE_GATEWAY_1_URL: ${{ vars.REMOTE_GATEWAY_1_URL }}
         REMOTE_GATEWAY_2_URL: ${{ vars.REMOTE_GATEWAY_2_URL }}
-        REMOTE_GATEWAY_1_CLIENT_CERT: ${{ vars.REMOTE_GATEWAY_1_CLIENT_CERT }}
-        REMOTE_GATEWAY_1_CLIENT_KEY: ${{ vars.REMOTE_GATEWAY_1_CLIENT_KEY }}
-        REMOTE_GATEWAY_2_CLIENT_CERT: ${{ vars.REMOTE_GATEWAY_2_CLIENT_CERT }}
-        REMOTE_GATEWAY_2_CLIENT_KEY: ${{ vars.REMOTE_GATEWAY_2_CLIENT_KEY }}
+        REMOTE_GATEWAY_1_CLIENT_CERT: ${{ secrets.REMOTE_GATEWAY_1_CLIENT_CERT }}
+        REMOTE_GATEWAY_1_CLIENT_KEY: ${{ secrets.REMOTE_GATEWAY_1_CLIENT_KEY }}
+        REMOTE_GATEWAY_2_CLIENT_CERT: ${{ secrets.REMOTE_GATEWAY_2_CLIENT_CERT }}
+        REMOTE_GATEWAY_2_CLIENT_KEY: ${{ secrets.REMOTE_GATEWAY_2_CLIENT_KEY }}
       run: |
         pytest -vs ${{ github.event.inputs.additional_params }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
 
