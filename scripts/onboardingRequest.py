@@ -16,7 +16,7 @@ with open('temp/country') as f:
 
 branchName = country + "/onboardingRequest"
 
-os.system("git checkout -b" + branchName)
+os.system("git checkout -b" + branchName +" > /dev/null 2>&1")
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 os.system("cp -r "+repo+"/onboarding " + country )
@@ -33,10 +33,11 @@ os.system("[ -d "+country + "/onboarding/DCC/auth"+" ] && mv " + country + "/onb
 os.system("[ -d "+country + "/onboarding/DCC/csca"+" ] && mv " + country + "/onboarding/DCC/csca "+ country+"/onboarding/DCC/SCA")
 os.system("[ -d "+country + "/onboarding/DCC/up"+" ] && mv " + country + "/onboarding/DCC/up "+ country+"/onboarding/DCC/UP")
 os.system("[ -f "+country + "/onboarding/DCC/SCA/CSCA.pem"+" ] && mv " + country + "/onboarding/DCC/SCA/CSCA.pem "+ country+"/onboarding/DCC/SCA/SCA.pem")
-os.system("git add "+ country)
+os.system("git add "+ country + " > /dev/null 2>&1")
 
-result = os.popen("git commit -m 'Bot added Files from "+country+"' ").read()
-print(result)
-os.system("git push -f -u origin "+ branchName + " ")
+result = os.popen("git commit -m 'Bot added Files from "+country+"'").read()
+
+if not "nothing added to commit" in result:
+  os.system("git push -f -u origin "+ branchName +" > /dev/null 2>&1")
 
 #> /dev/null 2>&1
