@@ -1,0 +1,62 @@
+# This workflow will install Python dependencies and run tests 
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: DGC PNG Verification
+on:
+  workflow_dispatch:
+    inputs:
+      additional_params:
+        description: 'Additional Parameters'
+        required: false
+        default: ''
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.10]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8 pytest
+        if [ -f scripts/requirements.txt ]; then pip install -r scripts/requirements.txt; fi
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Validate Pull Request
+      if: ${{ github.event_name != 'workflow_dispatch' }}
+      env:
+        REMOTE_GATEWAY_1_URL: https://tng-dev.who.int
+        REMOTE_GATEWAY_2_URL: https://tng-uat.who.int
+        REMOTE_GATEWAY_1_CLIENT_CERT: MIIC4zCCAcugAwIBAgIIWHQhC9dF6aAwDQYJKoZIhvcNAQELBQAwWDE4MDYGA1UE...
+        REMOTE_GATEWAY_1_CLIENT_KEY: MIIC4zCCAcugAwIBAgIIWHQhC9dF6aAwDQYJKoZIhvcNAQELBQAwWDE4MDYGA1UE...
+        REMOTE_GATEWAY_2_CLIENT_CERT: MIIC4zCCAcugAwIBAgIIWHQhC9dF6aAwDQYJKoZIhvcNAQELBQAwWDE4MDYGA1UE...
+        REMOTE_GATEWAY_2_CLIENT_KEY: MIIC4zCCAcugAwIBAgIIWHQhC9dF6aAwDQYJKoZIhvcNAQELBQAwWDE4MDYGA1UE...
+      run: |
+        pytest --country-mode --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+    - name: Validate TNG QA Workflow Dispatch
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      env:
+        REMOTE_GATEWAY_1_URL: https://tng-dev.who.int
+        REMOTE_GATEWAY_2_URL: https://tng-uat.who.int
+        REMOTE_GATEWAY_1_CLIENT_CERT: MIIC4zCCAcugAwIBAgIIWHQhC9dF6aAwDQYJKoZIhvcNAQELBQAwWDE4MDYGA1UE...
+        REMOTE_GATEWAY_1_CLIENT_KEY: MIIC4zCCAcugAwIBAgIIWHQhC9dF6aAwDQYJKoZIhvcNAQELBQAwWDE4MDYGA1UE...
+        REMOTE_GATEWAY_2_CLIENT_CERT: MIIC4zCCAcugAwIBAgIIWHQhC9dF6aAwDQYJKoZIhvcNAQELBQAwWDE4MDYGA1UE...
+        REMOTE_GATEWAY_2_CLIENT_KEY: MIIC4zCCAcugAwIBAgIIWHQhC9dF6aAwDQYJKoZIhvcNAQELBQAwWDE4MDYGA1UE...
+      run: |
+        pytest -vs ${{ github.event.inputs.additional_params }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+
+
+
