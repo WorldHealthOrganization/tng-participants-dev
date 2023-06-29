@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies and run tests 
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: TNG Onboarding QA
+name: Delivery Review
 on:
   workflow_dispatch:
     inputs:
@@ -11,7 +11,7 @@ on:
         default: ''
   push:    
 jobs:
-  qa-check:
+  delivery-review:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
