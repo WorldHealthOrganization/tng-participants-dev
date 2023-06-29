@@ -1,14 +1,13 @@
 import os
 from pathlib import Path
 
-def test_transitive_trust_failure(country_folder):
+def test_transitive_trust_failure(country_folder,country):
     approve = True
     noFailure = True
     signedFolderPresent = True
     csrNotSigned = True
     csrNotPresent = True
     
-    country = country_folder[0:3]
     pathlist = Path(country_folder+"/onboarding/UP").glob('**/Failure')
     
     if len(pathlist): 
