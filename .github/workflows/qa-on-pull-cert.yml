@@ -4,7 +4,7 @@
 name: Quality Assurance (Certificates)
 on:
   pull_request: 
-    types: [ opened, synchronize, reopened, edited ] 
+    types: [ opened, synchronize, reopened, edited, review_request_removed ] 
 jobs:
   certificate-check:
     runs-on: ubuntu-latest
