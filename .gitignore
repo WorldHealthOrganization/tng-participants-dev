@@ -46,3 +46,6 @@ coverage.xml
 *.tfvars
 .idea
 .terraform*
+transit
+repo
+temp

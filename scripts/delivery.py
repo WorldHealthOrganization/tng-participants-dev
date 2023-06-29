@@ -41,19 +41,59 @@ if __name__=='__main__':
         if country.alpha_3 in doc:
             cCode= country.alpha_3
         if cCode in doc: 
-            print("Try onboarding for " + country.alpha_3)
             try:
+                os.system("echo Try onboarding for " + country.alpha_3)
+                 
+                ################## Prepare the internal structure
                 os.system("rm -rf repo")
                 os.system("rm -rf temp")
                 os.system("mkdir temp")
                 os.system("echo '"+country.alpha_3 + "\n' > temp/country")
                 os.system("echo '"+doc[cCode]+ "' > temp/base64")
-                os.system("python scripts/config.py")
-                os.system("python scripts/repo.py")
-                os.system("./scripts/verify.sh 1> /dev/null")
-                os.system("python scripts/onboardingRequest.py")
-                os.system("gh pr create -B main -H " + country.alpha_3 +"/onboardingRequest --title 'Bot requested a change for "+country.alpha_3+".' --body 'Please merge the onnboarding request of "+country.alpha_3+".'")
-                os.system("git checkout main")
-                os.system("git reset --hard && git clean -f -d")
+                if os.system("python scripts/config.py") !=0:
+                    raise Exception("Configuration Error")
+                
+                if os.path.exists("sync"):  
+                   ###############  Transitive Trust
+                   os.system("./scripts/transitiveTrust.sh "+country.alpha_2)
+                   if os.system("python scripts/onboardingRequest.py ./transit/"+os.environ.get("ENV")+"/countries/"+country.alpha_2) != 0:
+                          raise Exception("Onboarding Request failed.")
+                else:
+                    try:       
+                        if os.system("python scripts/repo.py") != 0:
+                              raise Exception("Repository Cloning failed.")
+                          
+                        os.system("./scripts/verify.sh 1> /dev/null")
+                        
+                        if os.system("python scripts/onboardingRequest.py repo") != 0:
+                          raise Exception("Onboarding Request failed.")
+                    except Exception as Error:
+                        os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
+                
+            
+                
+                
+                ######### Create PR
+                
+                os.system("./scripts/createPR.sh "+country.alpha_3)
+                
+                #####################
+                if os.path.exists(country.alpha_3+"/onboarding/UP"):
+                 os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/UP")
+                if os.path.exists(country.alpha_3+"/onboarding/TLS"):
+                 os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/TLS")
+                if os.path.exists(country.alpha_3+"/onboarding/SCA"):
+                  os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/SCA")
+                if os.path.exists(country.alpha_3+"/onboarding/ISSUER"):
+                 os.system("./scripts/fileCheck.sh "+country.alpha_3+"/onboarding/ISSUER")
+                   
+                ####### Review section
+                
+                #os.system("./scripts/review.sh "+country.alpha_3)
+            
+                #####################
+            
+                os.system("git checkout main > /dev/null 2>&1")
+                os.system("git reset --hard && git clean -f -d > /dev/null 2>&1")
             except Exception as Error:
-                print("Error occoured for onboarding " + country.alpha_3 +": "+ Error)
+                os.system("echo 'Error occoured for onboarding " + country.alpha_3 +": "+ str(Error)+"'")
