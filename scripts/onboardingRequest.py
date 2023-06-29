@@ -20,6 +20,15 @@ os.system("git checkout -b" + branchName)
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 os.system("cp -r "+repo+"/onboarding " + country )
+os.system("cat "+country+"/onboarding/DCC/TLS/Report")
+os.system("rm "+country+"/onboarding/DCC/TLS/Report")
+
+if os.path.exists("sync"):
+  if os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.PEM"): 
+      os.system("rm "+country+"/onboarding/DCC/UP/UP_SYNC.CSR")
+else:
+  os.system("rm "+country+"/onboarding/DCC/UP/UP_SYNC.PEM")
+
 os.system("[ -d "+country + "/onboarding/DCC/auth"+" ] && mv " + country + "/onboarding/DCC/auth "+ country+"/onboarding/DCC/TLS")
 os.system("[ -d "+country + "/onboarding/DCC/csca"+" ] && mv " + country + "/onboarding/DCC/csca "+ country+"/onboarding/DCC/SCA")
 os.system("[ -d "+country + "/onboarding/DCC/up"+" ] && mv " + country + "/onboarding/DCC/up "+ country+"/onboarding/DCC/UP")
