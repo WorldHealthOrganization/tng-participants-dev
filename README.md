@@ -10,22 +10,14 @@ To be part of the Smart Trust Network, copy/fork at first the [template reposito
 
 The incoming content needs to be checked for the following rules:
 
-<<<<<<< HEAD
 ## Common Checks
 |Checks|Description|Further info|
 |----|-----------|-----|
 |Valid Folder Structure|Checks if the folder structure is valid and all required files are there.| [Folder structure](#folder-structure) |
 |Valid PEM | The certificates will be checked for a valid pem structure|-|
-=======
-
-|Checks|Description|
-|----|-----------|
-|Valid Folder Structure|Checks if the folder structure is valid and all required files are there.|
-|Valid PEM | The certificates will be checked for a valid pem structure|
 |TLS.PEM without CA| The TLS.PEM must be without CA Chain|
 |CA.PEM present| The CA.PEM must be present |
 | Chain Check| TLS.PEM + CA.PEM must resolve and verify| 
->>>>>>> 8e572d0ac03042ef2820def477d9536b3075a949
 |Key Length| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
 |Algorithm| RSASSA-PSS, ECDSA_P256 or DSA (legacy RSA)|
 |Explicit Parameter| Only allowed in ICAO | 
