@@ -1,8 +1,7 @@
 name: QA Check
 on:
   pull_request:
-   branches:
-    - 'NLD/onboardingRequest'
+   branches: ['NLD/onboardingRequest']
 jobs:
   ci:
     runs-on: ubuntu-latest
