@@ -31,6 +31,11 @@ jobs:
     - name: Run QA checks
       run: |
         pytest -vs scripts/tests/test_country_folders.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
-
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action/composite@v2
+      if: always()
+      with:
+        files: |
+          pytest.xml
 
 
