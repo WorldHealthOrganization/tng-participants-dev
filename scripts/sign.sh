@@ -58,7 +58,8 @@ declare -A USAGETOSIGNINGCFG=(
 declare -A DIRTOUSAGE=(
   [auth]="TLS"
   [TLS]="TA"
-  [csca]="TA"  
+  [csca]="TA"
+  [up]="TA"
   [SCA]="TA"
   [SCA]="TA"
 )
