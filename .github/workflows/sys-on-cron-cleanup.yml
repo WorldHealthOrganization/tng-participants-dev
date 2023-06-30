@@ -26,4 +26,5 @@ jobs:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
           retain_days: 0
+          check_branch_existence: true
           keep_minimum_runs: 2
