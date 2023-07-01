@@ -29,5 +29,5 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           BRANCH: ${{  github.head_ref }}
       run: |
-        python .scripts/review.py
+        python ./scripts/review.py
 
