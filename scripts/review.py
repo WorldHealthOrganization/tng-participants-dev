@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-prCommand = "gh pr view "+ os.environ("BRANCH") + " --json headRefName,comments,headRepositoryOwner,body,number,reviews,state,author"
-branch = os.environ("BRANCH")[0:3]
+prCommand = "gh pr view "+ os.environ.get("BRANCH") + " --json headRefName,comments,headRepositoryOwner,body,number,reviews,state,author"
+branch = os.environ.get("BRANCH")[0:3]
 result = os.popen(prCommand).read()
 
 print(result)
