@@ -40,7 +40,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
-        gh pr view ${{ github.head_ref }} --json headRefName,comments,headRepositoryOwner, body, number,reviews, state, author
+        gh pr view ${{ github.head_ref }} --json headRefName,comments,headRepositoryOwner,body,number,reviews,state,author
     - name: Run QA checks
       env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
