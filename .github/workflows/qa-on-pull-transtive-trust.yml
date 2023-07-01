@@ -38,7 +38,7 @@ jobs:
         #run_id: ${{ github.run_id }}
     - name: Test 
       run: |
-        gh pr comment ${{ github.head_ref }} -b
+        gh pr view ${{ github.head_ref }} -c
     - name: Run QA checks
       env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
