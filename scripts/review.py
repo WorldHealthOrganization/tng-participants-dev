@@ -28,7 +28,7 @@ if len(files):
     approve &= False
     noFailure &= False
     
-if not (os.path.exists(country+"/onboarding/DCC/UP/signed") and os.path.exists(country+"/onboarding/DCC/TLS/signed") and os.path.exists(country+"/onboarding/DCC/SCA/signed") and os.path.exists(country+"/onboarding/DCC/ISSUER/signed")):  
+if not (os.path.exists(country+"/onboarding/DCC/UP/signed") and os.path.exists(country+"/onboarding/DCC/TLS/signed") and os.path.exists(country+"/onboarding/DCC/SCA/signed")):  
     signedFolderPresent &= False
     approve &= False
     
