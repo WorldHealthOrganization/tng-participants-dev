@@ -5,7 +5,7 @@ import json
 
 def findComment(comment,comments):
     for c in comments:
-        if c == comment:
+        if c["body"] == comment:
             return True
     return False
 
