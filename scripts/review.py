@@ -29,15 +29,15 @@ if len(files):
     approve &= False
     noFailure &= False
     
-if not (os.path.exists(country+"/onboarding/UP/signed") and os.path.exists(country+"/onboarding/TLS/signed") and os.path.exists(country_folder+"/onboarding/SCA/signed") and os.path.exists(country_folder+"/onboarding/ISSUER/signed")):  
+if not (os.path.exists(country+"/onboarding/DCC/UP/signed") and os.path.exists(country+"/onboarding/DCC/TLS/signed") and os.path.exists(country+"/onboarding/DCC/SCA/signed") and os.path.exists(country+"/onboarding/DCC/ISSUER/signed")):  
     signedFolderPresent &= False
     approve &= False
     
-if  os.path.exists(country+"/onboarding/UP/UP_SYNC.CSR"):  
+if  os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.CSR"):  
     csrNotSigned &= False
     approve &= False
     
-if  os.path.exists(country+"/onboarding/UP/UP_SYNC.PEM") and os.path.exists(country+"/onboarding/UP/UP_SYNC.CSR"):  
+if  os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.PEM") and os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.CSR"):  
     csrNotPresent &= False
     approve &= False
     
