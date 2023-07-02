@@ -1,49 +1,65 @@
 import os
-from pathlib import Path
+import glob
+import json
+
+
+def findComment(comment,comments):
+    for c in comments:
+        if c == comment:
+            return True
+        else:
+            return False
 
 prCommand = "gh pr view "+ os.environ.get("BRANCH") + " --json headRefName,comments,headRepositoryOwner,body,number,reviews,state,author"
-branch = os.environ.get("BRANCH")[0:3]
+country = os.environ.get("BRANCH")[0:3]
 result = os.popen(prCommand).read()
 
-print(result)
+pr = json.loads(result)
 
-# approve = True
-# noFailure = True
-# signedFolderPresent = True
-# csrNotSigned = True
-# csrNotPresent = True
+approve = True
+noFailure = True
+signedFolderPresent = True
+csrNotSigned = True
+csrNotPresent = True
 
-# country = country_folder[0:3]
-# print(country)
-# pathlist = Path(country_folder+"/onboarding/UP").glob('**/Failure')
+files = glob.glob(country+"/**/Failure", recursive=True)
+comments = pr["comments"]
 
-# if len(pathlist): 
-#     approve &= False
-#     noFailure &= False
+if len(files): 
+    approve &= False
+    noFailure &= False
     
-# if not (os.path.exists(country_folder+"/onboarding/UP/signed") and os.path.exists(country_folder+"/onboarding/TLS/signed") and os.path.exists(country_folder+"/onboarding/SCA/signed") and os.path.exists(country_folder+"/onboarding/ISSUER/signed")):  
-#     signedFolderPresent &= False
-#     approve &= False
+if not (os.path.exists(country+"/onboarding/UP/signed") and os.path.exists(country+"/onboarding/TLS/signed") and os.path.exists(country_folder+"/onboarding/SCA/signed") and os.path.exists(country_folder+"/onboarding/ISSUER/signed")):  
+    signedFolderPresent &= False
+    approve &= False
     
-# if  os.path.exists(country_folder+"/onboarding/UP/UP_SYNC.CSR"):  
-#     csrNotSigned &= False
-#     approve &= False
+if  os.path.exists(country+"/onboarding/UP/UP_SYNC.CSR"):  
+    csrNotSigned &= False
+    approve &= False
     
-# if  os.path.exists(country_folder+"/onboarding/UP/UP_SYNC.PEM") and os.path.exists(country_folder+"/onboarding/UP/UP_SYNC.CSR"):  
-#     csrNotPresent &= False
-#     approve &= False
+if  os.path.exists(country+"/onboarding/UP/UP_SYNC.PEM") and os.path.exists(country+"/onboarding/UP/UP_SYNC.CSR"):  
+    csrNotPresent &= False
+    approve &= False
     
-# if not noFailure:
-#     os.system("gh pr review "+country+"/onboardingRequest -r -b 'Folder contains Failure files. Please resolve it.'")
+if not noFailure:
+    comment = "Folder contains Failure files. Please resolve it."
+    if not findComment(comment,comments):
+     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
     
-# if not signedFolderPresent:
-#     os.system("gh pr review "+country+"/onboardingRequest -r -b 'Signed Folder not present.'")
+if not signedFolderPresent:
+    comment = "Signed Folder not present."
+    if not findComment(comment,comments):
+     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
     
-# if not csrNotSigned: 
-#     os.system("gh pr review "+country+"/onboardingRequest -r -b 'CSR is not signed for UP. Please sign it.'")
+if not csrNotSigned: 
+    comment = "CSR is not signed for UP. Please sign it."
+    if not findComment(comment,comments):
+     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
     
-# if not csrNotPresent: 
-#     os.system("gh pr review "+country+"/onboardingRequest -r -b 'CSR is still present, but already signed.'")
+if not csrNotPresent: 
+    comment = "CSR is still present, but already signed."
+    if not findComment(comment,comments):
+     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
         
-# if approve:
-#     os.system("gh pr review "+country+"/onboardingRequest -a -b 'Everything fine.'")
+if approve:
+    os.system("gh pr review "+country+"/onboardingRequest -a -b 'Everything fine.'")
