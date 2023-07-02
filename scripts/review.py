@@ -9,7 +9,7 @@ def findComment(comment,comments):
             return True
     return False
 
-prCommand = "gh pr view "+ os.environ.get("BRANCH") + " --json"
+prCommand = "gh pr view "+ os.environ.get("BRANCH") + " --json headRefName,comments,headRepositoryOwner,body,number,reviews,state,author,reviews"
 country = os.environ.get("BRANCH")[0:3]
 result = os.popen(prCommand).read()
 
@@ -22,7 +22,7 @@ csrNotSigned = True
 csrNotPresent = True
 
 files = glob.glob(country+"/**/Failure", recursive=True)
-comments = pr["comments"]
+comments = pr["reviews"]
 
 print(comments)
 
