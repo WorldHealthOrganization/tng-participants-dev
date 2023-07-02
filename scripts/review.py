@@ -60,6 +60,8 @@ result = os.popen(prCommand).read()
 
 pr = json.loads(result)
 
+print(pr)
+
 approve = True
 noFailure = True
 signedFolderPresent = True
@@ -68,11 +70,6 @@ csrNotPresent = True
 
 files = glob.glob(country+"/**/Failure", recursive=True)
 reviews = pr["reviews"]
-
-with open("pytest.xml") as f:
-    data = f.read()
-    
-print (data)
 
 if len(files): 
     approve &= False
