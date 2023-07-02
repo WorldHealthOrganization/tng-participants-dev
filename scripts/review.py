@@ -7,8 +7,7 @@ def findComment(comment,comments):
     for c in comments:
         if c == comment:
             return True
-        else:
-            return False
+    return False
 
 prCommand = "gh pr view "+ os.environ.get("BRANCH") + " --json headRefName,comments,headRepositoryOwner,body,number,reviews,state,author"
 country = os.environ.get("BRANCH")[0:3]
