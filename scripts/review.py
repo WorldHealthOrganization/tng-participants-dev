@@ -9,7 +9,7 @@ def findComment(comment,comments):
             return True
     return False
 
-prCommand = "gh pr view "+ os.environ.get("BRANCH") + " --json headRefName,comments,headRepositoryOwner,body,number,reviews,state,author"
+prCommand = "gh pr view "+ os.environ.get("BRANCH") + " --json"
 country = os.environ.get("BRANCH")[0:3]
 result = os.popen(prCommand).read()
 
