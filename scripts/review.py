@@ -1,14 +1,7 @@
 import os
 import glob
 import json
-
-
-def findComment(comment,comments):
-    for c in comments:
-        if c["body"] == comment:
-            return True
-    return False
-
+import time
 
 #   additions
 #   assignees
@@ -62,11 +55,24 @@ pr = json.loads(result)
 
 checksStatus = "gh pr checks "+ os.environ.get("BRANCH")
 
-result = os.popen(checksStatus).read()
-
-print(result)
-
+repeat = True
+checkRunSucceeded = True
 approve = True
+
+while repeat:
+  result = os.popen(checksStatus).read()
+  print(result)
+  time.sleep(5) # Sleep for 3 seconds
+  
+  if "fail" in result:
+      checkRunSucceeded = False
+      approve = False
+      break;
+  
+  if result.count("pending") == 1:
+      break;
+      
+
 noFailure = True
 signedFolderPresent = True
 csrNotSigned = True
@@ -107,6 +113,10 @@ if not csrNotSigned:
     
 if not csrNotPresent: 
     comment = "CSR is still present, but already signed."
+    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    
+if not checkRunSucceeded: 
+    comment = "Tests Failed. Please resolve the issues."
     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
         
 if approve:
