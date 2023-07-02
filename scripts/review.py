@@ -24,8 +24,6 @@ csrNotPresent = True
 files = glob.glob(country+"/**/Failure", recursive=True)
 comments = pr["reviews"]
 
-print(comments)
-
 if len(files): 
     approve &= False
     noFailure &= False
