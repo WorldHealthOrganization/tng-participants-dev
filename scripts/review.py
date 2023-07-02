@@ -68,9 +68,11 @@ csrNotPresent = True
 
 files = glob.glob(country+"/**/Failure", recursive=True)
 reviews = pr["reviews"]
-comments = pr["comments"]
 
-print(comments)
+with open("pytest.xml") as f:
+    data = f.read()
+    
+print (data)
 
 if len(files): 
     approve &= False
