@@ -71,6 +71,8 @@ csrNotPresent = True
 files = glob.glob(country+"/**/Failure", recursive=True)
 reviews = pr["reviews"]
 
+change_requested = pr["state"] == "CHANGE_REQUESTED"
+
 if len(files): 
     approve &= False
     noFailure &= False
@@ -89,23 +91,20 @@ if  os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.PEM") and os.path.exists(
     
 if not noFailure:
     comment = "Folder contains Failure files. Please resolve it."
-    if not findComment(comment,reviews):
-     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
     
 if not signedFolderPresent:
     comment = "Signed Folder not present."
-    if not findComment(comment,reviews):
-     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
-    
+    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+
 if not csrNotSigned: 
     comment = "CSR is not signed for UP. Please sign it."
-    if not findComment(comment,reviews):
-     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
     
 if not csrNotPresent: 
     comment = "CSR is still present, but already signed."
-    if not findComment(comment,reviews):
-     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
         
 if approve:
+    comment = "Everything fine."
     os.system("gh pr review "+country+"/onboardingRequest -a -b 'Everything fine.'")
