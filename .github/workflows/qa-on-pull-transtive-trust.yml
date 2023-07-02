@@ -4,9 +4,7 @@
 name: Review Bot
 on:
   pull_request:
-  push:
-    branches:
-      - '*/onboardingRequest'   
+    types: [ opened, synchronize, reopened, edited , review_request_removed]
 jobs:
   transitive-trust-failure-check:
     runs-on: ubuntu-latest
