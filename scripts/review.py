@@ -60,7 +60,11 @@ result = os.popen(prCommand).read()
 
 pr = json.loads(result)
 
-print(pr)
+checksStatus = "gh pr checks "+ os.environ.get("BRANCH")
+
+result = os.popen(checksStatus).read()
+
+print(result)
 
 approve = True
 noFailure = True
