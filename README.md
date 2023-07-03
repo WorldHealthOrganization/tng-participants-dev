@@ -44,5 +44,11 @@ The incoming content needs to be checked for the following rules:
   - One `UP` folder with at least one UP.pem (optionally UP_1.pem, UP_2.pem, ...)
 - Every domain MAY have
   - One SCA folder with at least one SCA.pem (optionally SCA_1.pem, ...)
-  - One ISSUER folder with `DID.list` and/or `JWKS.list`
+  - One ISSUER folder with one ore more `DID.txt` and/or `JWKS.txt` (DID_1.txt,..., JWKS_1.txt)
+## Certificate Checks
 
+The most of the checks following the [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md) which defines the key length and key usage critieras. Additionally there will be more checks in future refering to ICAO, DIVOC, DDCC and other domains.
+
+## Transitive Trust Failure Checks
+
+The review process checks for any failure within the transitive trust.

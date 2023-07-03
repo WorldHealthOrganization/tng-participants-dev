@@ -92,7 +92,7 @@ def pytest_generate_tests(metafunc):
     pem_files = filter_by(pem_files, _country, _PATH_INDEX_COUNTRY )
     pem_files = filter_by(pem_files, config.getoption('domain'), _PATH_INDEX_DOMAIN )
 
-    country_folders = filter_by(country_folders, config.getoption('country'), 1 )
+    country_folders = filter_by(country_folders, _country , 1 )
 
     # Parametrize all tests that have a "cert" parameter with the found cert files
     if "cert" in metafunc.fixturenames:

@@ -1,15 +1,16 @@
 # This workflow will install Python dependencies and run tests 
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: TNG Onboarding QA Certificates
+name: Quality Assurance (Folder Structure)
 on:
   pull_request:    
+    types: [ opened, synchronize, reopened, edited , review_request_removed]
 jobs:
-  qa-check:
+  check-folder-structure:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-
+    if: contains(github.head_ref, 'onboardingRequest')
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 
@@ -28,10 +29,13 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run QA checks
-      env: 
-        COUNTRY:  ${{ vars.ENV_COUNTRY }}
       run: |
-        pytest -vs scripts/tests/test_country_folders.py --country-mode -C ${{ vars.ENV_COUNTRY }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
-
+        pytest -vs scripts/tests/test_country_folders.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action/composite@v2
+      if: always()
+      with:
+        files: |
+          pytest.xml
 
 
