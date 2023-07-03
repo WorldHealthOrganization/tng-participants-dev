@@ -1,11 +1,10 @@
 name: 'Onboarding using terraform'
 on:
+  workflow_dispatch:
+# Special permissions required for OIDC authentication
   push:
     branches:
-      - develop
       - main
-
-# Special permissions required for OIDC authentication
 permissions:
   id-token: write
 # These GitHub environment secrets are used by the terraform azure provider which has been configured using OIDC authentication.
@@ -151,7 +150,7 @@ jobs:
           truncate --size 0 ${CA_BUNDLE_FILE}
           echo "Building CA_BUNDLE_FILE"
           i=1
-          for cert in $(/usr/bin/find . -path **/auth/CA*.pem)
+          for cert in $(/usr/bin/find . -path **/TLS/CA*.pem)
           do
               i=$(($i+1))
               echo "Adding $cert to ${CA_BUNDLE_FILE}"
