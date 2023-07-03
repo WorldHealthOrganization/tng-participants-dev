@@ -2,6 +2,9 @@ name: 'Onboarding using terraform'
 on:
   workflow_dispatch:
 # Special permissions required for OIDC authentication
+  push:
+    branches:
+      - main
 permissions:
   id-token: write
 # These GitHub environment secrets are used by the terraform azure provider which has been configured using OIDC authentication.
