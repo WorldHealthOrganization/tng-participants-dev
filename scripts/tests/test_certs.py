@@ -1,6 +1,5 @@
 '''This is a collection of tests that target certificate files'''
 
-from common import requires_readable_cert
 from valid_pem import test_valid_pem
 from signature_algorithm import test_signature_algorithm
 from key_length import test_key_length
@@ -13,4 +12,5 @@ from validity_range import test_validity_range
 from extended_key_usage import test_extended_key_usages
 from key_usage import test_key_usages
 from basic_constraints import test_basic_constraints
-    
+from tls_pem_without_chain import test_tls_pem_without_chain
+from chain_check import test_if_tls_resolves

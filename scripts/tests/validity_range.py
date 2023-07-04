@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from common import requires_readable_cert
 
 @requires_readable_cert
@@ -10,6 +10,9 @@ def test_validity_range(cert):
     
     if cert.pathinfo.get('group').upper() == 'SCA':
         min_years, max_years = 2, 4
+    elif cert.pathinfo.get('group').upper() == 'TLS' \
+        and cert.pathinfo.get('filename').upper().startswith('CA'):         
+        return 0 # 'CA chain of TLS certs has no validity range restrictions'
     else: 
         min_years, max_years = 1, 2
 

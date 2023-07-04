@@ -15,9 +15,8 @@ The incoming content needs to be checked for the following rules:
 |----|-----------|-----|
 |Valid Folder Structure|<ul><li>[Mandatory files](scripts/tests/folder_mandatory_files.py)</li><li>[Group/Domain folder name](scripts/tests/groups_domains.py)| [Folder structure](#folder-structure) |
 |[Correct PEM](scripts/tests/valid_pem.py) | The certificates will be checked for a correct pem structure|-|
-|TLS.PEM without CA| The TLS.PEM must be without CA Chain|
-|CA.PEM present| The CA.PEM must be present |
-| Chain Check| TLS.PEM + CA.PEM must resolve and verify| 
+|[TLS.pem without CA](scripts/tests/tls_pem_without_chain.py)| The TLS.pem must be without CA Chain|
+|[Chain Check](scripts/tests/chain_check.py)| TLS.PEM + CA.PEM must resolve and verify| 
 |[Key Length](scripts/tests/key_length.py)| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
 |[Algorithm](scripts/tests/signature_algorithm.py)| RSASSA-PSS, ECDSA_P256 or DSA (legacy RSA)|
 |Explicit Parameter| Only allowed in ICAO | 

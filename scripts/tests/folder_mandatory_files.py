@@ -5,6 +5,8 @@ def test_folder_mandatory_files(country_folder):
 
     ofiles = collect_onboarding_files(country_folder)
 
+    assert len(ofiles) >= 1, 'There must be at least one domain'
+
     # Testing folder structure
     for domain in ofiles.keys():
         assert domain in ('DCC','DDCC','DIVOC','ICAO','SHC'), 'Invalid domain: '+domain

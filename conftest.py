@@ -4,8 +4,8 @@ import pytest
 import warnings
 import pycountry
 from glob import glob
-from cryptography import x509
 from functools import lru_cache
+from scripts.tests.common import PemFileWrapper, _PATHINDEX
 
 def pytest_addoption(parser):
     parser.addoption("--country-mode", action="store_true", help="Expect country folders")
@@ -13,10 +13,7 @@ def pytest_addoption(parser):
     parser.addoption("-C", "--country", default=None, help="Filter by country")
     parser.addoption("-D", "--domain", default=None, help="Filter domain (DCC,DDCC,ICAO,...)")
 
-_PATH_INDEX_FILENAME = -1
-_PATH_INDEX_GROUP = -2
-_PATH_INDEX_DOMAIN = -3
-_PATH_INDEX_COUNTRY = -5
+
 
 def _add_country(db, **params):
     '''Add a country to a pycountry database for the duration of this session.
@@ -88,9 +85,9 @@ def pytest_generate_tests(metafunc):
     if _country and '/' in _country:
         _country = _country.split('/')[0]
 
-    pem_files = filter_by(pem_files, config.getoption('group'), _PATH_INDEX_GROUP )
-    pem_files = filter_by(pem_files, _country, _PATH_INDEX_COUNTRY )
-    pem_files = filter_by(pem_files, config.getoption('domain'), _PATH_INDEX_DOMAIN )
+    pem_files = filter_by(pem_files, config.getoption('group'), _PATHINDEX.GROUP )
+    pem_files = filter_by(pem_files, _country, _PATHINDEX.COUNTRY )
+    pem_files = filter_by(pem_files, config.getoption('domain'), _PATHINDEX.DOMAIN )
 
     country_folders = filter_by(country_folders, _country , 1 )
 
@@ -114,40 +111,4 @@ def cert(request):
 def country_folder(request):
     return request.param
 
-
-class PemFileWrapper:
-    file_name = None
-    error = None
-    pathinfo = {}
-    extensions = {}
-    
-    def __init__(self, pem_file):
-        self.file_name = os.path.normpath(pem_file)
-        try: 
-            self.x509 = x509.load_pem_x509_certificate(
-                open(self.file_name,'rb').read()
-            )
-        except Exception as ex: 
-            self.error = ex
-            self.x509 = None
-
-        try:
-            self.extensions = {}
-            for ex in self.x509.extensions:
-                self.extensions[ ex.oid.dotted_string ] = ex 
-                if not ex.oid._name == 'Unknown OID':
-                    self.extensions[ ex.oid._name ] = ex
-        except:
-            pass # Could not load extensions
-
-
-        try: 
-            self.pathinfo = {}
-            path = self.file_name.split(os.sep)
-            self.pathinfo['filename'] = path[-1] # CA.pem, TLS.pem, UP.pem ...
-            self.pathinfo['group'] = path[-2] # up, csca, auth
-            self.pathinfo['domain'] = path[-3] # DCC, DIVOC, SHC
-            self.pathinfo['country'] = path[-5] # GER, BEL, FIN ...
-        except:
-            pass
 
