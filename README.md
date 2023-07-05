@@ -44,6 +44,7 @@ The incoming content needs to be checked for the following rules:
 |[Key Length](scripts/tests/key_length.py)| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
 |[Algorithm](scripts/tests/signature_algorithm.py)| RSASSA-PSS, ECDSA_P256 or DSA (legacy RSA)|
 |Explicit Parameter| Only allowed in ICAO |
+|Debian Weak Keys| Key must not match Debian Weak Keys | Shall ensure that nobody uses the old Open SSL Lib from Debian |
 
 ## Transitive Trust Failure Checks
 
