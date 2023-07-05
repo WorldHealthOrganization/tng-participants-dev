@@ -4,6 +4,7 @@ from common import _PATHINDEX
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric.dsa import DSAPublicKey
 from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import hashes
 
 def test_if_tls_resolves(country_folder):
     '''For every domain in the country_folder:
@@ -40,14 +41,14 @@ def test_if_tls_resolves(country_folder):
                         ca_cert.x509.public_key().verify(
                             cert.x509.signature,
                             cert.x509.tbs_certificate_bytes,
-                            padding.PKCS1v15(),
+                            cert.x509.signature_hash_algorithm
                         )
                     else:
                         ca_cert.x509.public_key().verify(
                             cert.x509.signature,
                             cert.x509.tbs_certificate_bytes,
                             padding.PKCS1v15(),
-                            cert.x509.signature_hash_algorithm                        
+                            cert.x509.signature_hash_algorithm
                         )
                     verified = True
                     print(f'{cert.pathinfo["filename"]}:{cert.index} verified by {ca_cert.pathinfo["filename"]}:{ca_cert.index}')
