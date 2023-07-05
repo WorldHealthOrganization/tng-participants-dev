@@ -15,7 +15,7 @@ The incoming content needs to be checked for the following rules:
 ## Common Checks
 |Checks|Description|Further info| Reference|
 |----|-----------|-----| ---|
-|Valid Folder Structure|<ul><li>[Mandatory files](scripts/tests/folder_mandatory_files.py)</li><li>[Group/Domain folder name](scripts/tests/groups_domains.py)| - | [Folder structure](#folder-structure)|
+|Valid Folder Structure|<ul><li>[Mandatory files](scripts/tests/folder_mandatory_files.py)</li><li>[Group/Domain folder name](scripts/tests/groups_domains.py)| - | [Reference](#folder-structure)|
 | Certificates Unique| | Certificates must be present only in one of the onboarding repositories|
 
 
@@ -30,15 +30,15 @@ The incoming content needs to be checked for the following rules:
 
 |Checks|Description|Further info| Reference|
 |----|-----------|-----|---|
-|[Correct PEM](scripts/tests/valid_pem.py) | The certificates will be checked for a correct pem structure|-|
-|[TLS.pem without CA](scripts/tests/tls_pem_without_chain.py)| The TLS.pem must be without CA Chain|
-|[Chain Check](scripts/tests/chain_check.py)| TLS.PEM + CA.PEM must resolve and verify| 
-|[Validity](scripts/tests/validity.py)| Certs must be valid for at least 30 days from today |
-|[Validity Range](scripts/tests/validity_range.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
-|[Key Usages](scripts/tests/key_usage.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
-|[Extended Key Usages](scripts/tests/extended_key_usage.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
-|[Basic constraints](scripts/tests/basic_constraints.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
-|[Subject](scripts/tests/subject_format.py)| Country attribute must be set in subject |
+|[Correct PEM](scripts/tests/valid_pem.py) | The certificates will be checked for a correct pem structure| | [Reference](#correct-pem)|
+|[TLS.pem without CA](scripts/tests/tls_pem_without_chain.py)| The TLS.pem must be without CA Chain|| [Reference](#tlspem-without-ca)|
+|[Chain Check](scripts/tests/chain_check.py)| TLS.PEM + CA.PEM must resolve and verify| | [Reference](#chain-check)|
+|[Validity](scripts/tests/validity.py)| Certs must be valid for at least 30 days from today || [Reference](#validity)|
+|[Validity Range](scripts/tests/validity_range.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md) | [Reference](#validity-range)|
+|[Key Usages](scripts/tests/key_usage.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)| [Reference](#key-usages)|
+|[Extended Key Usages](scripts/tests/extended_key_usage.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)| [Reference](#extended-key-usages)|
+|[Basic constraints](scripts/tests/basic_constraints.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)| [Reference](#basic-constraints)|
+|[Subject](scripts/tests/subject_format.py)| Country attribute must be set in subject | | [Reference](#subject)|
 
 ## Cryptographic Checks
 |Checks|Description|Further info|Reference|
@@ -87,6 +87,19 @@ The incoming content needs to be checked for the following rules:
 ## Certificate Checks
 
 The most of the checks following the [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md) which defines the key length and key usage critieras. Additionally there will be more checks in future refering to ICAO, DIVOC, DDCC and other domains.
+
+### Correct PEM
+
+
+### TLS.pem without CA
+
+### Chain Check
+### Validity
+### Validity Range
+### Key Usages
+### Extended Key Usages
+### Basic constraints
+### Subject
 
 ## Cryptographic Checks
 
