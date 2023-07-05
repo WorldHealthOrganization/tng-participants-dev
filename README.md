@@ -13,26 +13,26 @@ The incoming content needs to be checked for the following rules:
 ## Common Checks
 |Checks|Description|Further info|
 |----|-----------|-----|
-|Valid Folder Structure|Checks if the folder structure is valid and all required files are there.| [Folder structure](#folder-structure) |
-|Valid PEM | The certificates will be checked for a valid pem structure|-|
-|TLS.PEM without CA| The TLS.PEM must be without CA Chain|
-|CA.PEM present| The CA.PEM must be present |
-| Chain Check| TLS.PEM + CA.PEM must resolve and verify| 
-|Key Length| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
-|Algorithm| RSASSA-PSS, ECDSA_P256 or DSA (legacy RSA)|
+|Valid Folder Structure|<ul><li>[Mandatory files](scripts/tests/folder_mandatory_files.py)</li><li>[Group/Domain folder name](scripts/tests/groups_domains.py)| [Folder structure](#folder-structure) |
+|[Correct PEM](scripts/tests/valid_pem.py) | The certificates will be checked for a correct pem structure|-|
+|[TLS.pem without CA](scripts/tests/tls_pem_without_chain.py)| The TLS.pem must be without CA Chain|
+|[Chain Check](scripts/tests/chain_check.py)| TLS.PEM + CA.PEM must resolve and verify| 
+|[Key Length](scripts/tests/key_length.py)| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
+|[Algorithm](scripts/tests/signature_algorithm.py)| RSASSA-PSS, ECDSA_P256 or DSA (legacy RSA)|
 |Explicit Parameter| Only allowed in ICAO | 
-|Validity Range| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
-|Key Usages| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
-|Basic constraints| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
-|Valid domain| Domain in path name must be one of DCC DDCC DIVOC ICAO SHC|
-|Country attribute| Country attribute must be set in subject |
+|[Validity](scripts/tests/validity.py)| Certs must be valid for at least 30 days from today |
+|[Validity Range](scripts/tests/validity_range.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
+|[Key Usages](scripts/tests/key_usage.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
+|[Extended Key Usages](scripts/tests/extended_key_usage.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
+|[Basic constraints](scripts/tests/basic_constraints.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
+|[Subject](scripts/tests/subject_format.py)| Country attribute must be set in subject |
 
 ## Country specific checks
 
 |Checks|Description|Further info|
 |----|-----------|-----|
-|Country attribute| The country flag (C value) must be set to the correct country code | Must match folder name after bot pull
-|Oversea Territory OU | Some overseas territories require special values in their OU attribute|
+|[Country attribute](scripts/tests/country_flag.py)| The country flag (C value) must be set to the correct country code | Must match folder name after bot pull
+|[Oversea Territory OU](scripts/tests/oversea_territory.py) | Some overseas territories require special values in their OU attribute|
 
 # QA-Rules
 ## Folder structure
