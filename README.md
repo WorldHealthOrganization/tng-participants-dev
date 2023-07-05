@@ -8,6 +8,8 @@ To be part of the Smart Trust Network, copy/fork at first the [template reposito
 
 # QA Checks
 
+Due quality reasons the incoming content will be checked for certain quality critieras. This ensures that all certificates are following the rules defined in the Smart Trust governance documents.
+
 The incoming content needs to be checked for the following rules:
 
 ## Common Checks
@@ -46,10 +48,28 @@ The incoming content needs to be checked for the following rules:
 |Explicit Parameter| Only allowed in ICAO |
 |Debian Weak Keys| Key must not match Debian Weak Keys | Shall ensure that nobody uses the old Open SSL Lib from Debian |
 
+## DID Checks
+
+|Checks|Description|Further info|Reference|
+|----|-----------|-----|---|
+| DID Resolvable| DID must be resolvable over the Universal Verifier||
+| DID Web Domain Linkage| The DID Web domain must contain an DID Configuration||
+| JWK Key| Keys must be in JWK format. Public Key Base is not allowed|| 
+| Verification Method Present|At least one Verification Method must be present||
+| Key Unique Check| Verification Methods shall not contain the same Public Key||
+| No Private JWK | JWK shall not contain private Information||
+
+## JWKS Checks
+
 ## Transitive Trust Failure Checks
 
 |Checks|Description|Further info|Reference|
 |----|-----------|-----|---|
+|JWKS Resolvable| JWKS is resolvable||
+| JWKS URI Secure | JWKS URI must have and validated Domain||
+| Valid JWKS Format| JWKS format must be valid||
+| Key Unique Check| Verification Methods shall not contain the same Public Key||
+| No Private JWK | JWK shall not contain private Information||
 
 # QA-Rules Explained
 ## Common Checks
