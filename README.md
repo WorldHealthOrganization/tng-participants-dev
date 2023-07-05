@@ -11,15 +11,26 @@ To be part of the Smart Trust Network, copy/fork at first the [template reposito
 The incoming content needs to be checked for the following rules:
 
 ## Common Checks
-|Checks|Description|Further info|
-|----|-----------|-----|
-|Valid Folder Structure|<ul><li>[Mandatory files](scripts/tests/folder_mandatory_files.py)</li><li>[Group/Domain folder name](scripts/tests/groups_domains.py)| [Folder structure](#folder-structure) |
+|Checks|Description|Further info| Reference|
+|----|-----------|-----| ---|
+|Valid Folder Structure|<ul><li>[Mandatory files](scripts/tests/folder_mandatory_files.py)</li><li>[Group/Domain folder name](scripts/tests/groups_domains.py)| - | [Folder structure](#folder-structure)|
+| Certificates Unique| | Certificates must be present only in one of the onboarding repositories|
+
+
+## Country specific checks
+
+|Checks|Description|Further info| Reference|
+|----|-----------|-----|--- |
+|[Country attribute](scripts/tests/country_flag.py)| The country flag (C value) must be set to the correct country code | Must match folder name after bot pull
+|[Oversea Territory OU](scripts/tests/oversea_territory.py) | Some overseas territories require special values in their OU attribute|
+
+## Certificate Checks
+
+|Checks|Description|Further info| Reference|
+|----|-----------|-----|---|
 |[Correct PEM](scripts/tests/valid_pem.py) | The certificates will be checked for a correct pem structure|-|
 |[TLS.pem without CA](scripts/tests/tls_pem_without_chain.py)| The TLS.pem must be without CA Chain|
 |[Chain Check](scripts/tests/chain_check.py)| TLS.PEM + CA.PEM must resolve and verify| 
-|[Key Length](scripts/tests/key_length.py)| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
-|[Algorithm](scripts/tests/signature_algorithm.py)| RSASSA-PSS, ECDSA_P256 or DSA (legacy RSA)|
-|Explicit Parameter| Only allowed in ICAO | 
 |[Validity](scripts/tests/validity.py)| Certs must be valid for at least 30 days from today |
 |[Validity Range](scripts/tests/validity_range.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
 |[Key Usages](scripts/tests/key_usage.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
@@ -27,15 +38,22 @@ The incoming content needs to be checked for the following rules:
 |[Basic constraints](scripts/tests/basic_constraints.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
 |[Subject](scripts/tests/subject_format.py)| Country attribute must be set in subject |
 
-## Country specific checks
+## Cryptographic Checks
+|Checks|Description|Further info|Reference|
+|----|-----------|-----|---|
+|[Key Length](scripts/tests/key_length.py)| The key length should be for RSA-PSS minimum 3072, and for EC-DSA 256 bit|
+|[Algorithm](scripts/tests/signature_algorithm.py)| RSASSA-PSS, ECDSA_P256 or DSA (legacy RSA)|
+|Explicit Parameter| Only allowed in ICAO |
 
-|Checks|Description|Further info|
-|----|-----------|-----|
-|[Country attribute](scripts/tests/country_flag.py)| The country flag (C value) must be set to the correct country code | Must match folder name after bot pull
-|[Oversea Territory OU](scripts/tests/oversea_territory.py) | Some overseas territories require special values in their OU attribute|
+## Transitive Trust Failure Checks
 
-# QA-Rules
-## Folder structure
+|Checks|Description|Further info|Reference|
+|----|-----------|-----|---|
+
+# QA-Rules Explained
+## Common Checks
+### Folder structure
+
 - Under the onboarding folder, there must be exactly one folder for each domain that is to be onboarded 
   - See above for list of valid domains
 - Every domain MUST have 
@@ -44,9 +62,12 @@ The incoming content needs to be checked for the following rules:
 - Every domain MAY have
   - One SCA folder with at least one SCA.pem (optionally SCA_1.pem, ...)
   - One ISSUER folder with one ore more `DID.txt` and/or `JWKS.txt` (DID_1.txt,..., JWKS_1.txt)
+
 ## Certificate Checks
 
 The most of the checks following the [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md) which defines the key length and key usage critieras. Additionally there will be more checks in future refering to ICAO, DIVOC, DDCC and other domains.
+
+## Cryptographic Checks
 
 ## Transitive Trust Failure Checks
 
