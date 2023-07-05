@@ -4,7 +4,13 @@ This repository contains the current onboarded key material in DEV environment f
 
 # Procedure
 
-To be part of the Smart Trust Network, copy/fork at first the [template repository](https://github.com/WorldHealthOrganization/tng-participant-template) and send an onboarding/participation request to tng-support@who.int. After verification of your request your repository will be linked with this one and your onboarding informations are replicated to the environment.
+To be part of the Smart Trust Network, copy/fork at first the [template repository](https://github.com/WorldHealthOrganization/tng-participant-template) and send an [onboarding/participation request](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_onboarding.md) to tng-support@who.int After verification of your request your repository will be linked with this one and your onboarding informations are replicated to the environment.
+
+For creating new certificates for test/uat, follow the helper guidelines [here](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_CertificatePreperation.md).
+
+More information about DID usage can you find [here](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_did.md).
+
+A checklist is prepared [here](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_onboarding_checklist.md).
 
 # QA Checks
 
