@@ -22,7 +22,7 @@ The incoming content needs to be checked for the following rules:
 |Checks|Description|Further info| Reference|
 |----|-----------|-----| ---|
 |Valid Folder Structure|<ul><li>[Mandatory files](scripts/tests/folder_mandatory_files.py)</li><li>[Group/Domain folder name](scripts/tests/groups_domains.py)| - | [Reference](#folder-structure)|
-| Certificates Unique| | Certificates must be present only in one of the onboarding repositories|
+| Certificates Unique| | Certificates must be present only in one of the onboarding repositories/environments. This ensures that the same keypair cannot be onboarded (1)  to `DEV`, `UAT` and `PROD` environments, (2) by multiple parties and (3) multiple times n the same environment by the same party |
 
 
 ## Country specific checks
