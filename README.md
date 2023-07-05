@@ -8,7 +8,7 @@ To be part of the Smart Trust Network, copy/fork at first the [template reposito
 
 # QA Checks
 
-Due quality reasons the incoming content will be checked for certain quality critieras. This ensures that all certificates are following the rules defined in the Smart Trust governance documents.
+Due quality reasons the incoming content will be checked for certain quality critieras. This ensures that all certificates are following the rules defined in the [Smart Trust Certificate Governance document](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
 
 The incoming content needs to be checked for the following rules:
 
