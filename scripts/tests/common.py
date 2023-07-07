@@ -14,7 +14,7 @@ def requires_readable_cert(func):
     return wrapper
 
 @functools.lru_cache(maxsize=128)
-def collect_onboarding_files(country_folder):
+def collect_onboarding_files(country_folder, convert_upper=False):
     '''  Create a dict of tuples for all found files:
          The key is the domain (DCC, ICAO, etc.)
          Each tuple contains the path starting from the domain folder, 
@@ -24,7 +24,10 @@ def collect_onboarding_files(country_folder):
     onboardings = {}
     for path, dirs, files in os.walk(country_folder):
         for file in files: 
-            long_path = tuple(os.path.join(path, file).split(os.sep)[offset:])
+            fpath = os.path.join(path, file)
+            if convert_upper:
+                fpath = fpath.upper()
+            long_path = tuple(fpath.split(os.sep)[offset:])
             # If we're not scanning country folders but directly an onboarding folder
             if country_folder==f'.{os.sep}onboarding':
                 long_path = ('onboarding',)+long_path
@@ -32,6 +35,9 @@ def collect_onboarding_files(country_folder):
             # Ignore other folders than 'onboarding'
             if long_path[0].lower() == 'onboarding':
                 domain = long_path[1]
+                if domain.startswith('.'):
+                    continue # Allow folders like .git, files like .gitignore, etc. to be 
+                             # present without being seen as onboarding files
                 if not domain in onboardings:
                     onboardings[domain] = []
                 onboardings[domain].append(long_path[2:])
