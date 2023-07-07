@@ -8,7 +8,7 @@ cd transit
 cd $ENV
 mkdir signing 
 cd signing     
-echo "$NB_UP_SIGNING_PUB}" > pub-key.pem
+echo "$NB_UP_SIGNING_PUB" > pub-key.pem
 echo "$NB_UP_SIGNING_KEY" > priv-key.pem
 cd .. 
 cd ..
