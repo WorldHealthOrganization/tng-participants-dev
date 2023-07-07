@@ -1,7 +1,8 @@
 from datetime import timedelta
-from common import requires_readable_cert
+from common import requires_readable_cert, warn_in_sync_mode
 
 @requires_readable_cert
+@warn_in_sync_mode
 def test_validity_range(cert):    
     '''SCA must be valid for at least 2 years and at most 4 years,
        UP, TLS must be valid for at least 1 year and at most 2 years
@@ -12,7 +13,7 @@ def test_validity_range(cert):
         min_years, max_years = 2, 4
     elif cert.pathinfo.get('group').upper() == 'TLS' \
         and cert.pathinfo.get('filename').upper().startswith('CA'):         
-        return 0 # 'CA chain of TLS certs has no validity range restrictions'
+        return None # 'CA chain of TLS certs has no validity range restrictions'
     else: 
         min_years, max_years = 1, 2
 

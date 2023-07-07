@@ -1,8 +1,9 @@
-from common import requires_readable_cert
+from common import requires_readable_cert, warn_in_sync_mode
 import pytest
 from cryptography import x509
 
 @requires_readable_cert
+@warn_in_sync_mode
 def test_extended_key_usages(cert):
     """Extended key usage for TLS and UP certs must be set"""
     if cert.pathinfo.get('group').upper() == 'SCA'\

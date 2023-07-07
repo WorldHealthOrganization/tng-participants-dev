@@ -1,5 +1,6 @@
-from common import requires_readable_cert
+from common import requires_readable_cert, warn_in_sync_mode
 
+@warn_in_sync_mode
 @requires_readable_cert
 def test_basic_constraints(cert):
     '''Only CA and SCA certs may have a CA:TRUE constraint'''
