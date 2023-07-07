@@ -38,7 +38,7 @@ The incoming content needs to be checked for the following rules:
 |----|-----------|-----|---|
 |[Correct PEM](scripts/tests/valid_pem.py) | The certificates will be checked for a correct pem structure| | [Reference](#correct-pem)|
 |[TLS.pem without CA](scripts/tests/tls_pem_without_chain.py)| The TLS.pem must be without CA Chain|| [Reference](#tlspem-without-ca)|
-|[Chain Check](scripts/tests/chain_check.py)| TLS.PEM + CA.PEM must resolve and verify| | [Reference](#chain-check)|
+|[Chain Check](scripts/tests/chain_check.py)| TLS.pem + CA.pem must resolve and verify| | [Reference](#chain-check)|
 |[Validity](scripts/tests/validity.py)| Certs must be valid for at least 30 days from today || [Reference](#validity)|
 |[Validity Range](scripts/tests/validity_range.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md) | [Reference](#validity-range)|
 |[Key Usages](scripts/tests/key_usage.py)| Rules according to certificate Governance | [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)| [Reference](#key-usages)|
