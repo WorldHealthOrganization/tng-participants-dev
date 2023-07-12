@@ -67,8 +67,6 @@ The incoming content needs to be checked for the following rules:
 
 ## JWKS Checks
 
-## Transitive Trust Failure Checks
-
 |Checks|Description|Further info|Reference|
 |----|-----------|-----|---|
 |JWKS Resolvable| JWKS is resolvable||
@@ -76,6 +74,8 @@ The incoming content needs to be checked for the following rules:
 | Valid JWKS Format| JWKS format must be valid||
 | Key Unique Check| Verification Methods shall not contain the same Public Key||
 | No Private JWK | JWK shall not contain private Information||
+
+## Transitive Trust Failure Checks
 
 # QA-Rules Explained
 ## Common Checks
@@ -96,10 +96,16 @@ Most of the checks following the [Certificate Covernance](https://github.com/Wor
 
 ### Correct PEM
 
+The `.pem` file MUST contain a valid X509 structure in PEM encoding according to [RFC 7468](https://www.rfc-editor.org/rfc/rfc7468). This includes an proper BEGIN and END header. 
 
 ### TLS.pem without CA
 
+The `TLS` certificate is checked for the non existence of intermediate and root certificates, because this one are considered for the `CA.pem`files.
+
 ### Chain Check
+
+The combination of `TLS.pem` + `CA.pem` is checked for a valid chain to ensure the cryptographic correctness.
+
 ### Validity
 ### Validity Range
 ### Key Usages
