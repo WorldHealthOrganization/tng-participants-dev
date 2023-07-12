@@ -113,14 +113,14 @@ The combination of `TLS.pem` + `CA.pem` is checked for a valid chain to ensure t
 
 The extended key usage OIDs are checked for the correct OIDs. Which are in the current state defined by this table: 
 
-|Field|Value|Description|
-|-----|-----|-----------|
-|extendedKeyUsage|1.3.6.1.4.1.1847.2021.1.1|For Test Issuers|
-|extendedKeyUsage|1.3.6.1.4.1.1847.2021.1.2|For Vaccination Issuers|
-|extendedKeyUsage|1.3.6.1.4.1.1847.2021.1.3|For Recovery Issuers|
-|extendedKeyUsage|1.3.6.1.4.1.1847.2022.1.20|For raw keys of DIVOC|
-|extendedKeyUsage|1.3.6.1.4.1.1847.2022.1.21|For raw key of SHC|
-|extendedKeyUsage|1.3.6.1.4.1.1847.2022.1.22|For raw keys in DCCs (calculate kid on Public Key only)|
+|OID|Description|
+|-----|-----------|
+|1.3.6.1.4.1.1847.2021.1.1|For Test Issuers|
+|1.3.6.1.4.1.1847.2021.1.2|For Vaccination Issuers|
+|1.3.6.1.4.1.1847.2021.1.3|For Recovery Issuers|
+|1.3.6.1.4.1.1847.2022.1.20|For raw keys of DIVOC|
+|1.3.6.1.4.1.1847.2022.1.21|For raw key of SHC|
+|1.3.6.1.4.1.1847.2022.1.22|For raw keys in DCCs (calculate kid on Public Key only - UK Format )|
 
 
 ### Basic constraints
