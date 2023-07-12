@@ -27,6 +27,7 @@ DIRNAME=/usr/bin/dirname
 
 
 CASDIR=$1
+COUNTRY=$2
 if [[ ! -d $CASDIR ]]; then
     echo "Usage: ${BASH_SOURCE[0]} /path/to/private/key/directory"
     echo "       Missing first parameter is path to directory containing private keys"
@@ -79,6 +80,9 @@ do
     ISO3=$($BASENAME "$DIR")
     if [[ "${ISO3}" == "WHO" ]]; then continue; fi #Skip WHO keys
     echo "Processing Folder: ${ISO3}"
+
+    if [[ ! -z $COUNTRY && $COUNTRY != $DIR ]]; then continue; fi # skip countries 
+    
     for KEYDIR in $DIR/*
     do
 	if [[ ! -d $KEYDIR || -L $KEYDIR ]]; then continue; fi #not a directory 
