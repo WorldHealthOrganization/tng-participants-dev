@@ -210,7 +210,7 @@ do
 		echo -n '"certificateThumbprint": "' >>  $SIGNEDTXTPATH
 		echo -n  `openssl x509 -in ${SIGNEDCERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g' ` >>  $SIGNEDTXTPATH
 		echo '",' >>  $SIGNEDTXTPATH
-		echo -n '"certificateCountry": "'$COUNTRYNAME \
+		echo -n '"country": "'$COUNTRYNAME \
 			     >>  $SIGNEDTXTPATH
 		echo '"' >>  $SIGNEDTXTPATH
 		echo -n '}' >>  $SIGNEDTXTPATH
