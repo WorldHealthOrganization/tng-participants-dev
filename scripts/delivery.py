@@ -76,8 +76,14 @@ if __name__=='__main__':
                                 raise Exception("Onboarding Request failed.")
                         except Exception as Error:
                             os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
-                        
-                        ######### Create PR 
+
+
+                    ######### Try to sign it
+
+                    if "SIGN_TA_KEY" in doc:      
+                        os.system("./scripts/sign-json.sh ./sign " +country.alpha_3)
+               
+                    ######### Create PR 
                     os.system("./scripts/createPR.sh "+country.alpha_3)
                 
                     os.system("git checkout main > /dev/null 2>&1")
