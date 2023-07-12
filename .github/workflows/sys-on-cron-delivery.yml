@@ -43,8 +43,8 @@ jobs:
           SIGN_TA_PEM: ${{secrets.SIGN_TA_PEM}}
           SIGN_OPEN_SSL_CONF: ${{secrets.SIGN_OPEN_SSL_CONF}}   
         run: |
-          mkdir sign/cas/TA/certs
-          mkdir sign/cas/TA/private
+          mkdir -p sign/cas/TA/certs
+          mkdir -p sign/cas/TA/private
           echo $SIGN_OPEN_SSL_CONF | base64 --decode > sign/cas/TA/openssl.conf
           echo $SIGN_TA_PEM > sign/cas/TA/certs/TNG_TA.pem
           echo $SIGN_TA_KEY > sign/cas/TA/private/TNG_TA.key.pem
