@@ -111,7 +111,7 @@ The combination of `TLS.pem` + `CA.pem` is checked for a valid chain to ensure t
 ### Key Usages
 ### Extended Key Usages
 
-The extended key usage OIDs are checked for the correct OIDs. Which are in the current state defined by this table: 
+The extended key usage OIDs are checked for the correct OIDs. This OIDs are mainly considered to identify keys for the correct domain and limit them to a special purpose. The current OIDS are currently defined and checked: 
 
 |OID|Description|
 |-----|-----------|
@@ -121,7 +121,8 @@ The extended key usage OIDs are checked for the correct OIDs. Which are in the c
 |1.3.6.1.4.1.1847.2022.1.20|For raw keys of DIVOC|
 |1.3.6.1.4.1.1847.2022.1.21|For raw key of SHC|
 |1.3.6.1.4.1.1847.2022.1.22|For raw keys in DCCs (calculate kid on Public Key only - UK Format )|
-
+|1.3.6.1.4.1.1847.2022.1.23|For raw keys of ICAO| 
+|1.3.6.1.4.1.1847.2022.1.24|For raw keys of DCC| 
 
 ### Basic constraints
 ### Subject
