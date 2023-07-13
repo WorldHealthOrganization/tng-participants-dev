@@ -131,4 +131,4 @@ The extended key usage OIDs are checked for the correct OIDs. This OIDs are main
 
 ## Transitive Trust Failure Checks
 
-The review process checks for any failure within the transitive trust.
+The review process checks for any failure within the transitive trust. If there is no `CA.pem` or any intermediate extractable a failure file is generated. This is mostly the case when an internal CA is used, and the issuer url is not resolvable.
