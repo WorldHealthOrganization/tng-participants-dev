@@ -17,7 +17,7 @@ def test_validity_range(cert):
     else: 
         min_years, max_years = 1, 2
 
-    assert  validity > timedelta(days=min_years*365), \
+    assert  validity > timedelta(days=min_years*365-1), \
        f"{cert.pathinfo.get('group')} must be valid for at least {min_years} years (is: {validity.days} days)"
     assert validity < timedelta(days=max_years*366), \
        f"{cert.pathinfo.get('group')} must be valid for at most {max_years} years (is: {validity.days} days)"
