@@ -1,5 +1,6 @@
 # This is a workflow to support automated signing with TNG Trust Anchor for DEV and UAT environments.
 
+name: Sign certificates with TNG Trust Anchor (DEV/UAT)
 on:
   workflow_dispatch: #manual trigger
     inputs:
