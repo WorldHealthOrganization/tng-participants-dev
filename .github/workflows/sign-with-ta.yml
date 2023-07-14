@@ -37,6 +37,7 @@ jobs:
       - name: Sign
         run: |
           mkdir -p ./cas/TA/private
+          mkdir -p ./cas/TA/certs
           cp ./scripts/signing/openssl.conf ./cas/TA/openssl.conf
           echo "${{env.TNG_TA_PRIVATE_KEY}}" > ./cas/TA/private/TNG_TA.key.pem
           echo "${{env.TNG_TA_CA}}" > ./cas/TA/certs/TNG_TA.pem
