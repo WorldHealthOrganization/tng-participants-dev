@@ -12,6 +12,10 @@ on:
         description: 'Country to run the singing for'
         type: string
         required: false
+      dry_run:
+        description: 'Run workflow without pushing to GitHub'
+        type: boolean
+        required: false
 
 permissions:
   id-token: write
@@ -47,6 +51,7 @@ jobs:
           rm -rf ./cas
 
       - name: push changes
+        if: ${{ !inputs.dry_run }}
         run: |
             git config --global user.name 'tng-bot-dev'
             git config --global user.email '$BOT_EMAIL'
