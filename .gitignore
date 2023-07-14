@@ -49,3 +49,6 @@ coverage.xml
 transit
 repo
 temp
+
+# ignorre keys
+*.key*
