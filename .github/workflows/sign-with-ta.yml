@@ -36,7 +36,7 @@ jobs:
 
       - name: Sign
         run: |
-          mkdir ./cas/TA/private
+          mkdir -p ./cas/TA/private
           cp ./scripts/signing/openssl.conf ./cas/TA/openssl.conf
           echo "${{env.TNG_TA_PRIVATE_KEY}}" > ./cas/TA/private/TNG_TA.key.pem
           ./scripts/signing/sign-json.sh ./ ${{ inputs.country_alpha3 }}
