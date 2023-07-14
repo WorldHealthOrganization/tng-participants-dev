@@ -1,0 +1,42 @@
+# This is a workflow to support automated signing with TNG Trust Anchor for DEV and UAT environments.
+
+name: Sign certificates with TNG Trust Anchor (DEV/UAT)
+on:
+  workflow_dispatch: #manual trigger
+    inputs:
+      environment:
+        description: 'Environment to run the deployment against'
+        type: environment
+        required: true
+      country_alpha3:
+        description: 'Country to run the singing for'
+        type: string
+        required: false
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+env:
+  TNG_TA_PRIVATE_KEY: ${{secrets.BOT_EMAIL_GITHUB}}
+
+
+jobs:
+  tng_ta_sign:
+    name: 'TNG TA Sign for DEV and UAT'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Sign
+        run: |
+          mkdir -p ./cas/TA/private
+          cp ./scripts/signing/openssl.conf ./cas/TA/openssl.conf
+          echo "${{env.TNG_TA_PRIVATE_KEY}}" > ./cas/TA/private/TNG_TA.key.pem
+          ./scripts/signing/sign-json.sh ./ ${{ inputs.country_alpha3 }}
