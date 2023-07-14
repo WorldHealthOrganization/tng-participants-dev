@@ -24,9 +24,9 @@ DIRNAME=/usr/bin/dirname
 # Certificate Thumbprint:
 # Certificate Country: 
 
-
-CASDIR=$1
-COUNTRY=$2
+ROOT=$1
+CASDIR=$2
+COUNTRY=$3
 if [[ ! -d $CASDIR ]]; then
     echo "Usage: ${BASH_SOURCE[0]} /path/to/private/key/directory"
     echo "       Missing first parameter is path to directory containing private keys"
@@ -71,7 +71,7 @@ declare -A DIRTOUSAGE=(
 
 
 
-ROOT=$($REALPATH $(dirname $(dirname ${BASH_SOURCE[0]})))
+# ROOT=$($REALPATH $(dirname $(dirname ${BASH_SOURCE[0]})))
 echo "Examining contents of $ROOT";
 for DIR in $ROOT/*
 do
