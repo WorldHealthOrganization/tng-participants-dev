@@ -47,7 +47,7 @@ jobs:
           cp ./scripts/signing/openssl.conf ./cas/TA/openssl.conf
           echo "${{env.TNG_TA_PRIVATE_KEY}}" > ./cas/TA/private/TNG_TA.key.pem
           echo "${{env.TNG_TA_CA}}" > ./cas/TA/certs/TNG_TA.pem
-          ./scripts/signing/sign-json.sh ./ ${{inputs.country_alpha3}}
+          ./scripts/signing/sign-json.sh ./ $PWD/${{inputs.country_alpha3}}
           rm -rf ./cas
 
       - name: push changes
