@@ -39,8 +39,8 @@ jobs:
       - name: Prepare Signing
         id: Signing
         env: 
-          SIGN_TA_KEY: ${{secrets.SIGN_TA_KEY}}
-          SIGN_TA_PEM: ${{secrets.SIGN_TA_PEM}}
+          SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
+          SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
           SIGN_OPEN_SSL_CONF: ${{secrets.SIGN_OPEN_SSL_CONF}}   
         run: |
           mkdir -p sign/cas/TA/certs
