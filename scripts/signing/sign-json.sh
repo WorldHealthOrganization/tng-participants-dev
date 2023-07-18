@@ -24,9 +24,8 @@ DIRNAME=/usr/bin/dirname
 # Certificate Thumbprint:
 # Certificate Country: 
 
-ROOT=$1
-CASDIR=$2
-COUNTRY=$3
+CASDIR=$1
+COUNTRY=$2
 if [[ ! -d $CASDIR ]]; then
     echo "Usage: ${BASH_SOURCE[0]} /path/to/private/key/directory"
     echo "       Missing first parameter is path to directory containing private keys"
@@ -71,7 +70,7 @@ declare -A DIRTOUSAGE=(
 
 
 
-# ROOT=$($REALPATH $(dirname $(dirname ${BASH_SOURCE[0]})))
+ROOT=$($REALPATH $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))
 echo "Examining contents of $ROOT";
 for DIR in $ROOT/*
 do
@@ -125,9 +124,10 @@ do
 		for CERTPATH in $USAGEDIR/*.pem
 		do
 		    CERT=$($BASENAME "${CERTPATH}")
+			CERTPATHCOMP=$($DIRNAME "${CERTPATH}")
 		    SIGNEDCERT=signed.$CERT
 		    CSR=$CERT.csr
-		    SIGNEDTXT=TNG_$USAGE.signed.${CERT%.pem}.txt
+		    SIGNEDTXT=TNG_$USAGE.signed.${CERT%.pem}.json
 		    SIGNEDCERTPATH=$SIGNEDDIR/$SIGNEDCERT
 		    SIGNEDTXTPATH=$SIGNEDDIR/$SIGNEDTXT
 		    CSRPATH=$SIGNEDDIR/$CSR
@@ -164,13 +164,19 @@ do
 			echo -n `openssl x509 -in ${CERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g' ` \
 			     >>  $SIGNEDTXTPATH
 			echo '",' >>  $SIGNEDTXTPATH
-			echo -n '"certificateCountry": "'$COUNTRYNAME \
+			echo -n '"country": "'$COUNTRYNAME \
 			     >>  $SIGNEDTXTPATH
 			echo '"' >>  $SIGNEDTXTPATH
 			echo -n '}' >>  $SIGNEDTXTPATH
+			# cleanup
 		    else 
 			echo "           Skipping Text Output"
 		    fi
+			# clean up temporary data
+			for delTMP in ${CERTPATHCOMP}/signed/*.der ${CERTPATHCOMP}/signed/*.csr ${CERTPATHCOMP}/*.csr ; do
+				echo cleaning up... $delTMP
+				rm -rf $delTMP
+		 	done
 		done
 	for CERTPATH in $USAGEDIR/UP_SYNC.csr
 		do
@@ -216,9 +222,10 @@ do
 		echo -n '}' >>  $SIGNEDTXTPATH
 		echo move $SIGNEDCERTPATH to $CERTPATHCOMP/${CERTNAME}pem
 		mv $SIGNEDCERTPATH $CERTPATHCOMP/${CERTNAME}pem # move signed pem
-		# cleanup
+		# clean up temporary data
 		 for delTMP in ${CERTPATHCOMP}/signed/*.der ${CERTPATHCOMP}/signed/*.csr ${CERTPATHCOMP}/*.csr ; do
-		 rm -rf $delTMP
+		 	echo cleaning up... $delTMP
+		 	rm -rf $delTMP
 		 done
 
 		#     else 
