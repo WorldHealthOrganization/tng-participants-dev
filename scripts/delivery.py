@@ -80,7 +80,7 @@ if __name__=='__main__':
 
                     ######### Try to sign it
 
-                    if "SIGN_TA_KEY" in doc:      
+                    if "TNG_TA_PRIVATE_KEY" in doc:      
                         os.system("./scripts/signing/sign-json.sh ./sign " +country.alpha_3)
                
                     ######### Create PR 
