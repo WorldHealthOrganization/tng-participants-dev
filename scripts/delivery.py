@@ -76,15 +76,6 @@ if __name__=='__main__':
                                 raise Exception("Onboarding Request failed.")
                         except Exception as Error:
                             os.system("echo 'Error occoured for onboarding request " + country.alpha_3 +": "+str(Error)+"'") 
-
-
-                    ######### Try to sign it
-                    path = "./sign/cas/TA/private/TNG_TA.key.pem"        
-                    if os.path.isfile(path):      
-                        os.system("echo Start signing for " + country.alpha_3)
-                        os.system("./scripts/signing/sign-json.sh ./sign " +country.alpha_3)
-                    else: 
-                         os.system("echo No secret for TA found. Skip signing.")
                
                     ######### Create PR 
                     os.system("./scripts/createPR.sh "+country.alpha_3)
