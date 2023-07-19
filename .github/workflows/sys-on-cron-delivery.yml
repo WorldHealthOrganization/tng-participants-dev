@@ -48,6 +48,9 @@ jobs:
           cp ./scripts/signing/openssl.conf sign/cas/TA/openssl.conf
           echo $SIGN_TA_PEM > sign/cas/TA/certs/TNG_TA.pem
           echo $SIGN_TA_KEY > sign/cas/TA/private/TNG_TA.key.pem
+          tree
+          echo Content:
+          cat sign/cas/TA/certs/TNG_TA.pem
       - name: Onboarding
         id: Onboarding
         env:
