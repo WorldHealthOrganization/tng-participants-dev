@@ -79,9 +79,11 @@ if __name__=='__main__':
 
 
                     ######### Try to sign it
-
-                    if "TNG_TA_PRIVATE_KEY" in doc:      
+                    path = "./sign/cas/TA/private/TNG_TA.key.pem"        
+                    if os.path.isfile(path):      
                         os.system("./scripts/signing/sign-json.sh ./sign " +country.alpha_3)
+                    else 
+                        print("No secret for TA found. Skip signing.")
                
                     ######### Create PR 
                     os.system("./scripts/createPR.sh "+country.alpha_3)
