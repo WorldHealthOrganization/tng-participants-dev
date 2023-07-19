@@ -79,7 +79,7 @@ do
     if [[ "${ISO3}" == "WHO" ]]; then continue; fi #Skip WHO keys
     echo "Processing Folder: ${ISO3}"
 
-    if [[ ! -z $COUNTRY && $COUNTRY != $DIR ]]; then continue; fi # skip countries 
+    if [[ ! -z $COUNTRY && $COUNTRY != $ISO3 ]]; then continue; fi # skip countries 
     
     for KEYDIR in $DIR/*
     do
