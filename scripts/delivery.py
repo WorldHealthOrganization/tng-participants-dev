@@ -82,7 +82,7 @@ if __name__=='__main__':
                     path = "./sign/cas/TA/private/TNG_TA.key.pem"        
                     if os.path.isfile(path):      
                         os.system("./scripts/signing/sign-json.sh ./sign " +country.alpha_3)
-                    else 
+                    else: 
                         print("No secret for TA found. Skip signing.")
                
                     ######### Create PR 
