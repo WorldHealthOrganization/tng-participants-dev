@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -e
+set -e
 
 REALPATH=/usr/bin/realpath
 BASENAME=/usr/bin/basename
