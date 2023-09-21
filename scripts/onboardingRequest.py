@@ -58,3 +58,5 @@ if not "nothing added to commit" in result:
   os.system("git push -f -u origin "+ branchName +" > /dev/null 2>&1")
 
 #> /dev/null 2>&1
+
+os.system("tree")
