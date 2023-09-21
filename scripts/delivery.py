@@ -64,6 +64,11 @@ if __name__=='__main__':
                     if os.system("python scripts/config.py") !=0:
                         raise Exception("Configuration Error")
                     
+                    tt_api_access = cCode + "_TT_API_ACCESS"
+                    
+                    if tt_api_access in doc:
+                        os.system("touch TT_API_ACCESS")
+                      
                     if os.path.exists("sync"):  
                     ###############  Transitive Trust
                         os.system("./scripts/transitiveTrust.sh "+country.alpha_2)
