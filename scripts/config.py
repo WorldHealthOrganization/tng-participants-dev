@@ -25,5 +25,5 @@ else:
 os.system("mkdir -p sign/cas/TA/certs")
 os.system("mkdir -p sign/cas/TA/private")
 os.system("cp ./scripts/signing/openssl.conf sign/cas/TA/openssl.conf")
-os.system("echo -n "+os.environ.get("SIGN_TA_PEM")+" > sign/cas/TA/certs/TNG_TA.pem")
-os.system("echo -n "+os.environ.get("SIGN_TA_KEY")+" > sign/cas/TA/private/TNG_TA.key.pem")
+os.system("echo '"+os.environ.get("SIGN_TA_PEM")+"' > sign/cas/TA/certs/TNG_TA.pem")
+os.system("echo '"+os.environ.get("SIGN_TA_KEY")+"' > sign/cas/TA/private/TNG_TA.key.pem")
