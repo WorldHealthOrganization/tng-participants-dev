@@ -40,9 +40,8 @@ if not os.path.exists("TT_API_ACCESS"):
       os.system("rm -rf "+country+"/onboarding/DCC/TLS")
 
 ##### Try to sign it
-
-path = "./sign/cas/TA/private/TNG_TA.key.pem"        
-if os.path.isfile(path):      
+   
+if os.environ.get("ENV") != "PROD":       
     os.system("echo Start signing for " + country)
     os.system("./scripts/signing/sign-json.sh ./sign " +country)
 else: 
