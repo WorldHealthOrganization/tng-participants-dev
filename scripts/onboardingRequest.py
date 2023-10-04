@@ -44,6 +44,7 @@ if not os.path.exists("TT_API_ACCESS"):
 if os.environ.get("ENV") != "PROD":       
     os.system("echo Start signing for " + country)
     os.system("./scripts/signing/sign-json.sh ./sign " +country)
+    os.system("./scripts/signing/add_signature_to_trusted_issuer_json.sh  sign/cas/TA/certs/TNG_TA.pem sign/cas/TA/private/TNG_TA.key.pem " + country)
 else: 
      os.system("echo No secret for TA found. Skip signing.")
 
