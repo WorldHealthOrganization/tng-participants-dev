@@ -49,11 +49,13 @@ for dir in $(find . -type d -name $TRUSTED_ISSUER_FOLDER_NAME | grep $COUNTRY); 
     url=$(echo "$json_input" | jq -r '.url')
     urlType=$(echo "$json_input" | jq -r '.urlType')
     hash=$(echo "$json_input" | jq -r '.hash')
+    alpha2country=$(echo "$json_input" | jq -r '.country')
     # Extract and concatenate sslPublicKeys into one line
     sslPublicKeys=$(echo "$json_input" | jq -r '.sslPublicKeys | join(";")')
 
     # Print the values separated by semicolons
-    signatureInput=$(echo "$name;$url;$urlType;$hash;$sslPublicKeys")
+    # the order of the fields is important and should be the same as in TNG TrustedIssuerService.getHashData()
+    signatureInput=$(echo "$alpha2country;$name;$url;$urlType")
     echo "$signatureInput" > $dir/signed/trusted_issuer_signature_input.txt
 
     # Create a signature of the input using the signing key
