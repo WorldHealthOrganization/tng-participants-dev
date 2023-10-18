@@ -55,7 +55,9 @@ for dir in $(find . -type d -name $TRUSTED_ISSUER_FOLDER_NAME | grep $COUNTRY); 
 
     # Print the values separated by semicolons
     # the order of the fields is important and should be the same as in TNG TrustedIssuerService.getHashData()
-    signatureInput=$(echo "$alpha2country;$name;$url;$urlType")
+    signatureInputRaw=$(echo -n "$alpha2country;$name;$url;$urlType")
+    #TrustedIssuerService of TNG expects signature to be b64 encoded
+    signatureInput=$(echo -n "$signatureInputRaw" | base64)
     echo "$signatureInput" > $dir/signed/trusted_issuer_signature_input.txt
 
     # Create a signature of the input using the signing key
