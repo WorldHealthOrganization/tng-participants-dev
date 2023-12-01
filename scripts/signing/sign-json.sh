@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
-REALPATH=/usr/bin/realpath
+REALPATH=/bin/realpath
 BASENAME=/usr/bin/basename
 DIRNAME=/usr/bin/dirname
+SED=/opt/local/bin/gsed
+HEAD=/opt/local/bin/ghead
 
 #signs keys assumging a directory structure as follows
 # $ISO3/ – three letter country code or WHO which contains key material
@@ -67,7 +69,7 @@ declare -A DIRTOUSAGE=(
 EXCLUDEFROMSIGNING=("CA")
 
 function exists_in_list() { # call: list, item-delimter, value-to-compare
-	LIST=$1
+    LIST=$1
     DELIMITER=$2
     VALUE=$3
     [[ "$LIST" =~ ($DELIMITER|^)$VALUE($DELIMITER|$) ]]
@@ -120,17 +122,18 @@ do
 		SIGNINGCA=$PRIVATEKEYDIR/${USAGETOSIGNINGCA[$USAGE]}
 		SIGNINGCFG=$PRIVATEKEYDIR/${USAGETOSIGNINGCFG[$USAGE]}
 		if [ ! -e "$SIGNINGKEY" ]; then
-		   echo "Error: Could not find $SIGNINGKEY"
-		   exit 2
+		    echo "Error: Could not find $SIGNINGKEY"
+		    exit 2
 		fi;
 		echo "      Found Key Usage: $USAGE signing with $SIGNINGKEY";
 		SIGNEDDIR=$USAGEDIR/signed
+		echo Creating signing directory: "$SIGNEDDIR"
 		mkdir -p $SIGNEDDIR
 
 		for CERTPATH in $USAGEDIR/*.pem
 		do
 		    CERT=$($BASENAME "${CERTPATH}")
-			CERTPATHCOMP=$($DIRNAME "${CERTPATH}")
+		    CERTPATHCOMP=$($DIRNAME "${CERTPATH}")
 		    SIGNEDCERT=signed.$CERT
 		    CSR=$CERT.csr
 		    SIGNEDTXT=TNG_$USAGE.signed.${CERT%.pem}.json
@@ -138,23 +141,23 @@ do
 		    SIGNEDTXTPATH=$SIGNEDDIR/$SIGNEDTXT
 		    CSRPATH=$SIGNEDDIR/$CSR
 
-			if exists_in_list $EXCLUDEFROMSIGNING "," ${CERT%.pem}; then
+		    if exists_in_list $EXCLUDEFROMSIGNING "," ${CERT%.pem}; then
 			echo "         Found $CERT ...excluding it from signing"
-				continue
-			fi
+			continue
+		    fi
 
 		    echo "        Signing CERT $CERT with $SIGNINGCA "
 		    echo "           x509 Output At: $SIGNEDCERTPATH"
 
 		    cd $CASDIR
-		    # SUBJ=$(openssl x509 -in ${CERTPATH} -noout -subject --nameopt multiline | tail -n +2 | sed 's/^\s*/\//' | sed 's/\s*=\s*/=/' |sed -z 's/\n//g')
+		    # SUBJ=$(openssl x509 -in ${CERTPATH} -noout -subject --nameopt multiline | tail -n +2 | $SED 's/^\s*/\//' | $SED 's/\s*=\s*/=/' |$SED -z 's/\n//g')
 		    # openssl req -out ${CSRPATH} -key ${SIGNINGKEY} -new  -subj "${SUBJ}" 
 		    # openssl ca -batch -create_serial -config $SIGNINGCFG -cert $SIGNINGCA -keyfile $SIGNINGKEY \
-			#     -in $CSRPATH -out $SIGNEDCERTPATH   -subj "${SUBJ}"  2>&1 | sed 's/^/            | /g'
+			#     -in $CSRPATH -out $SIGNEDCERTPATH   -subj "${SUBJ}"  2>&1 | $SED 's/^/            | /g'
 		    cd $CURRDIR
 
 
-		    COUNTRYNAME=`openssl x509 -in ${CERTPATH} -noout -subject -nameopt multiline | grep countryName | awk -F'=' '{print $2}'  | sed 's/\s*//'`
+		    COUNTRYNAME=`openssl x509 -in ${CERTPATH} -noout -subject -nameopt multiline | grep countryName | awk -F'=' '{print $2}'  | $SED 's/\s*//'`
 		    if [ ! -z ${COUNTRYNAME} ]; then
 			echo "           JSON Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
 			echo '{' > $SIGNEDTXTPATH
@@ -162,18 +165,20 @@ do
 			#echo `openssl x509 -outform der -inform $CERT -out $SIGNEDDIR/${CERT}.der`
 			openssl x509 -outform der -in ${CERTPATH} -out $SIGNEDDIR/${CERT}.der
 			openssl cms -sign -nodetach -in $SIGNEDDIR/${CERT}.der -signer $SIGNINGCA -inkey $SIGNINGKEY -out $SIGNEDDIR/${CERT}_signed.der -outform DER -binary
-			#echo `openssl base64 in $SIGNEDDIR/${CERT}_signed.der -out -out signed.b64 -e -A` 
-			echo -n `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a -A | sed -z 's/\n*//g' | sed -z 's/\s*//g' ` \
+			#echo `openssl base64 in $SIGNEDDIR/${CERT}_signed.der -out -out signed.b64 -e -A`
+			echo A
+			echo -n `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a -A | $SED -z 's/\n*//g' | $SED -z 's/\s*//g' ` \
 			     >>  $SIGNEDTXTPATH
 			echo '",' >>  $SIGNEDTXTPATH
-			#	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | sed 's/://g' | sed 's/[A-Z]/\L&/g'` \
+			#	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | $SED 's/://g' | $SED 's/[A-Z]/\L&/g'` \
 			    #>>  $SIGNEDTXTPATH
 			echo -n  '"certificateRawData": "' >> $SIGNEDTXTPATH
-			echo -n `openssl x509 -in ${CERTPATH}  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed -z 's/\s*//g' ` \
+			echo B
+			echo -n `openssl x509 -in ${CERTPATH}  | tail -n +2 | $HEAD -n -1 | $SED -z 's/\n*//g' | $SED -z 's/\s*//g' ` \
 			     >> $SIGNEDTXTPATH
 			echo '",' >>  $SIGNEDTXTPATH
 			echo -n '"certificateThumbprint": "' >>  $SIGNEDTXTPATH
-			echo -n `openssl x509 -in ${CERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g' ` \
+			echo -n `openssl x509 -in ${CERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | $SED 's/://g' | $SED 's/[A-Z]/\L&/g' ` \
 			     >>  $SIGNEDTXTPATH
 			echo '",' >>  $SIGNEDTXTPATH
 			echo -n '"country": "'$COUNTRYNAME \
@@ -184,19 +189,19 @@ do
 		    else 
 			echo "           Skipping Text Output"
 		    fi
-			# clean up temporary data
-			for delTMP in ${CERTPATHCOMP}/signed/*.der ${CERTPATHCOMP}/signed/*.csr ${CERTPATHCOMP}/*.csr ; do
-				#echo cleaning up... $delTMP
-				rm -rf $delTMP
-		 	done
+		    # clean up temporary data
+		    for delTMP in ${CERTPATHCOMP}/signed/*.der ${CERTPATHCOMP}/signed/*.csr ${CERTPATHCOMP}/*.csr ; do
+			echo not cleaning up... $delTMP
+			#rm -rf $delTMP
+		    done
 		done
 
-	for CERTPATH in $USAGEDIR/UP_SYNC.csr
+		for CERTPATH in $USAGEDIR/UP_SYNC.csr
 		do
-		if [[ ! -e $CERTPATH ]]; then continue; fi
+		    if [[ ! -e $CERTPATH ]]; then continue; fi
 		    CERT=$($BASENAME "${CERTPATH}")
-			CERTNAME=$($BASENAME -s csr "${CERTPATH}")
-			CERTPATHCOMP=$($DIRNAME "${CERTPATH}")
+		    CERTNAME=$($BASENAME -s csr "${CERTPATH}")
+		    CERTPATHCOMP=$($DIRNAME "${CERTPATH}")
 		    SIGNEDCERT=signed.$CERT.pem
 		    CSR=$CERT.CSR
 		    SIGNEDTXT=TNG_$USAGE.signed.${CERT%.pem}.json
@@ -206,46 +211,47 @@ do
 		    echo "        Signing UP_SYNC_CERT $KEY with $SIGNINGCA "
 		    echo "           x509 Output At: $SIGNEDCERTPATH"
 		    cd $CASDIR
-		    #SUBJ=$(openssl x509 -in ${CERTPATH} -noout -subject --nameopt multiline | tail -n +2 | sed 's/^\s*/\//' | sed 's/\s*=\s*/=/' |sed -z 's/\n//g')
-			SUBJ="/C=${COUNTRYNAME}/CN=UP_SYNC_CERT_SIGNING/O=WHO/OU=WHO_TA"
-		   # openssl req -out ${CSRPATH} -key ${SIGNINGKEY} -new  -subj "${SUBJ}" 
+		    echo D		   
+		    #SUBJ=$(openssl x509 -in ${CERTPATH} -noout -subject --nameopt multiline | tail -n +2 | $SED 's/^\s*/\//' | $SED 's/\s*=\s*/=/' |$SED -z 's/\n//g')
+		    SUBJ="/C=${COUNTRYNAME}/CN=UP_SYNC_CERT_SIGNING/O=WHO/OU=WHO_TA"
+		    # openssl req -out ${CSRPATH} -key ${SIGNINGKEY} -new  -subj "${SUBJ}" 
 		    openssl ca -batch -create_serial -notext -config $SIGNINGCFG -cert $SIGNINGCA -keyfile $SIGNINGKEY \
-			-in $CERTPATH -out $SIGNEDCERTPATH -preserveDN  2>&1 | sed 's/^/            | /g'
+			    -in $CERTPATH -out $SIGNEDCERTPATH -preserveDN  2>&1 | $SED 's/^/            | /g'
 		    cd $CURRDIR
-			echo copy $SIGNEDCERTPATH to $CERTPATHCOMP/${CERTNAME}pem
-			cp $SIGNEDCERTPATH $CERTPATHCOMP/${CERTNAME}pem
-		#     COUNTRYNAME=`openssl x509 -in ${CERTPATH} -noout -subject -nameopt multiline | grep countryName | awk -F'=' '{print $2}'  | sed 's/\s*//'`
-		#     if [ ! -z ${COUNTRYNAME} ]; then
-		# 	echo "           Text Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
-		echo '{' > $SIGNEDTXTPATH
-		echo -n '"trustAnchorSignature": "' >> $SIGNEDTXTPATH
-	 	openssl x509 -outform der -in ${SIGNEDCERTPATH} -out $SIGNEDDIR/${CERT}.der
-		openssl cms -sign -nodetach -in $SIGNEDDIR/${CERT}.der -signer $SIGNINGCA -inkey $SIGNINGKEY -out $SIGNEDDIR/${CERT}_signed.der -outform DER -binary
-		echo -n `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a -A | sed -z 's/\n*//g' | sed -z 's/\s*//g' ` >>  $SIGNEDTXTPATH
-		echo '",' >>  $SIGNEDTXTPATH
-	 	echo -n  '"certificateRawData": "' >> $SIGNEDTXTPATH
-	 	echo -n `openssl x509 -in ${SIGNEDCERTPATH}  | tail -n +2 | head -n -1 | sed -z 's/\n*//g' | sed -z 's/\s*//g' ` >> $SIGNEDTXTPATH
-		echo '",' >>  $SIGNEDTXTPATH
-		echo -n '"certificateThumbprint": "' >>  $SIGNEDTXTPATH
-		echo -n  `openssl x509 -in ${SIGNEDCERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | sed 's/://g' | sed 's/[A-Z]/\L&/g' ` >>  $SIGNEDTXTPATH
-		echo '",' >>  $SIGNEDTXTPATH
-		echo -n '"country": "'$COUNTRYNAME \
-			     >>  $SIGNEDTXTPATH
-		echo '"' >>  $SIGNEDTXTPATH
-		echo -n '}' >>  $SIGNEDTXTPATH
-		echo move $SIGNEDCERTPATH to $CERTPATHCOMP/${CERTNAME}pem
-		mv $SIGNEDCERTPATH $CERTPATHCOMP/${CERTNAME}pem # move signed pem
-		# clean up temporary data
-		 for delTMP in ${CERTPATHCOMP}/signed/*.der ${CERTPATHCOMP}/signed/*.csr ${CERTPATHCOMP}/*.csr ; do
+		    echo copy $SIGNEDCERTPATH to $CERTPATHCOMP/${CERTNAME}pem
+		    cp $SIGNEDCERTPATH $CERTPATHCOMP/${CERTNAME}pem
+		    #     COUNTRYNAME=`openssl x509 -in ${CERTPATH} -noout -subject -nameopt multiline | grep countryName | awk -F'=' '{print $2}'  | $SED 's/\s*//'`
+		    #     if [ ! -z ${COUNTRYNAME} ]; then
+		    # 	echo "           Text Output At ${COUNTRYNAME}: $SIGNEDTXTPATH"
+		    echo '{' > $SIGNEDTXTPATH
+		    echo -n '"trustAnchorSignature": "' >> $SIGNEDTXTPATH
+	 	    openssl x509 -outform der -in ${SIGNEDCERTPATH} -out $SIGNEDDIR/${CERT}.der
+		    openssl cms -sign -nodetach -in $SIGNEDDIR/${CERT}.der -signer $SIGNINGCA -inkey $SIGNINGKEY -out $SIGNEDDIR/${CERT}_signed.der -outform DER -binary
+		    echo -n `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a -A | $SED -z 's/\n*//g' | $SED -z 's/\s*//g' ` >>  $SIGNEDTXTPATH
+		    echo '",' >>  $SIGNEDTXTPATH
+	 	    echo -n  '"certificateRawData": "' >> $SIGNEDTXTPATH
+	 	    echo -n `openssl x509 -in ${SIGNEDCERTPATH}  | tail -n +2 | $HEAD -n -1 | $SED -z 's/\n*//g' | $SED -z 's/\s*//g' ` >> $SIGNEDTXTPATH
+		    echo '",' >>  $SIGNEDTXTPATH
+		    echo -n '"certificateThumbprint": "' >>  $SIGNEDTXTPATH
+		    echo -n  `openssl x509 -in ${SIGNEDCERTPATH} -fingerprint -sha256 -noout | awk -F'=' '{print $2}' | $SED 's/://g' | $SED 's/[A-Z]/\L&/g' ` >>  $SIGNEDTXTPATH
+		    echo '",' >>  $SIGNEDTXTPATH
+		    echo -n '"country": "'$COUNTRYNAME \
+			 >>  $SIGNEDTXTPATH
+		    echo '"' >>  $SIGNEDTXTPATH
+		    echo -n '}' >>  $SIGNEDTXTPATH
+		    echo move $SIGNEDCERTPATH to $CERTPATHCOMP/${CERTNAME}pem
+		    mv $SIGNEDCERTPATH $CERTPATHCOMP/${CERTNAME}pem # move signed pem
+		    # clean up temporary data
+		    for delTMP in ${CERTPATHCOMP}/signed/*.der ${CERTPATHCOMP}/signed/*.csr ${CERTPATHCOMP}/*.csr ; do
 		 	#echo cleaning up... $delTMP
 		 	rm -rf $delTMP
-		 done
+		    done
 
-		#     else 
-		# 	echo "           Skipping Text Output"
-		#     fi
+		    #     else 
+		    # 	echo "           Skipping Text Output"
+		    #     fi
 		done
-	 done
+	    done
 	done
-  done
+    done
 done
