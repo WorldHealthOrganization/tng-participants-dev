@@ -17,6 +17,7 @@ if  [[ -z $ASSIGNEE ]]; then
     echo "       example ASIGNEE: tng-bot-dev"
     exit 1
 fi
+ASSIGNEEEMAIL="$1@who.int"
 
 
 REMOTE=$(git ls-remote --get-url origin | sed 's/^.*://g' | sed 's/\.git$//')
@@ -51,6 +52,8 @@ do
 	echo Switching to "$REF"
 	git switch "$REF"
     fi
+    git config user.name "$ASSIGNEE"
+    git config user.email "$ASSIGNEEEMAIL"
     echo Pulling remote "$REF" 
     git pull
     PCODE=$(echo $REF  | sed 's/\/onboardingRequest//')
