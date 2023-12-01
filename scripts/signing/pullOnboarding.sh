@@ -52,6 +52,7 @@ do
 	echo Switching to "$REF"
 	git switch "$REF"
     fi
+    echo git config user.name "$ASSIGNEE"
     git config user.name "$ASSIGNEE"
     git config user.email "$ASSIGNEEEMAIL"
     echo Pulling remote "$REF" 
