@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -e
-
+ 
 # script to push signed branches to remote
-# process github onboardingRequest branches looking for last commit to have a tag of the format signedRequest-$PCODE-$DATE-$TIME
-# where $PCODE is a participant code
+# process github onboardingRequest branches looking for last commit to have a tag of the format signedRequest-$PCODE-$DATE-$TIME 
+# where $PCODE is a participant code  
 # example tag: signedRequest-POL-20231130-135900
 
 BRANCHES=$(git branch -v  --no-color --list "*/onboardingRequest")
