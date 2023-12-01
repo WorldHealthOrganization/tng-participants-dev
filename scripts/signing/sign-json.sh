@@ -75,9 +75,9 @@ function exists_in_list() { # call: list, item-delimter, value-to-compare
     [[ "$LIST" =~ ($DELIMITER|^)$VALUE($DELIMITER|$) ]]
 }
 
-ROOT=$($REALPATH $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))
-echo "Examining contents of $ROOT";
-for DIR in $ROOT/*
+#ROOT=$($REALPATH $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))
+echo "Examining contents of $CURRDIR";
+for DIR in $CURRDIR/*
 do
     if [[ ! -d $DIR || -L $DIR ]]; then continue; fi #not a directory 
     ISO3=$($BASENAME "$DIR")
