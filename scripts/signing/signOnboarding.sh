@@ -20,8 +20,8 @@ cp $SRCSIGNSCRIPT $SIGNSCRIPT
 echo $SIGNSCRIPT
 
 
-ROOT=$($REALPATH $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))
-cd $ROOT
+#ROOT=$($REALPATH $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))
+#cd $ROOT
 
 
 CASDIR=$1

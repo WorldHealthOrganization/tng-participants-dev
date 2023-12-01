@@ -22,8 +22,8 @@ fi
 REMOTE=$(git ls-remote --get-url origin | sed 's/^.*://g' | sed 's/\.git$//')
 echo Remote: $REMOTE
 echo ${BASH_SOURCE[0]}
-ROOT=$($REALPATH $($DIRNAME $($DIRNAME  $($DIRNAME   ${BASH_SOURCE[0]}))))
-cd $ROOT
+#ROOT=$($REALPATH $($DIRNAME $($DIRNAME  $($DIRNAME   ${BASH_SOURCE[0]}))))
+#cd $ROOT
 
 
 git switch main
