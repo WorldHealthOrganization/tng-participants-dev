@@ -16,7 +16,7 @@ do
     echo Checking branch: $BRANCH for $PCODE
 
     git switch $BRANCH
-    TAGS=`git log --decorate=full -1 HEAD | head -1 | sed 's/.*(\(.*\))/\1/' | sed -E 's/,[[:space:]]+/\n/g' | grep -o '^tag: refs\/tags\/signedRequest-.*' | grep -o 'signingRequest-.*'`
+    TAGS=`git log --decorate=full -1 HEAD | head -1 | sed 's/.*(\(.*\))/\1/' | sed -E 's/,[[:space:]]+/\n/g' | grep -o '^tag: refs\/tags\/signedRequest-.*' | grep -o 'signedRequest-.*'`
     echo Last commit has following tags: $TAGS
     while IFS= read -r TAG
     do
