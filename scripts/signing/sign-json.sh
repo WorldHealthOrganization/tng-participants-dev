@@ -166,14 +166,12 @@ do
 			openssl x509 -outform der -in ${CERTPATH} -out $SIGNEDDIR/${CERT}.der
 			openssl cms -sign -nodetach -in $SIGNEDDIR/${CERT}.der -signer $SIGNINGCA -inkey $SIGNINGKEY -out $SIGNEDDIR/${CERT}_signed.der -outform DER -binary
 			#echo `openssl base64 in $SIGNEDDIR/${CERT}_signed.der -out -out signed.b64 -e -A`
-			echo A
 			echo -n `openssl enc -base64 -in $SIGNEDDIR/${CERT}_signed.der  -e -a -A | $SED -z 's/\n*//g' | $SED -z 's/\s*//g' ` \
 			     >>  $SIGNEDTXTPATH
 			echo '",' >>  $SIGNEDTXTPATH
 			#	echo `openssl x509 -in ${SIGNEDCERTPATH} -outform DER -fingerprint -sha256 -noout | awk -F'=' '{print $2}'  | $SED 's/://g' | $SED 's/[A-Z]/\L&/g'` \
 			    #>>  $SIGNEDTXTPATH
 			echo -n  '"certificateRawData": "' >> $SIGNEDTXTPATH
-			echo B
 			echo -n `openssl x509 -in ${CERTPATH}  | tail -n +2 | $HEAD -n -1 | $SED -z 's/\n*//g' | $SED -z 's/\s*//g' ` \
 			     >> $SIGNEDTXTPATH
 			echo '",' >>  $SIGNEDTXTPATH
@@ -211,7 +209,6 @@ do
 		    echo "        Signing UP_SYNC_CERT $KEY with $SIGNINGCA "
 		    echo "           x509 Output At: $SIGNEDCERTPATH"
 		    cd $CASDIR
-		    echo D		   
 		    #SUBJ=$(openssl x509 -in ${CERTPATH} -noout -subject --nameopt multiline | tail -n +2 | $SED 's/^\s*/\//' | $SED 's/\s*=\s*/=/' |$SED -z 's/\n//g')
 		    SUBJ="/C=${COUNTRYNAME}/CN=UP_SYNC_CERT_SIGNING/O=WHO/OU=WHO_TA"
 		    # openssl req -out ${CSRPATH} -key ${SIGNINGKEY} -new  -subj "${SUBJ}" 
