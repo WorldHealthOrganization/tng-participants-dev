@@ -53,11 +53,11 @@ do
 	echo Found signing tag, initiating signature process: $TAG
 	$SIGNSCRIPT  $CASDIR $PCODE
 	git add --dry-run $PCODE
-	echo git add $PCODE
-	echo git commit -m "Signed $PCODE"
+	git add $PCODE
+	git commit -m "Signed $PCODE"
 	DATE=$(date +%Y%m%d-%H%M%S)
 	STAG="signedRequest-$PCODE-$DATE"
-	echo git tag "$STAG"	
+	git tag "$STAG"
     done <<< "$TAGS"  
 
 done <<< "$BRANCHES"
