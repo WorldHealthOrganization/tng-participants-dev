@@ -56,7 +56,7 @@ do
 	git add $PCODE
 	git commit -m "Signed $PCODE"
 	DATE=$(date +%Y%m%d-%H%M%S)
-	STAG="signedRequest-$PCODE-$DATE"
+	STAG="signedRequest-$PCODE-$DATE-$RANDOM" 
 	git tag "$STAG"
     done <<< "$TAGS"  
 
