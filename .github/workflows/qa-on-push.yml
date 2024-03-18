@@ -24,10 +24,13 @@ jobs:
       with:
         repository: 'WorldHealthOrganization/tng-participant-template'
         path: 'ssot-tests'
+    - name: List directory contents
+      run: |
+        ls -la .
     - name: Copy test scripts to local directory
       run: |
         mkdir -p ./scripts/test
-        cp -rf ./ssot-tests/scripts/test/* ./scripts/test
+        cp -rf ssot-tests/scripts/test/* ./scripts/test
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
