@@ -44,10 +44,10 @@ jobs:
               if [ -d "$dir" ] && [[ "$dir" == *"$SEARCH_STRING"* ]]; then
                     found=true
                     find "$dir" -type d -name "signed" -exec rm -rf {} +
-                    git checkout -b "$dir"
+                    git checkout -b "$dir/resign"
                     git add .
                     git commit -m "PR created from Bot for resigning $dir"
-                    git push -u origin "$dir"
+                    git push -u origin "$dir/resign"
                     gh pr create -B main -H $dir/resign --title 'Bot requested a change for '$dir'.' --body 'Please merge the onnboarding request of '$dir'.' > /dev/null 2>&1
                     break
               fi
@@ -58,10 +58,10 @@ jobs:
                 if [ -d "$dir" ]; then
                       echo "A new branch for all" 
                       #find "$dir" -type d -name "signed" -exec rm -rf {} +
-                      #git checkout -b "$dir"
+                      #git checkout -b "$dir/resign"
                       #git add .
                       #git commit -m "PR created from Bot for resigning $dir"
-                      #git push -u origin "$dir"
+                      #git push -u origin "$dir/resign"
                       #gh pr create -B main -H $dir/resign --title 'Bot requested a change for '$dir'.' --body 'Please merge the onnboarding request of '$dir'.' > /dev/null 2>&1    
                 fi
               done
