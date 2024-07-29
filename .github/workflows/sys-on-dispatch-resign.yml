@@ -44,7 +44,7 @@ jobs:
               if [ -d "$dir" ] && [[ "$dir" == *"$SEARCH_STRING"* ]]; then
                 found=true
                    if [ -d "$dir/signed" ]; then
-                      rm -rf "$dir/signed"
+                      find "$dir" -type d -name "signed" -exec rm -rf {} +
                       git checkout -b "$dir"
                       git add .
                       git commit -m "PR created from Bot for resigning $dir"
@@ -60,7 +60,7 @@ jobs:
                 if [ -d "$dir" ]; then
                    if [ -d "$dir/signed" ]; then
                       echo "A new branch for all" 
-                      #rm -rf "$dir/signed"
+                      #find "$dir" -type d -name "signed" -exec rm -rf {} +
                       #git checkout -b "$dir"
                       #git add .
                       #git commit -m "PR created from Bot for resigning $dir"
