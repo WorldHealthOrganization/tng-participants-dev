@@ -48,7 +48,7 @@ jobs:
                     git add .
                     git commit -m "PR created from Bot for resigning $dir"
                     git push -u origin "$dir/resign"
-                    gh pr create -B main -H $dir/resign --title 'Bot requested a change for '$dir'.' --body 'Please merge the onnboarding request of '$dir'.' > /dev/null 2>&1
+                    gh pr create -B main -H $dir/resign --title 'Bot requested a resign for '$dir'.' --body 'Please merge the resign request of '$dir'.' > /dev/null 2>&1
                     break
               fi
             done
@@ -62,7 +62,7 @@ jobs:
                       #git add .
                       #git commit -m "PR created from Bot for resigning $dir"
                       #git push -u origin "$dir/resign"
-                      #gh pr create -B main -H $dir/resign --title 'Bot requested a change for '$dir'.' --body 'Please merge the onnboarding request of '$dir'.' > /dev/null 2>&1    
+                      #gh pr create -B main -H $dir/resign --title 'Bot requested a resign for '$dir'.' --body 'Please merge the resign request of '$dir'.' > /dev/null 2>&1    
                 fi
               done
             fi
