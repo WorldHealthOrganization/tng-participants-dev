@@ -2,6 +2,7 @@ import os
 import glob
 import json
 import time
+import sys
 
 def check_signed_folder_exists(base_dir):
     signed_folder_path = os.path.join(base_dir, 'signed')
@@ -109,24 +110,24 @@ if not (result):
        
 if not noFailure:
     comment = "Folder contains Failure files. Please resolve it."
-    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    os.system("gh pr review "+country+sys.argv[1]+" -r -b '"+comment+"'")
     
 if not signedFolderPresent:
     comment = "Signed Folder not present."
-    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    os.system("gh pr review "+country+sys.argv[1]+" -r -b '"+comment+"'")
 
 if not csrNotSigned: 
     comment = "CSR is not signed for UP. Please sign it."
-    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    os.system("gh pr review "+country+sys.argv[1]+" -r -b '"+comment+"'")
     
 if not csrNotPresent: 
     comment = "CSR is still present, but already signed."
-    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    os.system("gh pr review "+country+sys.argv[1]+" -r -b '"+comment+"'")
     
 if not checkRunSucceeded: 
     comment = "Tests Failed. Please resolve the issues."
-    os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
+    os.system("gh pr review "+country+sys.argv[1]+" -r -b '"+comment+"'")
         
 if approve:
     comment = "Everything fine."
-    os.system("gh pr review "+country+"/onboardingRequest -a -b 'Everything fine.'")
+    os.system("gh pr review "+country+sys.argv[1]+" -a -b 'Everything fine.'")
