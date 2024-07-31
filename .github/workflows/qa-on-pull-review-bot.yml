@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    if: contains(github.head_ref, 'onboardingRequest')
+    if: ${{ contains(github.head_ref, 'onboardingRequest') && contains(github.head_ref, 'resign') }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 
