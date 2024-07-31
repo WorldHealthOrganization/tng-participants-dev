@@ -5,14 +5,16 @@ import time
 
 def check_signed_folder_exists(base_dir):
     signed_folder_path = os.path.join(base_dir, 'signed')
+    print("search for: " + signed_folder_path)
     return os.path.isdir(signed_folder_path)
 
 def check_all_directories(base_pattern):
     directories = glob.glob(base_pattern)
-  
     for dir_name in directories:
         if not check_signed_folder_exists(dir_name):
+            print("Does not exist!")
             return False
+    print("Exist!")
     return True
 
 #   additions
