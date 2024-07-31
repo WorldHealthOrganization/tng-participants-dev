@@ -3,6 +3,18 @@ import glob
 import json
 import time
 
+def check_signed_folder_exists(base_dir):
+    signed_folder_path = os.path.join(base_dir, 'signed')
+    return os.path.isdir(signed_folder_path)
+
+def check_all_directories(base_pattern):
+    directories = glob.glob(base_pattern)
+  
+    for dir_name in directories:
+        if not check_signed_folder_exists(dir_name):
+            return False
+    return True
+
 #   additions
 #   assignees
 #   author
@@ -86,8 +98,10 @@ change_requested = pr["state"] == "CHANGE_REQUESTED"
 if len(files): 
     approve &= False
     noFailure &= False
-    
-if not (os.path.exists(country+"/onboarding/DCC/UP/signed") and os.path.exists(country+"/onboarding/DCC/TLS/signed") and os.path.exists(country+"/onboarding/DCC/SCA/signed")):  
+  
+result = check_all_directories(country+"/onboarding/*/*")
+
+if not (result):  
     signedFolderPresent &= False
     approve &= False
        
