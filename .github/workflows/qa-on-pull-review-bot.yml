@@ -22,10 +22,19 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
         if [ -f scripts/requirements.txt ]; then pip install -r scripts/requirements.txt; fi
+    
     - name: Review PR
+      if: contains(github.head_ref, 'onboardingRequest')
       env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           BRANCH: ${{  github.head_ref }}
       run: |
-        python ./scripts/review.py
+        python ./scripts/review.py "/onboardingRequest"
 
+    - name: Review PR
+      if: contains(github.head_ref, 'resign')
+      env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          BRANCH: ${{  github.head_ref }}
+      run: |
+        python ./scripts/review.py "/resign"
