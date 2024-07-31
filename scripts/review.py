@@ -90,15 +90,7 @@ if len(files):
 if not (os.path.exists(country+"/onboarding/DCC/UP/signed") and os.path.exists(country+"/onboarding/DCC/TLS/signed") and os.path.exists(country+"/onboarding/DCC/SCA/signed")):  
     signedFolderPresent &= False
     approve &= False
-    
-if  os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.csr"):  
-    csrNotSigned &= False
-    approve &= False
-    
-if  os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.pem") and os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.csr"):  
-    csrNotPresent &= False
-    approve &= False
-    
+       
 if not noFailure:
     comment = "Folder contains Failure files. Please resolve it."
     os.system("gh pr review "+country+"/onboardingRequest -r -b '"+comment+"'")
