@@ -60,7 +60,7 @@ do
     git config user.email "$ASSIGNEEEMAIL"
     echo Pulling remote "$REF" 
     git pull
-    PCODE=$(echo $REF  | sed 's/\/onboardingRequest//')
+    PCODE=$(echo $REF  | sed 's/\/onboardingRequest|resign//')
     PCODES+=($PCODE)
     DATE=$(date +%Y%m%d-%H%M%S)
     TAG="signingRequest-$PCODE-$DATE"
