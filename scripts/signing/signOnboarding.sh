@@ -42,7 +42,7 @@ printf '  branch info: %s\n' "${BRANCHES[@]}"
 while IFS= read -r BRANCHLIST
 do
     BRANCH=$(echo $BRANCHLIST | grep -o '^\S*')
-    PCODE=$(echo $BRANCH  | sed 's/\/onboardingRequest//')
+    PCODE=$(echo $BRANCH  | sed 's/\/onboardingRequest//;s/\/resign//')
     echo Checking branch: $BRANCH for $PCODE
 
     git switch $BRANCH
