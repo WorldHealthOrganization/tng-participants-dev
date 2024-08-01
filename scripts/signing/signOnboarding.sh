@@ -35,7 +35,7 @@ CASDIR=$(realpath ${CASDIR})
 
 
 git switch main
-BRANCHES=$(git branch -v  --no-color --list "*/onboardingRequest")
+BRANCHES=$(git branch -v  --no-color --list "*/onboardingRequest" "*/resign")
 echo Scanning Branches: $BRANCHES
 printf '  branch info: %s\n' "${BRANCHES[@]}"
 
