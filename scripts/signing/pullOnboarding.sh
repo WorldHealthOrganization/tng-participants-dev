@@ -32,13 +32,12 @@ git fetch --all
 
 
 
-
 REFS=$(curl  -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$REMOTE/pulls\?state=open \
 	   | jq ".[] | select( .assignee.login == \"$ASSIGNEE\").head.ref" \
-	   | grep onboardingRequest   \
+	   | grep "onboardingRequest\|resign"   \
 	   | sed 's/\"//g'
     )
-echo "Open Pull Requests for $ASSIGNEE: $REFS"
+echo "Open Pull Requests for $ASSIGNEE: ${REFS[*]}"
 
 PCODES=()
 while IFS= read -r REF
