@@ -43,6 +43,11 @@ echo "Open Pull Requests for $ASSIGNEE: $REFS"
 PCODES=()
 while IFS= read -r REF
 do
+    if [[  -z "${REF// }" ]] ; then
+	echo "Warning empty reference - may be because no open PRs"
+	continue
+    fi
+
     echo Processing PR: "$REF"
     BE=`git branch --list "$REF"`
     if [[ -z $BE ]] ; then
@@ -66,6 +71,6 @@ do
 done <<< "$REFS"
 
 git switch main
-echo Please sign on the following partcipants: "$PCODES"
+echo Please sign on the following partcipants: "${PCODES[*]}"
 
 

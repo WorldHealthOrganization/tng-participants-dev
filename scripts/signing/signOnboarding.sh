@@ -8,19 +8,19 @@ set -e
 # example tag: signingRequest-POL-20231130-135900
 
 
-REALPATH=/bin/realpath
+
 BASENAME=/usr/bin/basename
 DIRNAME=/usr/bin/dirname
 CURRDIR=$PWD
-SOURCEDIR=$($REALPATH $($DIRNAME ${BASH_SOURCE[0]}))
+SOURCEDIR=$(realpath $($DIRNAME ${BASH_SOURCE[0]}))
 SRCSIGNSCRIPT=$SOURCEDIR/sign-json.sh
 SIGNSCRIPT=/tmp/`uuid`.sh
-cp $SRCSIGNSCRIPT $SIGNSCRIPT
+cp "$SRCSIGNSCRIPT" $SIGNSCRIPT
 
 echo $SIGNSCRIPT
 
 
-#ROOT=$($REALPATH $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))
+#ROOT=$(realpath $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))
 #cd $ROOT
 
 
@@ -30,14 +30,13 @@ if [[ ! -d $CASDIR ]]; then
     echo "       Missing first parameter is path to directory containing private keys"
     exit 1
 fi
-CASDIR=$($REALPATH ${CASDIR})
+CASDIR=$(realpath ${CASDIR})
 
 
 git switch main
-
 BRANCHES=$(git branch -v  --no-color --list "*/onboardingRequest")
 echo Scanning Branches: $BRANCHES
-
+printf '  branch info: %s\n' "${BRANCHES[@]}"
 
 while IFS= read -r BRANCHLIST
 do
@@ -46,12 +45,15 @@ do
     echo Checking branch: $BRANCH for $PCODE
 
     git switch $BRANCH
+    set +e
     TAGS=`git log --decorate=full -1 HEAD | head -1 | sed 's/.*(\(.*\))/\1/' | sed -E 's/,[[:space:]]+/\n/g' | grep -o '^tag: refs\/tags\/signingRequest-.*' | grep -o 'signingRequest-.*'`
+    set -e
     echo Last commit has following tags: $TAGS
+    printf '  tag info: %s\n' "${TAGS[@]}"
     while IFS= read -r TAG
     do
 	echo Found signing tag, initiating signature process: $TAG
-	$SIGNSCRIPT  $CASDIR $PCODE
+	$SIGNSCRIPT  "$CASDIR" $PCODE
 	git add --dry-run $PCODE
 	git add $PCODE
 	git commit -m "Signed $PCODE"
