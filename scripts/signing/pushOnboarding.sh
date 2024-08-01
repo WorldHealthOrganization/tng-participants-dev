@@ -6,13 +6,13 @@ set -e
 # where $PCODE is a participant code  
 # example tag: signedRequest-POL-20231130-135900
 
-BRANCHES=$(git branch -v  --no-color --list "*/onboardingRequest")
+BRANCHES=$(git branch -v  --no-color --list "*/onboardingRequest" --list "*/resign")
 echo Scanning Branches: $BRANCHES
 
 while IFS= read -r BRANCHLIST
 do
     BRANCH=$(echo $BRANCHLIST | grep -o '^\S*')
-    PCODE=$(echo $BRANCH  | sed 's/\/onboardingRequest//')
+    PCODE=$(echo $BRANCH  | sed 's/\/onboardingRequest//;s/\/resign//')
     echo Checking branch: $BRANCH for $PCODE
 
     git switch $BRANCH
