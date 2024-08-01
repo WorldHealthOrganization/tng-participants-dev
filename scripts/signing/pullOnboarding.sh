@@ -60,7 +60,6 @@ do
     git config user.email "$ASSIGNEEEMAIL"
     echo Pulling remote "$REF" 
     git pull
-    echo Looking at ($REF)
     PCODE=$(echo $REF  | sed 's/\/onboardingRequest|resign//')
     PCODES+=($PCODE)
     DATE=$(date +%Y%m%d-%H%M%S)
