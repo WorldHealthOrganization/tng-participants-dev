@@ -92,7 +92,7 @@ The incoming content needs to be checked for the following rules:
 
 ## Certificate Checks
 
-Most of the checks following the [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md) which defines the key length and key usage critiera. Additionally there will be more checks in future refering to DCC, IPS-PILGRIMAGE, PH4H and other domains.
+Most of the checks following the [Certificate Covernance](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md) which defines the key length and key usage critiera. Additionally there will be more checks in future refering to DCC, IPS-PILGRIMAGE,DICVP,PH4H and other domains.
 
 ### Correct PEM
 
