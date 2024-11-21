@@ -30,7 +30,6 @@ if __name__=='__main__':
                                      flag='😄', name='Test XA', numeric='23233', official_name='Test Country XA' ) 
     add_country(pycountry.countries, alpha_2='XB', alpha_3='XXB', common_name='Test XA', 
                                      flag='😄', name='Test XXB', numeric='2929', official_name='Test Country XB' )
-    '''
     add_country(pycountry.countries, alpha_2='XY', alpha_3='XXY', common_name='Test XY', 
                                      flag='😄', name='Test XY', numeric='9989', official_name='Test Country XY' )
     add_country(pycountry.countries, alpha_2='XX', alpha_3='XXX', common_name='Test XA', 
@@ -66,7 +65,7 @@ if __name__=='__main__':
     add_country(pycountry.countries, alpha_2='XQ', alpha_3='XXQ', common_name='Test XQ',
                                      flag='😄', name='Test XQ', numeric='8885', official_name='Test Country XQ' )
     add_country(pycountry.countries, alpha_2='XN', alpha_3='XXN', common_name='Test XN',
-                                     flag='😄', name='Test XN', numeric='8886', official_name='Test Country XN' )'''
+                                     flag='😄', name='Test XN', numeric='8886', official_name='Test Country XN' )
     add_country(pycountry.countries, alpha_2='XD', alpha_3='XXL', common_name='Test XD',
                                      flag='😄', name='Test XD', numeric='8887', official_name='Test Country XD' )
     countries = list(pycountry.countries)
