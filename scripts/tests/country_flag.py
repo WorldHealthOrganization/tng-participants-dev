@@ -66,6 +66,8 @@ def test_country_flag(cert, pytestconfig):
                                      flag='😄', name='Test XN', numeric='8886', official_name='Test Country XXN' )
     add_country(pycountry.countries, alpha_2='XD', alpha_3='XXL', common_name='Test XD',
                                      flag='😄', name='Test XD', numeric='8887', official_name='Test Country XXL' )
+    add_country(pycountry.countries, alpha_2='XM', alpha_3='XXM', common_name='Test XM',
+                                     flag='😄', name='Test XM', numeric='8888', official_name='Test Country XXM' )
     countries = list(pycountry.countries)
 
     if not pytestconfig.getoption('country_mode'): 
