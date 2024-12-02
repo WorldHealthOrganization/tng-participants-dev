@@ -18,6 +18,8 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     environment: dev
+    outputs:
+      secrets: ${{ steps.pull-secrets.outputs.secrets }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -48,6 +50,24 @@ jobs:
       #     cp ./scripts/signing/openssl.conf sign/cas/TA/openssl.conf
       #     echo "${{env.SIGN_TA_PEM}}" > sign/cas/TA/certs/TNG_TA.pem
       #     echo "${{env.SIGN_TA_KEY}}" > sign/cas/TA/private/TNG_TA.key.pem
+      - name: Checkout participants-secrets repo
+        uses: actions/checkout@v4
+        env:
+          REPO_TOKEN: ${{ secrets.SECRETS_REPO_TOKEN }}
+        with:
+          repository: WorldHealthOrganization/tng-participants-secrets
+          ref: main
+          path: participants-secrets
+      
+      - name: Pull Secrets
+        id: pull-secrets
+        env:
+          REPO_TOKEN: ${{ secrets.SECRETS_REPO_TOKEN }}
+        run: |
+          bash scripts/secrets.sh
+          echo "secrets=$secrets;"
+
+
       - name: Onboarding
         id: Onboarding
         env:
@@ -55,7 +75,7 @@ jobs:
           BOT_TOKEN_GITHUB: ${{secrets.BOT_TOKEN_GITHUB}}
           GITHUB_JOB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           TRANSITIVE_TRUST_SOURCE: ${{vars.TRANSITIVE_TRUST_SOURCE}}
-          SECRETS: ${{toJSON(secrets)}}
+          SECRETS: ${{ steps.pull-secrets.outputs.secrets }}
           NB_UP_SIGNING_PUB: ${{secrets.NB_UP_SIGNING_PUB}}
           NB_UP_SIGNING_KEY: ${{secrets.NB_UP_SIGNING_KEY}}
           ENV: ${{vars.ENV}}
