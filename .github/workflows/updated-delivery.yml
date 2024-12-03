@@ -18,13 +18,15 @@ jobs:
         env:
           SECRETS: ${{toJSON(secrets)}}
         run: |
-          echo "$SECRETS" > countries.json
+          echo "$SECRETS" > countries_raw.json
+          jq 'with_entries(select(.key | length == 3))' countries_raw.json > countries.json
+
       - name: Upload countries.json
         uses: actions/upload-artifact@v4
         with:
           name: countries.json
           path: countries.json
-          # overwrite: true
+          overwrite: true
 
   delivery:
     # The type of runner that the job will run on
@@ -82,4 +84,5 @@ jobs:
           SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
           SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
         run: |
-          python scripts/delivery_new.py scripts/countries.json
+          cd scripts
+          python delivery_new.py 
