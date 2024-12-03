@@ -4,6 +4,9 @@ name: New Check Country Delivery
 
 # Controls when the workflow will run
 on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron: '0 * * * *'
   workflow_dispatch:
 env:
   # Setting an environment variable with the value of a configuration variable
