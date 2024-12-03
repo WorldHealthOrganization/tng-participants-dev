@@ -10,8 +10,23 @@ env:
   env_var: ${{ vars.ENV_CONTEXT_VAR }}
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract country secrets
+        id: extract-secrets
+        env:
+          SECRETS: ${{toJSON(secrets)}}
+        run: |
+          echo "$SECRETS" > countries.json
+      - name: Upload 
+        uses: actions/upload-artifact@v4
+        with:
+          name: countries.json
+          path: countries.json
+          # overwrite: true
+
+  delivery:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     environment: dev
@@ -46,12 +61,12 @@ jobs:
       #     echo "${{env.SIGN_TA_PEM}}" > sign/cas/TA/certs/TNG_TA.pem
       #     echo "${{env.SIGN_TA_KEY}}" > sign/cas/TA/private/TNG_TA.key.pem
 
-      - name: Extract country secrets
-        id: extract-secrets
-        env:
-          SECRETS: ${{toJSON(secrets)}}
-        run: |
-          echo "$SECRETS" > scripts/countries.json
+      # Download saved json from artifacts
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: countries.json
+          path: scripts/countries.json
 
       - name: Onboarding
         id: Onboarding
