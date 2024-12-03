@@ -84,5 +84,4 @@ jobs:
           SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
           SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
         run: |
-          cd scripts
-          python delivery_new.py 
+          python scripts/delivery_new.py 

@@ -26,7 +26,7 @@ if __name__=='__main__':
         
     try:
         # Read secrets from the 'countries.json' file
-        with open('countries.json', 'r') as file:
+        with open('scripts/countries.json', 'r') as file:
             doc = json.load(file)
     except FileNotFoundError:
         print("Error: 'countries.json' file not found.", file=sys.stderr)
