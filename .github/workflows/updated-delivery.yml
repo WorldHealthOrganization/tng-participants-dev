@@ -1,0 +1,63 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Check Country Delivery
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+env:
+  # Setting an environment variable with the value of a configuration variable
+  env_var: ${{ vars.ENV_CONTEXT_VAR }}
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    environment: dev
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - uses: actions/checkout@v3
+      - name: Configure Python
+        run: |
+                pip install --upgrade pip
+                pip install -r scripts/requirements.txt
+      - name: Configure Bot
+        run: |
+          git config --global user.email ${{secrets.BOT_EMAIL_GITHUB}}
+          git config --global user.name ${{secrets.BOT_USER_GITHUB}}
+          git config --global user.password ${{secrets.BOT_TOKEN_GITHUB}}
+          git config --global pull.rebase true
+          git config --global branch.autosetuprebase always
+      # - name: Prepare Signing
+      #   id: Signing
+      
+      #   env: 
+      #     SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
+      #     SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
+      #   run: |
+      #     mkdir -p sign/cas/TA/certs
+      #     mkdir -p sign/cas/TA/private
+      #     cp ./scripts/signing/openssl.conf sign/cas/TA/openssl.conf
+      #     echo "${{env.SIGN_TA_PEM}}" > sign/cas/TA/certs/TNG_TA.pem
+      #     echo "${{env.SIGN_TA_KEY}}" > sign/cas/TA/private/TNG_TA.key.pem
+      - name: Onboarding
+        id: Onboarding
+        env:
+          GITHUB_TOKEN: ${{secrets.BOT_TOKEN_GITHUB}}
+          BOT_TOKEN_GITHUB: ${{secrets.BOT_TOKEN_GITHUB}}
+          GITHUB_JOB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          TRANSITIVE_TRUST_SOURCE: ${{vars.TRANSITIVE_TRUST_SOURCE}}
+          SECRETS: ${{toJSON(secrets)}}
+          NB_UP_SIGNING_PUB: ${{secrets.NB_UP_SIGNING_PUB}}
+          NB_UP_SIGNING_KEY: ${{secrets.NB_UP_SIGNING_KEY}}
+          ENV: ${{vars.ENV}}
+          SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
+          SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
+        run: |
+          echo "$SECRETS" > scripts/countries.json
+          python scripts/delivery_new.py
