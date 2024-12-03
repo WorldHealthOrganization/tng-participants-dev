@@ -19,7 +19,7 @@ jobs:
           SECRETS: ${{toJSON(secrets)}}
         run: |
           echo "$SECRETS" > countries.json
-      - name: Upload 
+      - name: Upload countries.json
         uses: actions/upload-artifact@v4
         with:
           name: countries.json
@@ -30,6 +30,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     environment: dev
+    needs: [prepare]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -62,11 +63,11 @@ jobs:
       #     echo "${{env.SIGN_TA_KEY}}" > sign/cas/TA/private/TNG_TA.key.pem
 
       # Download saved json from artifacts
-      - name: Download Terraform Plan
+      - name: Download countries.json
         uses: actions/download-artifact@v4
         with:
           name: countries.json
-          path: scripts/countries.json
+          path: scripts
 
       - name: Onboarding
         id: Onboarding
@@ -81,4 +82,6 @@ jobs:
           SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
           SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
         run: |
+          ls -la
+          ls -la scripts/
           python scripts/delivery_new.py
