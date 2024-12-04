@@ -59,7 +59,7 @@ jobs:
             filename=$(basename -- "$file")
             base=${filename%.pgp}
             if [[ $base =~ ^[A-Z]{3}$ ]]; then
-              gpg --batch --yes --pinentry-mode loopback --passphrase-file gpg-passphrase --output decrypted/$base.txt --decrypt "$file"
+              gpg --batch --yes --pinentry-mode loopback --passphrase ${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY_PW }} --output decrypted/$base.txt --decrypt "$file"
             fi
           done
 
