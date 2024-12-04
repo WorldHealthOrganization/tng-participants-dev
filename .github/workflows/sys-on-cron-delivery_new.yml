@@ -21,14 +21,13 @@ jobs:
 
       - name: Configure Python
         run: |
-                pip install --upgrade pip
-                pip install -r scripts/requirements.txt
+          pip install --upgrade pip
+          pip install -r scripts/requirements.txt
 
       - name: Configure Bot
         run: |
           git config --global user.email ${{secrets.BOT_EMAIL_GITHUB}}
           git config --global user.name ${{secrets.BOT_USER_GITHUB}}
-          git config --global user.password ${{secrets.BOT_TOKEN_GITHUB}}
           git config --global pull.rebase true
           git config --global branch.autosetuprebase always
 
@@ -65,6 +64,7 @@ jobs:
 
       - name: Generate countries.json
         run: |
+          mkdir -p scripts
           echo "{" > scripts/countries.json
           first=true
           for file in decrypted/*.txt; do
@@ -79,6 +79,19 @@ jobs:
             echo "  \"$country\": $content" >> scripts/countries.json
           done
           echo "}" >> scripts/countries.json
+
+      - name: Debug countries.json
+        run: |
+          echo "Generated countries.json:"
+          cat scripts/countries.json
+
+      - name: Commit and push countries.json
+        run: |
+          git add scripts/countries.json
+          git commit -m "Add/Update countries.json"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Onboarding
         id: Onboarding
