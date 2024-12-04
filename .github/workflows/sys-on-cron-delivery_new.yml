@@ -44,10 +44,13 @@ jobs:
 
       - name: Set up GPG
         run: |
-          echo "${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY }}" | gpg --import
-          echo "${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY_PW }}" > gpg-passphrase
+          mkdir -p ~/.gnupg
+          echo "use-agent" > ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          chmod 700 ~/.gnupg
+          echo "${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY }}" | gpg --batch --import
           echo "List of GPG keys"
-          gpg --batch --yes --pinentry-mode loopback --passphrase-file gpg-passphrase --list-keys
+          gpg --batch --yes --pinentry-mode loopback --passphrase ${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY_PW }} --list-keys   
 
       - name: Decrypt files
         run: |
