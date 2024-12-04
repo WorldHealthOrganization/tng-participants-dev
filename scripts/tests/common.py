@@ -172,4 +172,3 @@ class PemFileWrapper:
             self.pathinfo['country'] = path[_PATHINDEX.COUNTRY] # GER, BEL, FIN ...
         except:
             pass
-
