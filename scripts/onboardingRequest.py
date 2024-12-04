@@ -20,6 +20,14 @@ os.system("git checkout -b" + branchName +" > /dev/null 2>&1")
 os.system("rm -rf "+country)
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
+
+allowed_domains = ('DCC', 'IPS-PILGRIMAGE', 'DICVP', 'PH4H')
+for domain in allowed_domains:
+    source_path = os.path.join(repo, 'onboarding', domain)
+    destination_path = os.path.join(country, 'onboarding', domain)
+    if os.path.exists(source_path):
+        os.system(f"cp -r {source_path} {destination_path}")
+
 os.system("cp -r "+repo+"/onboarding " + country )
 os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && cat "+country+"/onboarding/DCC/TLS/Report")
 os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && rm "+country+"/onboarding/DCC/TLS/Report")
@@ -37,7 +45,7 @@ os.system("[ -d "+country + "/onboarding/DCC/up"+" ] && mv " + country + "/onboa
 os.system("[ -f "+country + "/onboarding/DCC/SCA/CSCA.pem"+" ] && mv " + country + "/onboarding/DCC/SCA/CSCA.pem "+ country+"/onboarding/DCC/SCA/SCA.pem")
 
 #if not os.path.exists("TT_API_ACCESS"):
-#      os.system("rm -rf "+country+"/onboarding/DCC/TLS")
+      #os.system("rm -rf "+country+"/onboarding/DCC/TLS")
 
 ##### Try to sign it
    
