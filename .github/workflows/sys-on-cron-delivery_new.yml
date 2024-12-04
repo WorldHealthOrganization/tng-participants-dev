@@ -1,0 +1,98 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Check Country Delivery
+
+# Controls when the workflow will run
+on:
+  # schedule:
+  #   # * is a special character in YAML so you have to quote this string
+  #   - cron: '0 * * * *'
+  workflow_dispatch:
+env:
+  env_var: ${{ vars.ENV_CONTEXT_VAR }}
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Configure Python
+        run: |
+                pip install --upgrade pip
+                pip install -r scripts/requirements.txt
+
+      - name: Configure Bot
+        run: |
+          git config --global user.email ${{secrets.BOT_EMAIL_GITHUB}}
+          git config --global user.name ${{secrets.BOT_USER_GITHUB}}
+          git config --global user.password ${{secrets.BOT_TOKEN_GITHUB}}
+          git config --global pull.rebase true
+          git config --global branch.autosetuprebase always
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Checkout participants-secrets repo
+        uses: actions/checkout@v4
+        env:
+          REPO_TOKEN: ${{ secrets.EXT_SECRETS_REPO_TOKEN }}
+        with:
+          repository: WorldHealthOrganization/tng-participants-secrets
+          ref: main
+          path: participants-secrets
+          token: ${{ secrets.EXT_SECRETS_REPO_TOKEN }}
+
+      - name: Set up GPG
+        run: |
+          echo "${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY }}" | gpg --import
+          echo "${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY_PW }}" > gpg-passphrase
+          echo "List of GPG keys"
+          gpg --batch --yes --pinentry-mode loopback --passphrase-file gpg-passphrase --list-keys
+
+      - name: Decrypt files
+        run: |
+          mkdir -p decrypted
+          for file in participants-secrets/dev/*.pgp; do
+            filename=$(basename -- "$file")
+            base=${filename%.pgp}
+            if [[ $base =~ ^[A-Z]{3}$ ]]; then
+              gpg --batch --yes --pinentry-mode loopback --passphrase-file gpg-passphrase --output decrypted/$base.txt --decrypt "$file"
+            fi
+          done
+
+      - name: Generate countries.json
+        run: |
+          echo "{" > countries.json
+          first=true
+          for file in decrypted/*.txt; do
+            filename=$(basename -- "$file")
+            country=${filename%.txt}
+            content=$(cat "$file" | jq -Rsa .) # Safely escape as JSON string
+            if [ "$first" = true ]; then
+              first=false
+            else
+              echo "," >> countries.json
+            fi
+            echo "  \"$country\": $content" >> countries.json
+          done
+          echo "}" >> countries.json
+          #Debug
+          cat countries.json
+
+    #   - name: Onboarding
+    #     id: Onboarding
+    #     env:
+    #       GITHUB_TOKEN: ${{secrets.BOT_TOKEN_GITHUB}}
+    #       BOT_TOKEN_GITHUB: ${{secrets.BOT_TOKEN_GITHUB}}
+    #       GITHUB_JOB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    #       TRANSITIVE_TRUST_SOURCE: ${{vars.TRANSITIVE_TRUST_SOURCE}}
+    #       NB_UP_SIGNING_PUB: ${{secrets.NB_UP_SIGNING_PUB}}
+    #       NB_UP_SIGNING_KEY: ${{secrets.NB_UP_SIGNING_KEY}}
+    #       ENV: ${{vars.ENV}}
+    #       SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
+    #       SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
+    #     run: |
+    #       python scripts/delivery_newer.py
