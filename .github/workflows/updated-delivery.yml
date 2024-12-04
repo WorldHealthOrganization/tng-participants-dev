@@ -16,19 +16,24 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract country secrets
-        id: extract-secrets
-        env:
-          SECRETS: ${{toJSON(secrets)}}
+      - name: Export Secrets to File
         run: |
-          echo "$SECRETS" > countries_raw.json
-          jq 'with_entries(select(.key | length == 3))' countries_raw.json > countries.json
+          echo '${{ toJSON(secrets) }}' > secrets.json
 
-      - name: Upload countries.json
+      - name: Filter Secrets for Countries
+        run: |
+          jq 'with_entries(select(.key | length == 3))' secrets.json > countries_raw.json
+
+      - name: Debug Filtered Secrets
+        run: |
+          echo "Filtered Secrets:"
+          cat countries_raw.json
+
+      - name: Upload Filtered Secrets
         uses: actions/upload-artifact@v4
         with:
-          name: countries.json
-          path: countries.json
+          name: countries_raw.json
+          path: countries_raw.json
           overwrite: true
 
   delivery:
@@ -45,8 +50,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Configure Python
         run: |
-                pip install --upgrade pip
-                pip install -r scripts/requirements.txt
+          pip install --upgrade pip
+          pip install -r scripts/requirements.txt
       - name: Configure Bot
         run: |
           git config --global user.email ${{secrets.BOT_EMAIL_GITHUB}}
@@ -54,24 +59,12 @@ jobs:
           git config --global user.password ${{secrets.BOT_TOKEN_GITHUB}}
           git config --global pull.rebase true
           git config --global branch.autosetuprebase always
-      # - name: Prepare Signing
-      #   id: Signing
-      
-      #   env: 
-      #     SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
-      #     SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
-      #   run: |
-      #     mkdir -p sign/cas/TA/certs
-      #     mkdir -p sign/cas/TA/private
-      #     cp ./scripts/signing/openssl.conf sign/cas/TA/openssl.conf
-      #     echo "${{env.SIGN_TA_PEM}}" > sign/cas/TA/certs/TNG_TA.pem
-      #     echo "${{env.SIGN_TA_KEY}}" > sign/cas/TA/private/TNG_TA.key.pem
 
       # Download saved json from artifacts
       - name: Download countries.json
         uses: actions/download-artifact@v4
         with:
-          name: countries.json
+          name: countries_raw.json
           path: scripts
 
       - name: Onboarding
@@ -87,4 +80,4 @@ jobs:
           SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
           SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
         run: |
-          python scripts/delivery_new.py 
+          python scripts/delivery_new.py
