@@ -65,7 +65,7 @@ jobs:
 
       - name: Generate countries.json
         run: |
-          echo "{" > countries.json
+          echo "{" > scripts/countries.json
           first=true
           for file in decrypted/*.txt; do
             filename=$(basename -- "$file")
@@ -74,11 +74,11 @@ jobs:
             if [ "$first" = true ]; then
               first=false
             else
-              echo "," >> countries.json
+              echo "," >> scripts/countries.json
             fi
-            echo "  \"$country\": $content" >> countries.json
+            echo "  \"$country\": $content" >> scripts/countries.json
           done
-          echo "}" >> countries.json
+          echo "}" >> scripts/countries.json
 
       - name: Onboarding
         id: Onboarding
