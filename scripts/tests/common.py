@@ -172,3 +172,7 @@ class PemFileWrapper:
             self.pathinfo['country'] = path[_PATHINDEX.COUNTRY] # GER, BEL, FIN ...
         except:
             pass
+
+def assert_to_warning(condition, message):
+    if not condition:
+        warn(message)
