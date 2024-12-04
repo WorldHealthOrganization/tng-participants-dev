@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - uses: actions/setup-python@v4
         with:
           python-version: 3.8
@@ -27,9 +31,6 @@ jobs:
           git config --global user.password ${{secrets.BOT_TOKEN_GITHUB}}
           git config --global pull.rebase true
           git config --global branch.autosetuprebase always
-
-      - name: Checkout repo
-        uses: actions/checkout@v4
 
       - name: Checkout participants-secrets repo
         uses: actions/checkout@v4
