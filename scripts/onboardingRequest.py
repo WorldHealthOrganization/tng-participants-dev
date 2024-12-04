@@ -28,7 +28,7 @@ for domain in allowed_domains:
     if os.path.exists(source_path):
         os.system(f"cp -r {source_path} {destination_path}")
 
-os.system("cp -r "+repo+"/onboarding " + country )
+#os.system("cp -r "+repo+"/onboarding " + country )
 os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && cat "+country+"/onboarding/DCC/TLS/Report")
 os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && rm "+country+"/onboarding/DCC/TLS/Report")
 
