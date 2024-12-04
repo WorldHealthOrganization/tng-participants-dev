@@ -79,20 +79,18 @@ jobs:
             echo "  \"$country\": $content" >> countries.json
           done
           echo "}" >> countries.json
-          #Debug
-          cat countries.json
 
-    #   - name: Onboarding
-    #     id: Onboarding
-    #     env:
-    #       GITHUB_TOKEN: ${{secrets.BOT_TOKEN_GITHUB}}
-    #       BOT_TOKEN_GITHUB: ${{secrets.BOT_TOKEN_GITHUB}}
-    #       GITHUB_JOB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    #       TRANSITIVE_TRUST_SOURCE: ${{vars.TRANSITIVE_TRUST_SOURCE}}
-    #       NB_UP_SIGNING_PUB: ${{secrets.NB_UP_SIGNING_PUB}}
-    #       NB_UP_SIGNING_KEY: ${{secrets.NB_UP_SIGNING_KEY}}
-    #       ENV: ${{vars.ENV}}
-    #       SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
-    #       SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
-    #     run: |
-    #       python scripts/delivery_newer.py
+      - name: Onboarding
+        id: Onboarding
+        env:
+          GITHUB_TOKEN: ${{secrets.BOT_TOKEN_GITHUB}}
+          BOT_TOKEN_GITHUB: ${{secrets.BOT_TOKEN_GITHUB}}
+          GITHUB_JOB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          TRANSITIVE_TRUST_SOURCE: ${{vars.TRANSITIVE_TRUST_SOURCE}}
+          NB_UP_SIGNING_PUB: ${{secrets.NB_UP_SIGNING_PUB}}
+          NB_UP_SIGNING_KEY: ${{secrets.NB_UP_SIGNING_KEY}}
+          ENV: ${{vars.ENV}}
+          SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
+          SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
+        run: |
+          python scripts/delivery_newer.py
