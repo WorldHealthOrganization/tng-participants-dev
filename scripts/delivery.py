@@ -20,11 +20,18 @@ def add_country(db, **params):
         index = db.indices.setdefault(key, {})
         index[value] = obj
 
-# Demo
-
-if __name__=='__main__':
-        
-    doc = json.loads(os.environ.get("SECRETS"), strict=False)
+if __name__=='__main__':  
+    
+    try:
+        with open('scripts/countries.json', 'r') as file:
+            doc = json.load(file)
+        print("Successfully loaded countries.json.")
+    except FileNotFoundError:
+        print("Error: 'countries.json' file not found.", file=sys.stderr)
+        sys.exit(1) 
+    except json.JSONDecodeError:
+        print("Error: 'countries.json' contains invalid JSON.", file=sys.stderr)
+        sys.exit(1) 
     
     add_country(pycountry.countries, alpha_2='XA', alpha_3='XXA', common_name='Test XA', 
                                      flag='😄', name='Test XA', numeric='23233', official_name='Test Country XA' ) 
@@ -72,6 +79,8 @@ if __name__=='__main__':
                                      flag='😄', name='Test XM', numeric='8888', official_name='Test Country XM' )
     add_country(pycountry.countries, alpha_2='XP', alpha_3='XXP', common_name='Test XP',
                                      flag='😄', name='Test XP', numeric='8889', official_name='Test Country XP' )
+    add_country(pycountry.countries, alpha_2='XS', alpha_3='XXS', common_name='Test XS',
+                                     flag='😄', name='Test XS', numeric='8890', official_name='Test Country XS' )
     countries = list(pycountry.countries)
   
    
