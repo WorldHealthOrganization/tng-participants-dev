@@ -22,7 +22,7 @@ os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 
 allowed_domains = tuple(os.environ.get("ALLOWED_DOMAINS", "").split(','))
-print(allowed_domains)
+print(f"--- {allowed_domains} ---")
 for domain in allowed_domains:
     source_path = os.path.join(repo, 'onboarding', domain)
     destination_path = os.path.join(country, 'onboarding', domain)
