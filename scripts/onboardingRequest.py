@@ -21,22 +21,21 @@ os.system("rm -rf "+country)
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 
-allowed_domains = ('DCC', 'IPS-PILGRIMAGE', 'DICVP', 'PH4H')
+allowed_domains = tuple(os.environ.get("ALLOWED_DOMAINS", "").split(','))
 for domain in allowed_domains:
     source_path = os.path.join(repo, 'onboarding', domain)
     destination_path = os.path.join(country, 'onboarding', domain)
     if os.path.exists(source_path):
         os.system(f"cp -r {source_path} {destination_path}")
 
-#os.system("cp -r "+repo+"/onboarding " + country )
 os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && cat "+country+"/onboarding/DCC/TLS/Report")
 os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && rm "+country+"/onboarding/DCC/TLS/Report")
 
 if os.path.exists("sync"):
-  if os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.pem"): 
+  if os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.pem"):
       os.system("rm "+country+"/onboarding/DCC/UP/UP_SYNC.csr")
 else:
-    if os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.pem"): 
+    if os.path.exists(country+"/onboarding/DCC/UP/UP_SYNC.pem"):
       os.system("rm "+country+"/onboarding/DCC/UP/UP_SYNC.pem")
 
 os.system("[ -d "+country + "/onboarding/DCC/auth"+" ] && mv " + country + "/onboarding/DCC/auth "+ country+"/onboarding/DCC/TLS")
@@ -48,12 +47,12 @@ os.system("[ -f "+country + "/onboarding/DCC/SCA/CSCA.pem"+" ] && mv " + country
       #os.system("rm -rf "+country+"/onboarding/DCC/TLS")
 
 ##### Try to sign it
-   
-if os.environ.get("ENV") != "PROD":       
+
+if os.environ.get("ENV") != "PROD":
     os.system("echo Start signing for " + country)
     os.system("./scripts/signing/sign-json.sh ./sign " +country)
     os.system("./scripts/signing/add_signature_to_trusted_issuer_json.sh  sign/cas/TA/certs/TNG_TA.pem sign/cas/TA/private/TNG_TA.key.pem " + country)
-else: 
+else:
      os.system("echo No secret for TA found. Skip signing.")
 
 ####################
