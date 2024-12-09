@@ -4,6 +4,7 @@ import os
 from cryptography import x509
 from base64 import urlsafe_b64decode
 import json
+import warnings
 from warnings import warn
 
 def requires_readable_cert(func):
@@ -173,6 +174,18 @@ class PemFileWrapper:
         except:
             pass
 
+# Custom warning format function
+def custom_formatwarning(message, category, filename, lineno, line=None):
+    return f"{message}\n"
+
+# Set the custom format function
+warnings.formatwarning = custom_formatwarning
+
 def assert_to_warning(condition, message):
     if not condition:
         warn(message)
+
+def read_allowed_domain_from_env():
+    '''Reads the ALLOWED_DOMAINS environment variable and returns a tuple of the domains
+    that are allowed to be present in the onboarding folder.'''
+    return tuple(os.getenv("ALLOWED_DOMAINS", "").split(", "))
