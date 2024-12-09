@@ -21,7 +21,7 @@ os.system("rm -rf "+country)
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 
-allowed_domains = ('DCC', 'IPS-PILGRIMAGE', 'DICVP', 'PH4H')
+domains = tuple(os.getenv("ALLOWED_DOMAINS", "").split(", "))
 print(f"--- {allowed_domains} ---")
 for domain in allowed_domains:
     source_path = os.path.join(repo, 'onboarding', domain)
