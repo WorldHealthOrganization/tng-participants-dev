@@ -1,5 +1,35 @@
 import os
 import sys
+import operator
+
+def collect_onboarding_files(country_folder, convert_upper=False):
+    '''  Create a dict of tuples for all found files:
+         The key is the domain (DCC, ICAO, etc.)
+         Each tuple contains the path starting from the domain folder,
+            e.g. ('TLS','TLS.pem')
+    '''
+    offset = len(country_folder.split(os.sep))
+    onboardings = {}
+    for path, dirs, files in os.walk(country_folder):
+        for file in files:
+            fpath = os.path.join(path, file)
+            if convert_upper:
+                fpath = fpath.upper()
+            long_path = tuple(fpath.split(os.sep)[offset:])
+            # If we're not scanning country folders but directly an onboarding folder
+            if country_folder==f'.{os.sep}onboarding':
+                long_path = ('onboarding',)+long_path
+
+            # Ignore other folders than 'onboarding'
+            if long_path[0].lower() == 'onboarding':
+                domain = long_path[1]
+                if domain.startswith('.'):
+                    continue # Allow folders like .git, files like .gitignore, etc. to be
+                    # present without being seen as onboarding files
+                if not domain in onboardings:
+                    onboardings[domain] = []
+                onboardings[domain].append(long_path[2:])
+    return onboardings
 
 repo = sys.argv[1]
 
@@ -21,13 +51,26 @@ os.system("rm -rf "+country)
 os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 
+# Retrieve environment variable and convert to tuple
 allowed_domains = tuple(os.getenv("ALLOWED_DOMAINS", "").split(", "))
+
 print(f"--- {allowed_domains} ---")
-for domain in allowed_domains:
-    source_path = os.path.join(repo, 'onboarding', domain)
-    destination_path = os.path.join(country, 'onboarding', domain)
-    if os.path.exists(source_path):
-        os.system(f"cp -r {source_path} {destination_path}")
+
+#os.system("cp -r "+repo+"/onboarding " + country )
+
+source_path = os.path.join(repo, 'onboarding')
+destination_path = country
+os.system(f"cp -r {source_path} {destination_path}")
+
+print(f"--- Country folder structure before signing ---")
+os.system("tree")
+
+ofiles = collect_onboarding_files(destination_path)
+country_domains = ofiles.keys()
+
+for domain in list(country_domains):
+    if operator.countOf(allowed_domains, domain) == 0: # if domain not in allowed_domains
+        os.system("rm -rf "+destination_path+"/onboarding/"+domain)
 
 os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && cat "+country+"/onboarding/DCC/TLS/Report")
 os.system("[ -e "+country+"/onboarding/DCC/TLS/Report ] && rm "+country+"/onboarding/DCC/TLS/Report")
@@ -66,5 +109,5 @@ if not "nothing added to commit" in result:
   os.system("git push -f -u origin "+ branchName +" > /dev/null 2>&1")
 
 #> /dev/null 2>&1
-
+print(f"--- Country folder structure after signing ---")
 os.system("tree")
