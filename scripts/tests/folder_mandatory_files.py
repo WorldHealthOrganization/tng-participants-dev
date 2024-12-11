@@ -1,11 +1,11 @@
-from common import collect_onboarding_files
+from common import collect_onboarding_files, read_allowed_domain_from_env
 
 def test_folder_mandatory_files(country_folder): 
     'Check if mandatory files exist in folder'
 
     ofiles = collect_onboarding_files(country_folder)
 
-    allowed_domains = ('DCC', 'IPS-PILGRIMAGE', 'DICVP', 'PH4H')
+    allowed_domains = read_allowed_domain_from_env()
 
     assert len(ofiles) >= 1, 'There must be at least one domain'
 
