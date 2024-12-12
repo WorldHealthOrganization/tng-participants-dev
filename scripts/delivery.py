@@ -83,7 +83,7 @@ if __name__=='__main__':
                                      flag='😄', name='Test XS', numeric='8890', official_name='Test Country XS' )
     add_country(pycountry.countries, alpha_2='XT', alpha_3='XXT', common_name='Test XT',
                                      flag='😄', name='Test XT', numeric='8891', official_name='Test Country XT' )
-     add_country(pycountry.countries, alpha_2='XU', alpha_3='XXU', common_name='Test XU',
+    add_country(pycountry.countries, alpha_2='XU', alpha_3='XXU', common_name='Test XU',
                                      flag='😄', name='Test XU', numeric='8892', official_name='Test Country XU' )
     countries = list(pycountry.countries)
   
