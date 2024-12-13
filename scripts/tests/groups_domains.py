@@ -13,4 +13,3 @@ def test_valid_domain(cert):
     assert domain, 'Certificate at incorrect location'
     #assert domain.upper() in ('DCC','IPS-PILGRIMAGE','DICVP','PH4H'), 'Invalid domain: ' + domain
     assert_to_warning(domain.upper() in ('DCC','IPS-PILGRIMAGE','DICVP','PH4H'), 'Invalid domain: ' + domain)
-

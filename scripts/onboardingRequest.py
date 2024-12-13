@@ -1,7 +1,6 @@
 import os
 import sys
 import operator
-from time import sleep
 
 def collect_onboarding_files(country_folder, convert_upper=False):
     '''  Create a dict of tuples for all found files:
@@ -63,11 +62,6 @@ source_path = os.path.join(repo, 'onboarding')
 destination_path = country
 os.system(f"cp -r {source_path} {destination_path}")
 
-#print(f"--- Country folder structure before signing ---")
-#os.system("tree")
-
-#sleep(5)
-
 ofiles = collect_onboarding_files(destination_path)
 country_domains = ofiles.keys()
 
@@ -111,8 +105,6 @@ result = os.popen("git commit -m 'Bot added Files from "+country+"'").read()
 if not "nothing added to commit" in result:
   os.system("git push -f -u origin "+ branchName +" > /dev/null 2>&1")
 
-#sleep(5)
 
 #> /dev/null 2>&1
-#print(f"--- Country folder structure after signing ---")
 os.system("tree")
