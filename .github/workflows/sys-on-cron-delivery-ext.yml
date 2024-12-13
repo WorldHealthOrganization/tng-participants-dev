@@ -1,8 +1,10 @@
-name: Check Country Delivery (External)
+# This workflow is pulling secrets from WorldHealthOrganization/tng-participants-secrets, not from github actions secrets
+# Please run the workflow named 'Export and Encrypt Secrets' to export github actions secrets
+name: Check Country Delivery
 
 on:
-  # schedule:
-  #   - cron: '0 * * * *'
+  schedule:
+    - cron: '0 * * * *'
   workflow_dispatch:
 env:
   env_var: ${{ vars.ENV_CONTEXT_VAR }}
@@ -93,4 +95,4 @@ jobs:
           SIGN_TA_KEY: ${{secrets.TNG_TA_PRIVATE_KEY}}
           SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
         run: |
-          python scripts/delivery_newer.py
+          python scripts/delivery.py
