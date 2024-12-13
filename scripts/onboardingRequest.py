@@ -53,7 +53,7 @@ os.system("mkdir -p " + country)
 os.system("mkdir -p " + country+"/onboarding")
 
 # Retrieve environment variable and convert to tuple
-allowed_domains = tuple(os.getenv("ALLOWED_DOMAINS", "").split(", "))
+allowed_domains = tuple(os.environ.get("ALLOWED_DOMAINS", "").split(", "))
 print(f'Length of allowed domains is: {len(allowed_domains)}', flush=True)
 print(f'Allowed domains is: {allowed_domains}', flush=True)
 
