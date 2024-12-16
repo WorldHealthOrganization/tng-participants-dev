@@ -188,4 +188,4 @@ def assert_to_warning(condition, message):
 def read_allowed_domain_from_env():
     '''Reads the ALLOWED_DOMAINS environment variable and returns a tuple of the domains
     that are allowed to be present in the onboarding folder.'''
-    return tuple(os.getenv("ALLOWED_DOMAINS", "").split(", "))
+    return tuple(os.environ.get("ALLOWED_DOMAINS", "").split(", "))

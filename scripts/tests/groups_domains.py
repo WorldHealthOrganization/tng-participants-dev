@@ -1,8 +1,4 @@
-import warnings
-
-def assert_to_warning(condition, message):
-    if not condition:
-        warnings.warn(message)
+from common import assert_to_warning
 
 def test_valid_group(cert):
     'The group in the path name must be valid'
