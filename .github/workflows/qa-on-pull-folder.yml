@@ -40,4 +40,5 @@ jobs:
           pytest.xml
         check_run_annotations: all
     - name: Conclusion
+      if: always()
       run: echo "Conclusion is ${{ fromJSON( steps.test-results.outputs.json ).conclusion }}"
