@@ -37,5 +37,7 @@ jobs:
       with:
         files: |
           pytest.xml
+      json-files: |
+          pytest.json
 
 
