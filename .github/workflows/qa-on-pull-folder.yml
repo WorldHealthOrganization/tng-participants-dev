@@ -60,7 +60,7 @@ jobs:
 
     - name: Print content of test_report.md
       if: always()
-      run: cat test_report.md
+      run: cat md_report.md
 
     - name: Render the report to the PR
       uses: marocchino/sticky-pull-request-comment@v2
