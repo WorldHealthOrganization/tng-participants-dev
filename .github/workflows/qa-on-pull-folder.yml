@@ -34,7 +34,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run QA checks
       run: |
-        pytest -vs scripts/tests/test_country_folders.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output test_report.md --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml --json-report --json-report --json-report-file=test_report.json
+        pytest -vs scripts/tests/test_country_folders.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output test_report.md --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
     - name: Publish Test Results
       id: test-results
       uses: EnricoMi/publish-unit-test-result-action@v2
@@ -53,7 +53,7 @@ jobs:
     - name: Print content of pytest.xml
       if: always()
       run: cat pytest.xml
-    
+
     - name: Print content of test_report.md
       if: always()
       run: cat test_report.md
