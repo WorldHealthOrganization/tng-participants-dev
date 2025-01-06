@@ -34,7 +34,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run QA checks
       env:
-        REPORT_OUTPUT: cert_test_md_report.md
+        REPORT_OUTPUT: cert_test_report.md
       shell: bash
       run: |
         echo "REPORT_FILE=${REPORT_OUTPUT}" >> "$GITHUB_ENV"
@@ -46,23 +46,7 @@ jobs:
       with:
         files: |
           pytest.xml
-    - name: List generated test files
-      if: always()
-      run: ls -l
-
-    - name: Print content of tng_onboarding_qa.html
-      if: always()
-      run: cat tng_onboarding_qa.html
-
-    - name: Print content of pytest.xml
-      if: always()
-      run: cat pytest.xml
-
-    - name: Print content of cert_test_md_report.md
-      if: always()
-      run: cat cert_test_md_report.md
-
-    - name: Render the report to the PR
+    - name: Render the cert test report to the PR
       uses: marocchino/sticky-pull-request-comment@v2
       if: always()
       with:
