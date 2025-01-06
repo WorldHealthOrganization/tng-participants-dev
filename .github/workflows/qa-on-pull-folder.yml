@@ -66,6 +66,6 @@ jobs:
       uses: marocchino/sticky-pull-request-comment@v2
       if: always()
       with:
-        header: test-report
+        header: cert-test-report
         recreate: true
         path: ${{ env.REPORT_FILE }}
