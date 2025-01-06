@@ -34,7 +34,7 @@ jobs:
       shell: bash
       run: |
         echo "REPORT_FILE=${REPORT_OUTPUT}" >> "$GITHUB_ENV"
-        pytest -vs scripts/tests/test_country_folders.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output "$REPORT_OUTPUT" --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+        pytest -vs scripts/tests/test_certs.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output "$REPORT_OUTPUT" --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
     - name: Publish Test Results
       id: test-results
       uses: EnricoMi/publish-unit-test-result-action@v2
