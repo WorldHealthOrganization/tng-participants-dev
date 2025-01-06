@@ -51,5 +51,4 @@ jobs:
       if: always()
       with:
         header: cert-test-report
-        recreate: true
         path: ${{ env.REPORT_FILE }}

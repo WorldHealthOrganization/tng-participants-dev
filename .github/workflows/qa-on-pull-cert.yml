@@ -47,7 +47,6 @@ jobs:
       if: always()
       with:
         header: folder-test-report
-        recreate: true
         path: ${{ env.REPORT_FILE }}
 
 
