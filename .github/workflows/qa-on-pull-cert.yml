@@ -28,9 +28,16 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Checkout participants repo for QA checks
+      uses: actions/checkout@v4
+      with:
+        repository: WorldHealthOrganization/tng-participant-template/scripts/tests
+        sparse-checkout: |
+            scripts/tests
+        path: qa/tests
     - name: Run QA checks
       run: |
-        pytest -vs scripts/tests/test_certs.py --country-mode -C ${{ github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+        pytest -vs qa/tests/test_certs.py --country-mode -C ${{ github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action/composite@v2
       if: always()
