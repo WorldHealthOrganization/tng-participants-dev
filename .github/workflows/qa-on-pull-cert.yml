@@ -31,7 +31,7 @@ jobs:
     - name: Checkout participants repo for QA checks
       uses: actions/checkout@v4
       with:
-        repository: WorldHealthOrganization/tng-participant-template/scripts/tests
+        repository: WorldHealthOrganization/tng-participant-template
         sparse-checkout: |
             scripts/tests
         path: qa/tests
