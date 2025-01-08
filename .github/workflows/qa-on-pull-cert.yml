@@ -35,6 +35,12 @@ jobs:
         path: qa/tests
         sparse-checkout: |
             scripts/tests
+    - name: List of qa/tests folder
+      run: |
+        echo "List of current folder"
+        ls -ls
+        echo "List of qa/tests folder"
+        ls -la qa/tests
     - name: Run QA checks
       run: |
         pytest -vs qa/tests/scripts/tests/test_certs.py --country-mode -C ${{ github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
