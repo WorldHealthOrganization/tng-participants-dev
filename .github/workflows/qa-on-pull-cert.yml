@@ -32,9 +32,16 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: WorldHealthOrganization/tng-participant-template
-        path: qa/tests
+        path: script/tests
         sparse-checkout: |
             scripts/tests
+    - name: Exclude .git and other unnecessary directories
+      run: |
+        echo "/*" > .git/info/sparse-checkout
+        echo "!/*/" >> .git/info/sparse-checkout
+        echo "!scripts/tests" >> .git/info/sparse-checkout
+        git sparse-checkout init --cone
+        git sparse-checkout set scripts/tests
     - name: List of qa/tests folder
       run: |
         echo "List of current folder"
