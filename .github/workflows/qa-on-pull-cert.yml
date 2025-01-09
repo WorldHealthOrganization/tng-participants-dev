@@ -17,6 +17,13 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.10'
+    - name: Checkout participants repo for QA checks
+      uses: actions/checkout@v4
+      with:
+        repository: WorldHealthOrganization/tng-participant-template
+        path: scripts
+        sparse-checkout: |
+          scripts/requirements.txt scripts/tests
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -28,20 +35,14 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Checkout participants repo for QA checks
-      uses: actions/checkout@v4
-      with:
-        repository: WorldHealthOrganization/tng-participant-template
-        path: script/tests
-        sparse-checkout: |
-            scripts/tests
     - name: Exclude .git and other unnecessary directories
       run: |
         echo "/*" > .git/info/sparse-checkout
         echo "!/*/" >> .git/info/sparse-checkout
         echo "!scripts/tests" >> .git/info/sparse-checkout
+        echo "!scripts/requirements.txt" >> .git/info/sparse-checkout
         git sparse-checkout init --cone
-        git sparse-checkout set scripts/tests
+        git sparse-checkout set scripts/tests scripts/requirements.txt
     - name: List of qa/tests folder
       run: |
         echo "List of current folder"
