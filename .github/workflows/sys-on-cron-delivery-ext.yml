@@ -20,7 +20,13 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 3.8
-
+      - name: Checkout requirements.txt file from participants repo
+        uses: actions/checkout@v4
+        with:
+          repository: WorldHealthOrganization/tng-participant-template
+          path: scripts
+          sparse-checkout: |
+            scripts/requirements.txt
       - name: Configure Python
         run: |
                 pip install --upgrade pip
