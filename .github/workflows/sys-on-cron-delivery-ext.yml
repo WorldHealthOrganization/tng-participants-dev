@@ -25,10 +25,11 @@ jobs:
         with:
           repository: WorldHealthOrganization/tng-participant-template
           sparse-checkout: |
-            scripts/requirements.txt scripts/delivery.py
+            scripts/requirements.txt
+            scripts/delivery.py
       - name: List of current folder
         run: |
-          ls -ls
+          ls -ls scripts
       - name: Configure Python
         run: |
                 pip install --upgrade pip
