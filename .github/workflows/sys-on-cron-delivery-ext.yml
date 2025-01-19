@@ -24,9 +24,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: WorldHealthOrganization/tng-participant-template
-          path: scripts
+          path: tng-participant-template
           sparse-checkout: |
             scripts/requirements.txt
+      - name: List of current folder
+        run: |
+          ls -ls
       - name: Configure Python
         run: |
                 pip install --upgrade pip
