@@ -29,7 +29,7 @@ jobs:
           git config --global pull.rebase true
           git config --global branch.autosetuprebase always
 
-      - name: Checkout scripts folder files from participants repo
+      - name: Checkout participants template repo
         uses: actions/checkout@v4
         with:
           repository: WorldHealthOrganization/tng-participant-template
@@ -53,7 +53,6 @@ jobs:
           ls -ls scripts
           ls -ls scripts/signing
           ls -ls scripts/tests
-
 
       - name: Configure Python
         run: |
@@ -107,6 +106,9 @@ jobs:
             echo "  \"$country\": $content" >> scripts/countries.json
           done
           echo "}" >> scripts/countries.json
+
+      - name: Set execute permissions for all files in scripts directory
+        run: chmod -R +x scripts/
 
       - name: List of current folder
         run: |
