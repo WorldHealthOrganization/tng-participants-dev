@@ -108,6 +108,13 @@ jobs:
           done
           echo "}" >> scripts/countries.json
 
+      - name: List of current folder
+        run: |
+          ls -ls
+          ls -ls scripts
+          ls -ls scripts/signing
+          ls -ls scripts/tests
+
       - name: Onboarding
         id: Onboarding
         env:
