@@ -30,7 +30,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run QA checks
       env:
-        REPORT_OUTPUT: folder_test_report.md
+        REPORT_OUTPUT: folder_check_qa_report.md
       shell: bash
       run: |
         echo "REPORT_FILE=${REPORT_OUTPUT}" >> "$GITHUB_ENV"
@@ -42,11 +42,11 @@ jobs:
       with:
         files: |
           pytest.xml
-    - name: Render the folder test report to the PR
+    - name: Render the folder check QA report to the PR comment
       uses: marocchino/sticky-pull-request-comment@v2
       if: always()
       with:
-        header: folder-test-report
+        header: folder-check-qa-report
         path: ${{ env.REPORT_FILE }}
 
 

@@ -17,10 +17,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.10'
-    - name: actions/npm
-      uses: actions/setup-node@v3
-      with:
-        node-version: '14'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -34,7 +30,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run QA checks
       env:
-        REPORT_OUTPUT: cert_test_report.md
+        REPORT_OUTPUT: cert_check_qa_report.md
       shell: bash
       run: |
         echo "REPORT_FILE=${REPORT_OUTPUT}" >> "$GITHUB_ENV"
@@ -46,9 +42,9 @@ jobs:
       with:
         files: |
           pytest.xml
-    - name: Render the cert test report to the PR
+    - name: Render the cert check QA report to the PR comment
       uses: marocchino/sticky-pull-request-comment@v2
       if: always()
       with:
-        header: cert-test-report
+        header: cert-check-qa-report
         path: ${{ env.REPORT_FILE }}
