@@ -43,6 +43,7 @@ jobs:
 
       - name: copy of scripts folder files from participants repo
         run: |
+          mkdir scripts
           cp -r tng-participant-template/scripts/* scripts/
           rm -rf tng-participant-template
 
