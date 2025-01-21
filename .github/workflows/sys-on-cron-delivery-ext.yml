@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: WorldHealthOrganization/tng-participant-template
+          ref: feat/centralization-onboarding-qa-checks-in-template
           sparse-checkout: |
             scripts/requirements.txt
             scripts/delivery.py
