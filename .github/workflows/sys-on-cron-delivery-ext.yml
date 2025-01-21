@@ -39,13 +39,12 @@ jobs:
       - name: List of current folder
         run: |
           ls -ls
-          ls -ls scripts
-          ls -ls scripts/signing
-          ls -ls scripts/tests
+          ls -ls tng-participant-template/scripts
 
       - name: copy of scripts folder files from participants repo
         run: |
           cp -r tng-participant-template/scripts/* scripts/
+          rm -rf tng-participant-template
 
       - name: List of current folder
         run: |
