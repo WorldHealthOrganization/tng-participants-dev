@@ -20,21 +20,6 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 3.8
-      - name: Checkout requirements.txt file from participants repo
-        uses: actions/checkout@v4
-        with:
-          repository: WorldHealthOrganization/tng-participant-template
-          ref: feat/centralization-onboarding-qa-checks-in-template
-          sparse-checkout: |
-            scripts/requirements.txt
-            scripts/delivery.py
-      - name: List of current folder
-        run: |
-          ls -ls scripts
-      - name: Configure Python
-        run: |
-                pip install --upgrade pip
-                pip install -r scripts/requirements.txt
 
       - name: Configure Bot
         run: |
@@ -43,6 +28,24 @@ jobs:
           git config --global user.password ${{secrets.BOT_TOKEN_GITHUB}}
           git config --global pull.rebase true
           git config --global branch.autosetuprebase always
+
+      - name: Checkout scripts folder files from participants repo
+        uses: actions/checkout@v4
+        with:
+          repository: WorldHealthOrganization/tng-participant-template
+          ref: feat/centralization-onboarding-qa-checks-in-template #TODO : ref to 'main' for main branch
+
+      - name: List of current folder
+        run: |
+          ls -ls
+          ls -ls scripts
+          ls -ls scripts/signing
+          ls -ls scripts/tests
+
+      - name: Configure Python
+        run: |
+                pip install --upgrade pip
+                pip install -r scripts/requirements.txt
 
       - name: Checkout participants-secrets repo
         uses: actions/checkout@v4
