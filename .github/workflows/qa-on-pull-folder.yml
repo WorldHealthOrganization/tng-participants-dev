@@ -29,13 +29,22 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run QA checks
+      env:
+        REPORT_OUTPUT: cert_check_qa_report.md
+      shell: bash
       run: |
-        pytest -vs scripts/tests/test_country_folders.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+        echo "REPORT_FILE=${REPORT_OUTPUT}" >> "$GITHUB_ENV"
+        pytest -vs scripts/tests/test_country_folders.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output "$REPORT_OUTPUT" --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
     - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action/composite@v2
+      id: test-results
+      uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
         files: |
           pytest.xml
-
-
+    - name: Render the cert check QA report to the PR comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: always()
+      with:
+        header: cert-check-qa-report
+        path: ${{ env.REPORT_FILE }}
