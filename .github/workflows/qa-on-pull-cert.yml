@@ -18,6 +18,13 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: List of current folder
+        if: always()
+        run: |
+          ls -ls
+          ls -ls scripts
+          ls -ls scripts/signing
+
       - name: Checkout participants template repo
         uses: actions/checkout@v4
         with:
@@ -25,7 +32,7 @@ jobs:
           ref: feat/centralization-onboarding-qa-checks-in-template #TODO : ref to 'main' for main branch
           path: tng-participant-template
 
-      - name: copy of scripts folder files from participants repo
+      - name: copy of test folder files from participants repo
         run: |
           mkdir -p ./scripts/tests
           cp -rf tng-participant-template/scripts/tests/* ./scripts/tests
@@ -50,6 +57,16 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Set execute permissions for all files in scripts directory
+        run: chmod -R +x scripts/tests
+
+      - name: List of current folder
+        run: |
+          ls -ls
+          ls -ls scripts
+          ls -ls scripts/signing
+          ls -ls scripts/tests
 
       - name: Run QA checks
         run: |
