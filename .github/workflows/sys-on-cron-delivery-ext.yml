@@ -82,6 +82,9 @@ jobs:
           done
           echo "}" >> scripts/countries.json
 
+      - name: Set execute permissions for all files in scripts directory
+        run: chmod -R +x scripts/
+
       - name: Onboarding
         id: Onboarding
         env:
