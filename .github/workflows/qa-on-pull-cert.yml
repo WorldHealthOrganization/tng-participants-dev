@@ -13,6 +13,10 @@ jobs:
     if: contains(github.head_ref, 'onboardingRequest')
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: feat/test-ssot-qa
+          path: tng-participants-dev
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
