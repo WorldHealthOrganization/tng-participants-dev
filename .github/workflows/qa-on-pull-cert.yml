@@ -27,7 +27,7 @@ jobs:
         run: |
           ls -ls
           ls -ls tng-participants-dev
-          ls -ls tng-participants-dev/scripts/tests
+          ls -ls tng-participants-dev/scripts/
 
       - name: Checkout participants template repo
         uses: actions/checkout@v4
