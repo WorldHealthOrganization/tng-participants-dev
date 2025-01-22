@@ -85,6 +85,13 @@ jobs:
       - name: Set execute permissions for all files in scripts directory
         run: chmod -R +x scripts/
 
+      - name: List of current folder
+        run: |
+            ls -ls
+            ls -ls scripts
+            ls -ls scripts/signing
+            ls -ls scripts/tests
+
       - name: Onboarding
         id: Onboarding
         env:
