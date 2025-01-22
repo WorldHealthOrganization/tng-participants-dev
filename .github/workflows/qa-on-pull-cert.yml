@@ -27,6 +27,7 @@ jobs:
     - name: List of current folder
       run: |
         ls -ls
+        ls -ls scripts
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
