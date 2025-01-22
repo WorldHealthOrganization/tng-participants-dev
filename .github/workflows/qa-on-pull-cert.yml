@@ -26,8 +26,8 @@ jobs:
         if: always()
         run: |
           ls -ls
-          ls -ls scripts
-          ls -ls scripts/signing
+          ls -ls tng-participants-dev
+          ls -ls tng-participants-dev/scripts/tests
 
       - name: Checkout participants template repo
         uses: actions/checkout@v4
