@@ -3,8 +3,8 @@
 
 name: Quality Assurance (Certificates)
 on:
-  pull_request: 
-    types: [ opened, synchronize, reopened, edited, review_request_removed ] 
+  pull_request:
+    types: [ opened, synchronize, reopened, edited, review_request_removed ]
 jobs:
   certificate-check:
     runs-on: ubuntu-latest
@@ -12,41 +12,51 @@ jobs:
       fail-fast: false
     if: contains(github.head_ref, 'onboardingRequest')
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.10'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
-        if [ -f scripts/requirements.txt ]; then pip install -r scripts/requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Run QA checks
-      env:
-        REPORT_OUTPUT: folder_check_qa_report.md
-      shell: bash
-      run: |
-        echo "REPORT_FILE=${REPORT_OUTPUT}" >> "$GITHUB_ENV"
-        pytest -vs scripts/tests/test_certs.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output "$REPORT_OUTPUT" --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
-    - name: Publish Test Results
-      id: test-results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        files: |
-          pytest.xml
-    - name: Render the folder check QA report to the PR comment
-      uses: marocchino/sticky-pull-request-comment@v2
-      if: always()
-      with:
-        header: folder-check-qa-report
-        path: ${{ env.REPORT_FILE }}
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
 
+      - name: Checkout participants template repo
+        uses: actions/checkout@v4
+        with:
+          repository: WorldHealthOrganization/tng-participant-template
+          ref: feat/centralization-onboarding-qa-checks-in-template #TODO : ref to 'main' for main branch
+          path: tng-participant-template
 
+      - name: copy of scripts folder files from participants repo
+        run: |
+          mkdir -p ./scripts/tests
+          cp -rf tng-participant-template/scripts/tests/* ./scripts/tests
+          rm -rf tng-participant-template
+
+      - name: List of current folder
+        run: |
+          ls -ls
+          ls -ls scripts
+          ls -ls scripts/signing
+          ls -ls scripts/tests
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8 pytest
+          if [ -f scripts/requirements.txt ]; then pip install -r scripts/requirements.txt; fi
+
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run QA checks
+        run: |
+          pytest -vs ./scripts/tests/test_certs.py --country-mode -C ${{ github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2
+        if: always()
+        with:
+          files: |
+            pytest.xml
