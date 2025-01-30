@@ -30,6 +30,7 @@ jobs:
           ls -ls
           mkdir -p ./scripts/tests
           cp -rf tng-participant-template/scripts/tests/* ./scripts/tests
+          cp -rf tng-participant-template/conftest.py ./conftest.py
           rm -rf tng-participant-template
       - name: Install dependencies
         run: |
