@@ -32,6 +32,8 @@ jobs:
           cp -rf tng-participant-template/scripts/tests/* ./scripts/tests
           cp -rf tng-participant-template/conftest.py ./conftest.py
           rm -rf tng-participant-template
+          ls -ls
+          ls -ls scripts/tests
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -51,7 +53,7 @@ jobs:
         shell: bash
         run: |
           echo "REPORT_FILE=${REPORT_OUTPUT}" >> "$GITHUB_ENV"
-          pytest -vs ./scripts/tests/test_certs.py --country-mode -C ${{  github.head_ref }} --tb=short -rA --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output "$REPORT_OUTPUT" --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
+          pytest -vs ./scripts/tests/test_certs.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output "$REPORT_OUTPUT" --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
         if: always()
