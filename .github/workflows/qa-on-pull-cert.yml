@@ -31,7 +31,8 @@ jobs:
         mkdir -p ./scripts/tests
         cp -rf tng-participant-template/scripts/tests/* ./scripts/tests
         cp -rf tng-participant-template/conftest.py ./conftest.py
-        ls -ls tn-participant-template/
+        chmod -R +x tng-participant-template
+        ls -ls tng-participant-template/
         ls -ls tng-participant-template/scripts/
         ls -ls tn-participant-template/scripts/tests
         rm -rf tng-participant-template
