@@ -28,9 +28,13 @@ jobs:
     - name: copy of test folder files from participants repo
       run: |
         ls -ls
+        ls -ls scripts/tests
         mkdir -p ./scripts/tests
         cp -rf tng-participant-template/scripts/tests/* ./scripts/tests
         cp -rf tng-participant-template/conftest.py ./conftest.py
+        ls -ls tn-participant-template/
+        ls -ls tng-participant-template/scripts/
+        ls -ls tn-participant-template/scripts/tests
         rm -rf tng-participant-template
     - name: Install dependencies
       run: |
@@ -44,7 +48,9 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Set execute permissions for test files in scripts directory
-      run: chmod -R +x scripts
+      run: | 
+        chmod -R +x scripts
+        ls -ls scripts
     - name: Run QA checks
       env:
         REPORT_OUTPUT: folder_check_qa_report.md
