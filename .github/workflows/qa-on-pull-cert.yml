@@ -35,6 +35,7 @@ jobs:
         ls -ls tng-participant-template/
         ls -ls tng-participant-template/scripts/
         ls -ls tn-participant-template/scripts/tests
+        chmod -R +x tng-participant-template/scripts/tests
         rm -rf tng-participant-template
     - name: Install dependencies
       run: |
