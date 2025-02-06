@@ -28,7 +28,6 @@ jobs:
     - name: copy of test folder files from participants repo
       run: |
         ls -ls
-        ls -ls scripts/tests
         mkdir -p ./scripts/tests
         cp -rf tng-participant-template/scripts/tests/* ./scripts/tests
         cp -rf tng-participant-template/conftest.py ./conftest.py
