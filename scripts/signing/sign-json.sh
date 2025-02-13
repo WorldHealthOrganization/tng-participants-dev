@@ -65,8 +65,8 @@ declare -A DIRTOUSAGE=(
   [CSCA]="TA"
   [sca]="TA"
   [SCA]="TA"
-  [dsca]="TA"
-  [DSCA]="TA"
+  [deca]="TA"
+  [DECA]="TA"
 )
 EXCLUDEFROMSIGNING=("CA")
 
