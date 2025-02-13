@@ -68,6 +68,8 @@ declare -A DIRTOUSAGE=(
   [CSCA]="TA"
   [sca]="TA"
   [SCA]="TA"
+  [desc]="TA"
+  [DESC]="TA"
 )
 
 
