@@ -19,6 +19,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Checkout test scripts
+      uses: actions/checkout@v2
+      with:
+        repository: 'WorldHealthOrganization/tng-participant-template'
+        path: 'ssot-tests'
+    - name: List directory contents
+      run: |
+        ls -la .
+    - name: Copy test scripts to local directory
+      run: |
+        mkdir -p ./scripts/tests
+        cp -rf ssot-tests/scripts/tests/* ./scripts/tests
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
