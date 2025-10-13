@@ -15,9 +15,9 @@ jobs:
     steps:
 
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v6
         with:
           python-version: 3.8
 
@@ -35,7 +35,7 @@ jobs:
           git config --global branch.autosetuprebase always
 
       - name: Checkout participants-secrets repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         env:
           REPO_TOKEN: ${{ secrets.EXT_SECRETS_REPO_TOKEN }}
         with:
@@ -96,4 +96,5 @@ jobs:
           SIGN_TA_PEM: ${{secrets.TNG_TA_CA}}
           ALLOWED_DOMAINS: ${{vars.ALLOWED_DOMAINS}}
         run: |
+
           python scripts/delivery.py
