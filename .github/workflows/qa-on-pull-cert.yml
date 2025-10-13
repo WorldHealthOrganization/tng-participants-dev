@@ -12,9 +12,9 @@ jobs:
       fail-fast: false
     if: contains(github.head_ref, 'onboardingRequest')
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
     - name: Set up Python 
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
         python-version: '3.10'
     - name: Install dependencies
@@ -37,13 +37,13 @@ jobs:
         pytest -vs scripts/tests/test_certs.py --country-mode -C ${{  github.head_ref }} --tb=short -rfEx --md-report --md-report-verbose=1 --md-report-zeros=number --md-report-flavor gfm --md-report-exclude-outcomes xpassed xfailed --md-report-output "$REPORT_OUTPUT" --html=tng_onboarding_qa.html --self-contained-html --junit-xml=pytest.xml
     - name: Publish Test Results
       id: test-results
-      uses: EnricoMi/publish-unit-test-result-action@v2
+      uses: EnricoMi/publish-unit-test-result-action@v2.20
       if: always()
       with:
         files: |
           pytest.xml
     - name: Render the folder check QA report to the PR comment
-      uses: marocchino/sticky-pull-request-comment@v2
+      uses: marocchino/sticky-pull-request-comment@v2.9
       if: always()
       with:
         header: folder-check-qa-report
