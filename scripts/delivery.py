@@ -95,6 +95,8 @@ if __name__=='__main__':
                                      flag='😄', name='Test XX', numeric='8896', official_name='Test Country XX' )
     add_country(pycountry.countries, alpha_2='IO', alpha_3='IOM', common_name='Test IO',
                                      flag='😄', name='Test IO', numeric='8897', official_name='Test Country IO' )
+    add_country(pycountry.countries, alpha_2='XR', alpha_3='XXR', common_name='Test XR',
+                                     flag='😄', name='Test XR', numeric='8898', official_name='Test Country XR' )
     countries = list(pycountry.countries)
   
    
@@ -154,4 +156,5 @@ if __name__=='__main__':
                     os.system("echo Skip "+country.alpha_3 + "Branch already exist merge the branch or delete the branch.")
             except Exception as Error:
                 os.system("echo 'Error occoured for onboarding " + country.alpha_3 +": "+ str(Error)+"'")
+
 
