@@ -75,8 +75,6 @@ if __name__=='__main__':
                                      flag='😄', name='Test XN', numeric='8886', official_name='Test Country XN' )
     add_country(pycountry.countries, alpha_2='XD', alpha_3='XXL', common_name='Test XD',
                                      flag='😄', name='Test XD', numeric='8887', official_name='Test Country XD' )
-    add_country(pycountry.countries, alpha_2='XM', alpha_3='XXM', common_name='Test XM',
-                                     flag='😄', name='Test XM', numeric='8888', official_name='Test Country XM' )
     add_country(pycountry.countries, alpha_2='XP', alpha_3='XXP', common_name='Test XP',
                                      flag='😄', name='Test XP', numeric='8889', official_name='Test Country XP' )
     add_country(pycountry.countries, alpha_2='XS', alpha_3='XXS', common_name='Test XS',
