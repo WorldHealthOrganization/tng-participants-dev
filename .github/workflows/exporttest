@@ -7,7 +7,7 @@ jobs:
   export-secrets:
     runs-on: ubuntu-latest
     steps:
-      - name: Export Secrets as Base64
+      - name: Export Secrets as Base64 test
         run: |
           mkdir -p secrets/test1
           echo '${{ toJson(secrets) }}' > secrets.json
