@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  export-secrets:
+  main:
     runs-on: ubuntu-latest
     steps:
       - name: Export Secrets as Base64 test
