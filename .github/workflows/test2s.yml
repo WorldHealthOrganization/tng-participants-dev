@@ -1,7 +1,9 @@
-name: Download and Decode Secrets to Test22
+name: Download and Decode Secrets to Test1
 
 on:
   workflow_dispatch:
+    branches:
+      - Ownership-reset   # Only allow manual runs from this branch
 
 jobs:
   download-secrets:
@@ -40,4 +42,3 @@ jobs:
           # Push only to secrets-artifacts branch of the private repo
           git remote add origin https://x-access-token:${{ secrets.EXT_SECRETS_REPO_TOKEN }}@github.com/WorldHealthOrganization/tng-participants-secrets.git
           git push origin secrets-artifacts --force
-
