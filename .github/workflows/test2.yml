@@ -2,6 +2,8 @@ name: Download and Decode Secrets to Test1
 
 on:
   workflow_dispatch:
+    branches:
+      - Ownership-reset   # Only allow manual runs from this branch
 
 jobs:
   download-secrets:
