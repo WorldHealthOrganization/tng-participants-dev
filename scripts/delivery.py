@@ -105,7 +105,7 @@ if __name__=='__main__':
             print("Skip Process because git is not properly responding")
             sys.exit(1)
     
-    print("Status:" + status)
+    print("Status:" , status)
     print ("branches found:")
     print(branches)
 
@@ -160,6 +160,7 @@ if __name__=='__main__':
                     os.system("echo Skip "+country.alpha_3 + "Branch already exist merge the branch or delete the branch.")
             except Exception as Error:
                 os.system("echo 'Error occoured for onboarding " + country.alpha_3 +": "+ str(Error)+"'")
+
 
 
 
