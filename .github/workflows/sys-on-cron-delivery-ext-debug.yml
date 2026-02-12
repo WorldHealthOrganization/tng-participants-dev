@@ -85,7 +85,7 @@ jobs:
 
       - name: print countries.json
         run: |
-          echo scripts/countries.json
+          cat scripts/countries.json
 
       - name: Onboarding
         id: Onboarding
