@@ -83,6 +83,10 @@ jobs:
           done
           echo "}" >> scripts/countries.json
 
+      - name: print countries.json
+        run: |
+          echo scripts/countries.json
+
       - name: Onboarding
         id: Onboarding
         env:
