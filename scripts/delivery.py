@@ -97,9 +97,15 @@ if __name__=='__main__':
                                      flag='😄', name='Test XR', numeric='8898', official_name='Test Country XR' )
     countries = list(pycountry.countries)
   
-   
-
-    branches = os.popen("git ls-remote --heads").read()
+    # Fix pOpen Handling to stop PR Creation when git fails with errors
+    p = os.popen("git ls-remote --heads")
+    branches =p.read()
+    status = p.close()
+    if status is not None:
+            print("Skip Process because git is not properly responding")
+            sys.exit(1)
+    
+    print("Status:" , status)
     print ("branches found:")
     print(branches)
 
@@ -154,5 +160,7 @@ if __name__=='__main__':
                     os.system("echo Skip "+country.alpha_3 + "Branch already exist merge the branch or delete the branch.")
             except Exception as Error:
                 os.system("echo 'Error occoured for onboarding " + country.alpha_3 +": "+ str(Error)+"'")
+
+
 
 
