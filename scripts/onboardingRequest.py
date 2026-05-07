@@ -1,6 +1,36 @@
 import os
 import sys
 import operator
+import re
+
+PRIVATE_KEY_RE = re.compile(r"BEGIN.*PRIVATE KEY")
+
+def enforce_no_private_key(root_path):
+    """
+    Recursively scan text-like files under root_path for private key headers.
+    Raises RuntimeError if a match is found.
+    """
+    matches = []
+
+    for path, _, files in os.walk(root_path):
+        for file in files:
+            file_path = os.path.join(path, file)
+
+            try:
+                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                    for line_no, line in enumerate(f, start=1):
+                        if PRIVATE_KEY_RE.search(line):
+                            matches.append((file_path, line_no, line.strip()))
+                            break
+            except OSError:
+                # If a file can't be read, continue scanning others. (for example -permission denied,broken file,unreadable file)
+                continue
+
+    if matches:
+        print("Private key content detected in onboarding files:", flush=True)
+        for file_path, line_no, line in matches:
+            print(f" - {file_path}:{line_no}: {line}", flush=True)
+        raise RuntimeError("Private key content found. Aborting onboarding.")
 
 def collect_onboarding_files(country_folder, convert_upper=False):
     '''  Create a dict of tuples for all found files:
@@ -61,6 +91,7 @@ print(f'Allowed domains is: {allowed_domains}', flush=True)
 source_path = os.path.join(repo, 'onboarding')
 destination_path = country
 os.system(f"cp -r {source_path} {destination_path}")
+enforce_no_private_key(os.path.join(destination_path, 'onboarding'))
 
 ofiles = collect_onboarding_files(destination_path)
 country_domains = ofiles.keys()
