@@ -14,7 +14,7 @@ A checklist is prepared [here](https://github.com/WorldHealthOrganization/smart-
 
 # QA Checks
 
-Due to quality reasons the incoming content will be checked for certain quality critiera. This ensures that all certificates are following the rules defined in the [Smart Trust Certificate Governance document](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
+Due to quality reasons the incoming content will be checked for certain quality criteria. This ensures that all certificates are following the rules defined in the [Smart Trust Certificate Governance document](https://github.com/WorldHealthOrganization/smart-trust/blob/main/input/pagecontent/concepts_certificate_governance.md)
 
 The incoming content needs to be checked for the following rules:
 
