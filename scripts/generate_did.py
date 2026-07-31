@@ -18,7 +18,6 @@ import json
 import base64
 
 from cryptography import x509
-from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 
 DID_HOST = "raw.githubusercontent.com"
@@ -100,17 +99,12 @@ def build_did_document(pem_path, country, domain):
         raise ValueError(f"No certificate found in {pem_path}")
 
     leaf = certificates[0]
-    x5c = [
-        base64.b64encode(cert.public_bytes(serialization.Encoding.DER)).decode("ascii")
-        for cert in certificates
-    ]
 
     did_prefix = _did_prefix()
     controller = f"{did_prefix}:{country}"
     verification_id = f"{controller}:onboarding:{domain}:UP:DID"
 
-    public_key_jwk = {"x5c": x5c}
-    public_key_jwk.update(_public_key_jwk(leaf))
+    public_key_jwk = _public_key_jwk(leaf)
 
     return {
         "@context": [
