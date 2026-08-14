@@ -10,6 +10,15 @@ The did:web identifiers are environment agnostic: the repository owner and name
 are read from the GITHUB_REPOSITORY environment variable (owner/repo) that
 GitHub Actions provides, falling back to the default WHO repository when run
 locally.
+
+The identifiers also embed the branch the document is published on, so a DID
+resolves to raw.githubusercontent.com/<owner>/<repo>/<branch>/<path...>. The
+branch is taken (in priority order) from an explicit command line argument, the
+GITHUB_HEAD_REF / GITHUB_REF_NAME environment variables that GitHub Actions
+provides for the branch the check-country workflow runs on, and finally the
+default branch. Because a did:web colon separator maps to a "/" in the resolved
+URL, any "/" contained in the branch name is converted to a colon so the branch
+spans the expected number of path segments.
 '''
 
 import os
@@ -22,6 +31,7 @@ from cryptography.hazmat.primitives.asymmetric import ec, rsa
 
 DID_HOST = "raw.githubusercontent.com"
 DEFAULT_REPOSITORY = "WorldHealthOrganization/tng-participants-dev"
+DEFAULT_BRANCH = "main"
 
 # Map cryptography curve names to the JWK crv names (RFC 7518 / RFC 8812).
 _CRV_NAMES = {
@@ -37,13 +47,27 @@ def _b64url(raw):
     return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
 
 
-def _did_prefix():
+def _resolve_branch(branch=None):
+    'Resolve the publishing branch from the argument, environment or default.'
+    branch = (
+        branch
+        or os.environ.get("GITHUB_HEAD_REF")
+        or os.environ.get("GITHUB_REF_NAME")
+        or DEFAULT_BRANCH
+    )
+    return branch.strip().strip("/") or DEFAULT_BRANCH
+
+
+def _did_prefix(branch=None):
     'Build the environment agnostic did:web prefix from GITHUB_REPOSITORY.'
     repository = os.environ.get("GITHUB_REPOSITORY", DEFAULT_REPOSITORY)
     owner, _, name = repository.partition("/")
     if not name:
         owner, name = DEFAULT_REPOSITORY.split("/")
-    return f"did:web:{DID_HOST}:{owner}:{name}"
+    # A did:web colon maps to a "/" in the resolved URL, so a branch that itself
+    # contains "/" is expanded into the matching number of path segments.
+    branch_segments = _resolve_branch(branch).replace("/", ":")
+    return f"did:web:{DID_HOST}:{owner}:{name}:{branch_segments}"
 
 
 def _load_certificates(pem_path):
@@ -92,7 +116,7 @@ def _public_key_jwk(cert):
     raise ValueError(f"Unsupported public key type: {type(public_key).__name__}")
 
 
-def build_did_document(pem_path, country, domain):
+def build_did_document(pem_path, country, domain, branch=None):
     'Build the DID document dict for the UP certificate at pem_path.'
     certificates = _load_certificates(pem_path)
     if not certificates:
@@ -100,7 +124,7 @@ def build_did_document(pem_path, country, domain):
 
     leaf = certificates[0]
 
-    did_prefix = _did_prefix()
+    did_prefix = _did_prefix(branch)
     controller = f"{did_prefix}:{country}"
     verification_id = f"{controller}:onboarding:{domain}:UP:DID"
 
@@ -123,7 +147,7 @@ def build_did_document(pem_path, country, domain):
     }
 
 
-def generate_for_country(country_folder):
+def generate_for_country(country_folder, branch=None):
     'Generate did.json for every onboarding/<DOMAIN>/UP/UP.pem under country_folder.'
     country = os.path.basename(os.path.normpath(country_folder))
     onboarding_root = os.path.join(country_folder, "onboarding")
@@ -138,7 +162,7 @@ def generate_for_country(country_folder):
             continue
 
         try:
-            document = build_did_document(up_pem, country, domain)
+            document = build_did_document(up_pem, country, domain, branch)
         except Exception as error:
             print(f"Skipping DID for {up_pem}: {error}", flush=True)
             continue
@@ -156,7 +180,11 @@ def generate_for_country(country_folder):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python scripts/generate_did.py <country-folder>", file=sys.stderr)
+    if len(sys.argv) not in (2, 3):
+        print(
+            "Usage: python scripts/generate_did.py <country-folder> [branch]",
+            file=sys.stderr,
+        )
         sys.exit(1)
-    generate_for_country(sys.argv[1])
+    branch_arg = sys.argv[2] if len(sys.argv) == 3 else None
+    generate_for_country(sys.argv[1], branch_arg)
