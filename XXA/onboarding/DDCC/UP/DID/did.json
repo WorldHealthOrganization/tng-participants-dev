@@ -1,0 +1,20 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
+    ],
+    "id": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:XXA:onboarding:DDCC:UP:DID",
+    "verificationMethod": [
+        {
+            "id": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:XXA:onboarding:DDCC:UP:DID",
+            "type": "JsonWebKey2020",
+            "controller": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:XXA",
+            "publicKeyJwk": {
+                "kty": "EC",
+                "crv": "P-256",
+                "x": "8qxYlgLQPfDxo_M7d3z_jMCJ2iqnGAH8yFyAxCbkG-U",
+                "y": "1b6_Bal4wzFVOJfJrcDxyQD9dAdSCHFN4yi0gpBcX9I"
+            }
+        }
+    ]
+}
