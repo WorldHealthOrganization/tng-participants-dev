@@ -4,7 +4,19 @@ import json
 import time
 import sys
 
+# Usage folders that are not signed by scripts/signing/sign-json.sh and therefore
+# must NOT be required to contain a 'signed/' subfolder (e.g. DDCC/REFERENCES only
+# holds Trusted_Reference.json, which is a reference list, not a signed artifact).
+SIGN_EXEMPT_USAGES = {"REFERENCES"}
+
+# Check-run status values (from `gh pr checks --json`) that indicate a real failure.
+FAILED_CHECK_STATES = {"fail", "failure", "cancel", "cancelled", "timed_out", "action_required", "startup_failure"}
+
 def check_signed_folder_exists(base_dir):
+    # Reference-type folders are not signed by design, so treat them as satisfied.
+    if os.path.basename(os.path.normpath(base_dir)) in SIGN_EXEMPT_USAGES:
+        print("skip (sign-exempt): " + base_dir)
+        return True
     signed_folder_path = os.path.join(base_dir, 'signed')
     print("search for: " + signed_folder_path)
     return os.path.isdir(signed_folder_path)
@@ -17,6 +29,33 @@ def check_all_directories(base_pattern):
             return False
     print("Exist!")
     return True
+
+def evaluate_checks(branch, exclude_names=("transitive-trust-failure-check",)):
+    '''Evaluate PR check runs using structured JSON instead of substring matching.
+
+       Returns True only if no relevant check is in a failed state. The review
+       bot's own job is excluded to avoid self-reference, and the
+       check *name* is never used to decide pass/fail (only the status/bucket),
+       so names like "transitive-trust-failure-check" cannot cause false fails.
+    '''
+    while True:
+        raw = os.popen("gh pr checks " + branch + " --json name,state,bucket").read()
+        try:
+            checks = json.loads(raw) if raw.strip() else []
+        except json.JSONDecodeError:
+            print("Could not parse checks JSON, retrying...")
+            time.sleep(5)
+            continue
+
+        relevant = [c for c in checks if c.get("name") not in exclude_names]
+        states = {(c.get("bucket") or c.get("state") or "").lower() for c in relevant}
+        print("Check states: " + str(states))
+
+        if "pending" in states:
+            time.sleep(5)
+            continue
+
+        return not (FAILED_CHECK_STATES & states)
 
 #   additions
 #   assignees
@@ -74,19 +113,12 @@ repeat = True
 checkRunSucceeded = True
 approve = True
 
-while repeat:
-  result = os.popen(checksStatus).read()
-  print(result)
-  time.sleep(5) # Sleep for 3 seconds
-  
-  if "fail" in result:
-      checkRunSucceeded = False
-      approve = False
-      break;
-  
-  if result.count("pending") == 1:
-      break;
-      
+# Evaluate checks via structured JSON status (not raw substring matching), so
+# that a job NAME containing "fail" (e.g. transitive-trust-failure-check) can no
+# longer be misread as an actual test failure.
+checkRunSucceeded = evaluate_checks(os.environ.get("BRANCH"))
+if not checkRunSucceeded:
+    approve = False
 
 noFailure = True
 signedFolderPresent = True
