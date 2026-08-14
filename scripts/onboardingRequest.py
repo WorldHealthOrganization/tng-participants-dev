@@ -120,7 +120,7 @@ os.system("[ -f "+country + "/onboarding/DCC/SCA/CSCA.pem"+" ] && mv " + country
 
 ##### Generate DID documents from the onboarded UP certificates
 os.system("echo Generating DID documents for " + country)
-os.system("python scripts/generate_did.py " + country + " " + branchName)
+os.system("python scripts/generate_did.py " + country)
 
 ##### Try to sign it
 
