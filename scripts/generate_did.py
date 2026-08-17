@@ -1,7 +1,7 @@
 '''Generate a did.json document for each UP certificate of a country.
 
 For every onboarding/<DOMAIN>/UP/UP.pem found under the given country folder a
-DID document is written to onboarding/<DOMAIN>/UP/DID/did.json. The
+DID document is written to onboarding/<DOMAIN>/UP/did.json. The
 publicKeyJwk is derived directly from the UP certificate so the UP public key
 can be used as a trust anchor. The document intentionally contains no proof
 section (it is not signed).
@@ -126,7 +126,7 @@ def build_did_document(pem_path, country, domain, branch=None):
 
     did_prefix = _did_prefix(branch)
     controller = f"{did_prefix}:{country}"
-    verification_id = f"{controller}:onboarding:{domain}:UP:DID"
+    verification_id = f"{controller}:onboarding:{domain}:UP"
 
     public_key_jwk = _public_key_jwk(leaf)
 
@@ -167,7 +167,7 @@ def generate_for_country(country_folder, branch=None):
             print(f"Skipping DID for {up_pem}: {error}", flush=True)
             continue
 
-        did_dir = os.path.join(onboarding_root, domain, "UP", "DID")
+        did_dir = os.path.join(onboarding_root, domain, "UP")
         os.makedirs(did_dir, exist_ok=True)
         did_path = os.path.join(did_dir, "did.json")
         with open(did_path, "w", encoding="utf-8") as did_file:
