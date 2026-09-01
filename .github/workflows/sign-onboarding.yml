@@ -1,0 +1,57 @@
+name: Sign onboarding request
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to switch to before listing artifacts
+        required: true
+        default: XXU/onboardingRequest
+        type: string
+      signing_keys_repository:
+        description: Owner/repo for the signing keys repository
+        required: true
+        default: kotharikaushal/tng-participants-dev-signing-keys
+        type: string
+      github_pat:
+        description: PAT with access to the private signing keys repository
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  BOT_USERNAME: tng-bot-dev
+
+jobs:
+  sign_onboarding:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tng-participants-dev
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Checkout tng-participants-dev-signing-keys
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ inputs.signing_keys_repository }}
+          path: tng-participants-dev-signing-keys
+          token: ${{ inputs.github_pat }}
+
+      - name: Pull and sign onboarding
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/signing/pullOnboarding.sh "$BOT_USERNAME"
+          ./scripts/signing/signOnboarding.sh tng-participants-dev-signing-keys
+
+      - name: Switch branch and show signed file
+        shell: bash
+        run: |
+          set -euo pipefail
+          git switch "${{ inputs.branch }}"
+          ls -lR XXU
+          cat XXU/onboarding/DCC/TLS/signed/TNG_TA.signed.TLS.json
+
