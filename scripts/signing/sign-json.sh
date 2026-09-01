@@ -4,8 +4,8 @@ set -e
 REALPATH=/bin/realpath
 BASENAME=/usr/bin/basename
 DIRNAME=/usr/bin/dirname
-SED=/opt/local/bin/gsed
-HEAD=/opt/local/bin/ghead
+SED=$(type -p sed)
+HEAD=$(type -p head)
 
 #signs keys assuming a directory structure as follows
 # $ISO3/ – three letter country code or WHO which contains key material
