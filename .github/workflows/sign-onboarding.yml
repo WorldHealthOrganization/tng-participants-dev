@@ -44,8 +44,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cp ./scripts/signing/signOnboarding.sh /tmp/signOnboarding.sh
+          chmod +x /tmp/signOnboarding.sh
           ./scripts/signing/pullOnboarding.sh "$BOT_USERNAME"
-          ./scripts/signing/signOnboarding.sh tng-participants-dev-signing-keys
+          /tmp/signOnboarding.sh tng-participants-dev-signing-keys
 
       - name: Switch branch and show signed file
         shell: bash
