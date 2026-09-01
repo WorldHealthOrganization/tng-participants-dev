@@ -14,9 +14,10 @@ DIRNAME=/usr/bin/dirname
 CURRDIR=$PWD
 SOURCEDIR=$(realpath $($DIRNAME ${BASH_SOURCE[0]}))
 SRCSIGNSCRIPT=$SOURCEDIR/sign-json.sh
-SIGNSCRIPT=/tmp/`uuid`.sh
+SIGNSCRIPT=$(mktemp /tmp/sign-json-XXXXXX.sh)
 cp "$SRCSIGNSCRIPT" $SIGNSCRIPT
 chmod +x $SIGNSCRIPT
+trap 'rm -f "$SIGNSCRIPT"' EXIT
 
 echo $SIGNSCRIPT
 
@@ -67,5 +68,4 @@ done <<< "$BRANCHES"
 
 git switch main    
 	
-
 
