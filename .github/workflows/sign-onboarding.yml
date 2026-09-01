@@ -19,7 +19,7 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   BOT_USERNAME: tng-bot-dev
@@ -54,4 +54,3 @@ jobs:
           git switch "${{ inputs.branch }}"
           ls -lR XXU
           cat XXU/onboarding/DCC/TLS/signed/TNG_TA.signed.TLS.json
-
