@@ -1,0 +1,242 @@
+# Check Country Delivery (external) — REST edition
+#
+# Same procedure as the upstream hourly job, but `scripts/delivery.py` is replaced
+# by the REST service in `tng_trust_service.py`. The runner is now a CLIENT.
+#
+#   upstream step                    ->  here
+#   ---------------------------------------------------------------------
+#   Set up GPG                       ->  signing keys go to the service
+#   Decrypt files                    ->  runner decrypts credential blobs (if used)
+#   Generate countries.json          ->  per-participant submission payloads
+#   Run delivery.py (all countries)  ->  POST /submissions -> /sign -> /deploy
+#   Commit / push trust list         ->  inside the service's deploy step
+#
+# See docs/migration-from-upstream.md for the assumptions this encodes.
+
+name: Check Country Delivery (ext, REST)
+
+on:
+  # schedule:
+  #   - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target trust list"
+        type: choice
+        default: dev
+        options: [dev, uat, prod]
+        required: true
+      participants:
+        description: "Space-separated ISO-3166 alpha-3 codes; empty = all"
+        type: string
+        required: false
+      dry_run:
+        description: "Deploy as a dry run (commit locally, do not push)"
+        type: boolean
+        default: true
+
+# One in-flight run per environment. Upstream had no concurrency group, so an
+# hourly cron plus a manual dispatch could rebase and push the same branch at once.
+concurrency:
+  group: country-delivery-${{ github.event.inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  TNG_ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+  DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+  SERVICE_URL: "http://127.0.0.1:8080"
+  DOMAIN: "tng"
+  RUN_ID: "gh-${{ github.run_id }}"
+
+jobs:
+  deliver:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout participants
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Start trust service
+        env:
+          # Keys go to the SERVICE, not to a general-purpose script.
+          TNG_TA_PRIVATE_KEY_DEV: ${{ secrets.TNG_TA_PRIVATE_KEY_DEV }}
+          TNG_TA_CA_DEV: ${{ secrets.TNG_TA_CA_DEV }}
+          TNG_TA_PRIVATE_KEY_UAT: ${{ secrets.TNG_TA_PRIVATE_KEY_UAT }}
+          TNG_TA_CA_UAT: ${{ secrets.TNG_TA_CA_UAT }}
+          TNG_TA_PRIVATE_KEY_PROD: ${{ secrets.TNG_TA_PRIVATE_KEY_PROD }}
+          TNG_TA_CA_PROD: ${{ secrets.TNG_TA_CA_PROD }}
+          TRUST_LIST_REPO: ${{ vars.TRUST_LIST_REPO }}
+          TRUST_LIST_TOKEN: ${{ secrets.BOT_TOKEN_GITHUB }}
+          TNG_ENVIRONMENTS: "dev,uat,prod"
+          JOURNAL_PATH: "journal/deliveries.jsonl"
+        run: |
+          nohup python tng_trust_service.py > service.log 2>&1 &
+          echo "SERVICE_PID=$!" >> "$GITHUB_ENV"
+          for i in $(seq 1 30); do
+            if curl -sf "$SERVICE_URL/healthz" > /dev/null; then
+              echo "service up"; curl -s "$SERVICE_URL/healthz" | jq .; exit 0
+            fi
+            sleep 1
+          done
+          echo "service did not become healthy"; cat service.log; exit 1
+
+      # Only needed if participant credentials are still encrypted blobs.
+      - name: Set up GPG
+        if: ${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY != '' }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY }}
+        run: |
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          mkdir -p "$GNUPGHOME"; chmod 700 "$GNUPGHOME"
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+          printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+
+      - name: Reconcile deliveries
+        env:
+          SELECTED: ${{ github.event.inputs.participants }}
+        run: |
+          set -uo pipefail
+          mkdir -p reports
+          base="$SERVICE_URL/$DOMAIN/api"
+
+          # Map an onboarding path to a validationType. ADJUST to your layout —
+          # see docs/migration-from-upstream.md, assumption 1.
+          map_validation_type() {
+            local path="$1" fw="" mat=""
+            case "$path" in
+              */DCC/*|*/dcc/*)   fw="dcc" ;;
+              */PH4H/*|*/ph4h/*) fw="ph4h" ;;
+              */DDCC/*|*/ddcc/*) fw="ddcc" ;;
+              *)                 fw="any" ;;
+            esac
+            case "$path" in
+              *TLS*|*tls*)          mat="tls" ;;
+              *CA*|*/ca/*)          mat="ca" ;;
+              *UP*|*/up/*)          mat="up" ;;
+              *SCA*|*sca*)          mat="sca" ;;
+              *DID*|*did*)          mat="did" ;;
+              *JWKS*|*jwks*|*.jwks) mat="jwks" ;;
+              *)                    mat="" ;;
+            esac
+            [ -n "$mat" ] && echo "${fw}.${mat}"
+          }
+
+          participants=()
+          for d in */; do
+            code="${d%/}"
+            echo "$code" | grep -Eq '^[A-Z]{3}$' && participants+=("$code")
+          done
+          if [ -n "${SELECTED:-}" ]; then read -ra participants <<< "$SELECTED"; fi
+          echo "participants: ${participants[*]:-<none>}"
+
+          failed=0; delivered=0; rejected=0
+          {
+            echo "| Participant | Verify | Sign | Deploy |"
+            echo "|---|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          for code in "${participants[@]:-}"; do
+            [ -n "$code" ] || continue
+
+            artifacts="[]"
+            while IFS= read -r f; do
+              vt="$(map_validation_type "$f")"; [ -n "$vt" ] || continue
+              artifacts="$(jq -c --arg f "$f" --arg vt "$vt" --arg c "$(base64 -w0 "$f")" \
+                '. + [{filename:$f, validationType:$vt, content:$c, embeddingMethod:"BASE64"}]' \
+                <<< "$artifacts")"
+            done < <(find "$code" -type f \( -name '*.pem' -o -name '*.json' -o -name '*.did' \) 2>/dev/null)
+
+            if [ "$(jq 'length' <<< "$artifacts")" -eq 0 ]; then
+              echo "::warning::no material found for $code"; continue
+            fi
+
+            payload="$(jq -nc --arg p "$code" --arg r "$RUN_ID" --argjson a "$artifacts" \
+              '{participant:$p, run_id:$r, artifacts:$a}')"
+
+            # --- 1. upload + verify ---
+            resp="$(curl -s -w '\n%{http_code}' -X POST "$base/submissions" \
+              -H 'Content-Type: application/json' -H "X-Actor: gh-actions/${RUN_ID}" -d "$payload")"
+            body="$(sed '$d' <<< "$resp")"; http="$(tail -n1 <<< "$resp")"
+            echo "$body" > "reports/${code}.1-verify.json"
+            if [ "$http" != "201" ]; then
+              echo "| $code | ⚠️ HTTP $http | — | — |" >> "$GITHUB_STEP_SUMMARY"; failed=1; continue
+            fi
+            sid="$(jq -r '.id' <<< "$body")"
+            agg="$(jq -r '.aggregate_result' <<< "$body")"
+            if [ "$(jq -r '.state' <<< "$body")" != "verified" ]; then
+              echo "| $code | ❌ $agg | — | — |" >> "$GITHUB_STEP_SUMMARY"
+              rejected=$((rejected+1)); failed=1; continue
+            fi
+
+            # --- 2. sign ---
+            resp="$(curl -s -w '\n%{http_code}' -X POST "$base/submissions/$sid/sign" \
+              -H 'Content-Type: application/json' -H "X-Actor: gh-actions/${RUN_ID}" \
+              -d "$(jq -nc --arg e "$TNG_ENVIRONMENT" '{environment:$e}')")"
+            body="$(sed '$d' <<< "$resp")"; http="$(tail -n1 <<< "$resp")"
+            echo "$body" > "reports/${code}.2-sign.json"
+            if [ "$http" != "200" ]; then
+              echo "| $code | ✅ $agg | ⚠️ HTTP $http | — |" >> "$GITHUB_STEP_SUMMARY"
+              curl -s -X POST "$base/submissions/$sid/close" > /dev/null
+              failed=1; continue
+            fi
+            sv="$(jq -r '[.signatures[].signature.self_verified] | all' <<< "$body")"
+
+            # --- 3. deploy ---
+            resp="$(curl -s -w '\n%{http_code}' -X POST "$base/submissions/$sid/deploy" \
+              -H 'Content-Type: application/json' -H "X-Actor: gh-actions/${RUN_ID}" \
+              -d "$(jq -nc --argjson d "$DRY_RUN" '{dry_run:$d}')")"
+            body="$(sed '$d' <<< "$resp")"; http="$(tail -n1 <<< "$resp")"
+            echo "$body" > "reports/${code}.3-deploy.json"
+            curl -s -H 'Accept: text/plain' "$base/submissions/$sid/audit" > "reports/${code}.audit.txt"
+
+            if [ "$http" = "200" ]; then
+              state="$(jq -r '.state' <<< "$body")"
+              echo "| $code | ✅ $agg | ✅ verified=$sv | ✅ $state |" >> "$GITHUB_STEP_SUMMARY"
+              [ "$state" = "delivered" ] && delivered=$((delivered+1))
+            else
+              echo "| $code | ✅ $agg | ✅ verified=$sv | ❌ HTTP $http |" >> "$GITHUB_STEP_SUMMARY"
+              curl -s -X POST "$base/submissions/$sid/close" > /dev/null
+              failed=1
+            fi
+          done
+
+          {
+            echo ""
+            echo "Environment: \`$TNG_ENVIRONMENT\` · dry_run: \`$DRY_RUN\` · run: \`$RUN_ID\`"
+            echo "Delivered: $delivered · Rejected: $rejected"
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $failed
+
+      - name: Run summary from the journal
+        if: ${{ always() }}
+        run: |
+          curl -s "$SERVICE_URL/$DOMAIN/api/runs/$RUN_ID" > reports/run-summary.json 2>/dev/null || true
+          jq . reports/run-summary.json 2>/dev/null || echo "no journal records for this run"
+
+      - name: Upload reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: delivery-reports-${{ env.TNG_ENVIRONMENT }}-${{ github.run_id }}
+          path: |
+            reports/
+            journal/
+          if-no-files-found: warn
+
+      - name: Service log on failure
+        if: ${{ failure() }}
+        run: cat service.log || true
+
+      - name: Stop trust service
+        if: ${{ always() }}
+        run: kill "${SERVICE_PID}" 2>/dev/null || true
