@@ -1,0 +1,77 @@
+# One-time workflow: generates did.json from UP.pem for every participant where it
+# is still missing and opens a PR with the result. The did:web identifiers take the
+# repository from GITHUB_REPOSITORY and the branch from the ref the workflow runs on.
+
+name: Generate did.json for all participants (one-time)
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run the generation against'
+        type: environment
+        required: true
+      dry_run:
+        description: 'Only list the did.json files that would be generated'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-did-all:
+    name: 'Generate did.json (${{ inputs.environment }})'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 #v6.3.0
+        with:
+          python-version: '3.10'
+
+      - name: Checkout Code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+
+      - name: Install dependencies
+        run: pip install cryptography
+
+      - name: Generate did.json
+        env:
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
+          ARGS="--branch $TARGET_BRANCH"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          python scripts/generate_did_all.py $ARGS | tee "$RUNNER_TEMP/did.log"
+          # Invalid/placeholder UP.pem files are reported, but must not block the PR.
+          grep "^Failed:" "$RUNNER_TEMP/did.log" > "$RUNNER_TEMP/did_failed.log" || true
+          while read -r line; do echo "::warning::$line"; done < "$RUNNER_TEMP/did_failed.log"
+
+      - name: Create PR
+        if: ${{ !inputs.dry_run }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN_GITHUB }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
+          git config --global user.email ${{ secrets.BOT_EMAIL_GITHUB }}
+          git config --global user.name ${{ secrets.BOT_USER_GITHUB }}
+          git add -A -- '*/onboarding/*/UP/did.json'
+          if git diff --cached --quiet; then
+            echo "All did.json files already exist. Nothing to commit."
+            exit 0
+          fi
+          PR_BRANCH="bot/generate-did-all-${{ github.run_id }}"
+          git checkout -b "$PR_BRANCH"
+          git commit -m "Bot generated did.json for all participants (${{ inputs.environment }})"
+          git push -u origin "$PR_BRANCH"
+          {
+            echo "Generated did.json from UP.pem for every participant where it was missing."
+            if [ -s "$RUNNER_TEMP/did_failed.log" ]; then
+              echo
+              echo "The following UP.pem files could not be processed:"
+              sed 's/^/- /' "$RUNNER_TEMP/did_failed.log"
+            fi
+          } > "$RUNNER_TEMP/pr_body.md"
+          gh pr create -B "$TARGET_BRANCH" -H "$PR_BRANCH" \
+            --title 'Bot generated did.json for all participants (${{ inputs.environment }})' \
+            --body-file "$RUNNER_TEMP/pr_body.md"
