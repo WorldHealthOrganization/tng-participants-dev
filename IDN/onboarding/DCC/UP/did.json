@@ -1,0 +1,20 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
+    ],
+    "id": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:IDN:onboarding:DCC:UP",
+    "verificationMethod": [
+        {
+            "id": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:IDN:onboarding:DCC:UP",
+            "type": "JsonWebKey2020",
+            "controller": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:IDN",
+            "publicKeyJwk": {
+                "kty": "EC",
+                "crv": "P-256",
+                "x": "WzsN2B4dO6sdH9vdvgFkaulEVxhSvGILpadmeSdx74o",
+                "y": "tORSOr93yaxOQp8krT6X5fiooJnbJU10_nKD4z1lcrE"
+            }
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
+    ],
+    "id": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:SGP:onboarding:DCC:UP",
+    "verificationMethod": [
+        {
+            "id": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:SGP:onboarding:DCC:UP",
+            "type": "JsonWebKey2020",
+            "controller": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:SGP",
+            "publicKeyJwk": {
+                "kty": "EC",
+                "crv": "P-256",
+                "x": "mthi53DpHE9HrMifOAm1Uk9qsJT9CQCRY9l_PgDPYUg",
+                "y": "xocM6INxhVu9GFKAHPfBQZqT6oT1iI3NkGjIhDJISBo"
+            }
+        }
+    ]
+}
