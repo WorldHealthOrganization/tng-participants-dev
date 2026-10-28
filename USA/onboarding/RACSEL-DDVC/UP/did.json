@@ -1,0 +1,20 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
+    ],
+    "id": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:USA:onboarding:RACSEL-DDVC:UP",
+    "verificationMethod": [
+        {
+            "id": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:USA:onboarding:RACSEL-DDVC:UP",
+            "type": "JsonWebKey2020",
+            "controller": "did:web:raw.githubusercontent.com:WorldHealthOrganization:tng-participants-dev:main:USA",
+            "publicKeyJwk": {
+                "kty": "EC",
+                "crv": "P-256",
+                "x": "vvF_EzycZFBAftvQhEKj6QeIuU3Heh-zh5ntDisvs54",
+                "y": "wlgtJw2zy2j44JqacU8Uf1hMuL1LuCTKaAY9B3aSnhU"
+            }
+        }
+    ]
+}
