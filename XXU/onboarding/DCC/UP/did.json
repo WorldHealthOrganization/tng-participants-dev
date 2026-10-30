@@ -12,8 +12,8 @@
             "publicKeyJwk": {
                 "kty": "EC",
                 "crv": "P-256",
-                "x": "qdlu65cfBXUagVWe6dqT86NpKUygvVCvgWd0S1uudII",
-                "y": "SPR9D_RYA688WGoFkMms1ycVj3mXUlSw8TGU-_kyv48"
+                "x": "7b0cHqZ0G0oL-ddtaLGMn0u7H8ko7iwP1tymPI7wqIM",
+                "y": "Mzxz9QJRgPn31Gy8sQsdfjLHKYH3KgngEiDLihvmJiU"
             }
         }
     ]
