@@ -92,14 +92,17 @@ jobs:
 
       # Only needed if participant credentials are still encrypted blobs.
       - name: Set up GPG
-        if: ${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY != '' }}
         env:
           GPG_PRIVATE_KEY: ${{ secrets.EXT_SECRETS_GPG_PRIVATE_KEY }}
         run: |
-          export GNUPGHOME="$RUNNER_TEMP/gnupg"
-          mkdir -p "$GNUPGHOME"; chmod 700 "$GNUPGHOME"
-          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
-          printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          if [ -n "${GPG_PRIVATE_KEY:-}" ]; then
+            export GNUPGHOME="$RUNNER_TEMP/gnupg"
+            mkdir -p "$GNUPGHOME"; chmod 700 "$GNUPGHOME"
+            echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+            printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          else
+            echo "No GPG private key configured; skipping GPG setup."
+          fi
 
       - name: Reconcile deliveries
         env:
