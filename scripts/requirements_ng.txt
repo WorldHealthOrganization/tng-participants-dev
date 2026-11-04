@@ -1,0 +1,12 @@
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pydantic>=2.9
+cryptography>=43.0
+pycountry>=24.6.1
+# Both arrive transitively via uvicorn[standard], but are declared here because
+# they are load-bearing: pyyaml reads rules.yaml (a missing rule set is fatal by
+# design) and .tng/delivery.yml; python-dotenv loads .env at startup.
+pyyaml>=6.0
+python-dotenv>=1.0
+pytest>=8.3
+httpx>=0.27

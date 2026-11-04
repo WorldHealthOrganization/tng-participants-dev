@@ -64,7 +64,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r scripts/requirements_ng.txt
 
       - name: Start trust service
         env:
@@ -73,14 +73,14 @@ jobs:
           TNG_TA_CA_DEV: ${{ secrets.TNG_TA_CA_DEV }}
           TNG_TA_PRIVATE_KEY_UAT: ${{ secrets.TNG_TA_PRIVATE_KEY_UAT }}
           TNG_TA_CA_UAT: ${{ secrets.TNG_TA_CA_UAT }}
-          TNG_TA_PRIVATE_KEY_PROD: ${{ secrets.TNG_TA_PRIVATE_KEY_PROD }}
-          TNG_TA_CA_PROD: ${{ secrets.TNG_TA_CA_PROD }}
-          TRUST_LIST_REPO: ${{ vars.TRUST_LIST_REPO }}
+          # TNG_TA_PRIVATE_KEY_PROD: ${{ secrets.TNG_TA_PRIVATE_KEY_PROD }} does not exist. PROD signing alsways air-gapped.
+          # TNG_TA_CA_PROD: ${{ secrets.TNG_TA_CA_PROD }} does not exist. PROD signing alsways air-gapped.
+          # TODO: TRUST_LIST_REPO: ${{ vars.TRUST_LIST_REPO }} variable does not exist
           TRUST_LIST_TOKEN: ${{ secrets.BOT_TOKEN_GITHUB }}
-          TNG_ENVIRONMENTS: "dev,uat,prod"
+          TNG_ENVIRONMENTS: "dev,uat"
           JOURNAL_PATH: "journal/deliveries.jsonl"
         run: |
-          nohup python tng_trust_service.py > service.log 2>&1 &
+          nohup python scripts/tng_trust_service.py > service.log 2>&1 &
           echo "SERVICE_PID=$!" >> "$GITHUB_ENV"
           for i in $(seq 1 30); do
             if curl -sf "$SERVICE_URL/healthz" > /dev/null; then
